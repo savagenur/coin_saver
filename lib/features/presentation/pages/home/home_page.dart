@@ -1,4 +1,5 @@
 import 'package:coin_saver/constants.dart';
+import 'package:coin_saver/features/presentation/pages/home/add_transaction/add_transaction_page.dart';
 import 'package:coin_saver/features/presentation/widgets/shadowed_container_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -51,7 +52,6 @@ class _HomePageState extends State<HomePage>
                         padding: EdgeInsets.symmetric(horizontal: 40),
                         labelPadding: EdgeInsets.symmetric(horizontal: 5),
                         indicatorColor: primaryColor,
-                        
                         indicatorSize: TabBarIndicatorSize.label,
                         labelStyle: const TextStyle(
                             fontWeight: FontWeight.bold, color: primaryColor),
@@ -111,7 +111,13 @@ class _HomePageState extends State<HomePage>
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddTransactionPage(),
+                ));
+          },
           child: Icon(Icons.add),
         ),
       ),
@@ -127,6 +133,7 @@ class _HomePageState extends State<HomePage>
         icon: Icon(Icons.menu),
       ),
       title: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Padding(
             padding: EdgeInsets.only(bottom: 5),
@@ -136,7 +143,7 @@ class _HomePageState extends State<HomePage>
                 Icon(Icons.monetization_on),
                 Text(
                   "Main",
-                  style: TextStyle(fontSize: 16),
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white),
                 ),
                 Icon(
                   Icons.arrow_drop_down_sharp,
@@ -179,8 +186,6 @@ class _HomePageState extends State<HomePage>
     ];
   }
 }
-
-
 
 class GDPData {
   final String category;

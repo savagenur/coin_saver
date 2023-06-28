@@ -1,7 +1,7 @@
-import 'package:coin_saver/constants.dart';
+import 'package:coin_saver/constants/constants.dart';
 import 'package:flutter/material.dart';
 
-import '../../../widgets/my_button_widget.dart';
+import '../../widgets/my_button_widget.dart';
 
 class AddTransactionPage extends StatefulWidget {
   const AddTransactionPage({super.key});
@@ -54,7 +54,7 @@ class AddTransactionPageState extends State<AddTransactionPage> {
                           style: Theme.of(context)
                               .textTheme
                               .titleLarge!
-                              .copyWith(color: primaryColor),
+                              .copyWith(color: Theme.of(context).primaryColor),
                         ),
                       ),
                     ),
@@ -66,7 +66,7 @@ class AddTransactionPageState extends State<AddTransactionPage> {
                             style: Theme.of(context)
                                 .textTheme
                                 .titleLarge!
-                                .copyWith(color: primaryColor),
+                                .copyWith(color: Theme.of(context).primaryColor),
                           ),
                           IconButton(
                               onPressed: () {},
@@ -83,7 +83,7 @@ class AddTransactionPageState extends State<AddTransactionPage> {
                   child: Text(
                     "Not selected",
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontWeight: FontWeight.bold, color: primaryColor),
+                        fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor),
                   ),
                 ),
                 Divider(),
@@ -154,7 +154,7 @@ class AddTransactionPageState extends State<AddTransactionPage> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5),
                             color: selectedDay == index
-                                ? primaryColor
+                                ? Theme.of(context).primaryColor
                                 : Colors.white,
                           ),
                           padding: EdgeInsets.all(5),

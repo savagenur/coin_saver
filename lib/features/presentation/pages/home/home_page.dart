@@ -1,7 +1,8 @@
-import 'package:coin_saver/constants.dart';
-import 'package:coin_saver/features/presentation/pages/home/add_transaction/add_transaction_page.dart';
+import 'package:coin_saver/constants/constants.dart';
+import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:coin_saver/features/presentation/widgets/shadowed_container_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../widgets/category_tile.dart';
@@ -51,11 +52,11 @@ class _HomePageState extends State<HomePage>
                         controller: _tabController,
                         padding: EdgeInsets.symmetric(horizontal: 40),
                         labelPadding: EdgeInsets.symmetric(horizontal: 5),
-                        indicatorColor: primaryColor,
+                        indicatorColor: Theme.of(context).primaryColor,
                         indicatorSize: TabBarIndicatorSize.label,
-                        labelStyle: const TextStyle(
-                            fontWeight: FontWeight.bold, color: primaryColor),
-                        unselectedLabelColor: primaryColor,
+                        labelStyle:  TextStyle(
+                            fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor),
+                        unselectedLabelColor: Theme.of(context).primaryColor,
                         tabs: kChartPeriodTitles
                             .map(
                               (e) => Tab(
@@ -68,6 +69,7 @@ class _HomePageState extends State<HomePage>
                             .toList(),
                       ),
                       DayNavigationWidget(),
+                     
                       Stack(
                         alignment: Alignment.center,
                         children: [

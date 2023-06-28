@@ -18,7 +18,7 @@ List<CategoryModel> mainCategories = [
   CategoryModel(
       id: uuid.v1(),
       name: "Workout",
-      iconData: FontAwesomeIcons.dumbbell,
+      iconData: FontAwesomeIcons.personRunning,
       color: Colors.green,
       isIncome: false),
 
@@ -53,7 +53,7 @@ List<CategoryModel> mainCategories = [
       id: uuid.v1(),
       name: "Cafe",
       iconData: FontAwesomeIcons.martiniGlassCitrus,
-      color: Colors.yellow,
+      color: Colors.yellow.shade900,
       isIncome: false),
 
   // INCOME

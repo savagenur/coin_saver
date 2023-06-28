@@ -54,8 +54,9 @@ class _HomePageState extends State<HomePage>
                         labelPadding: EdgeInsets.symmetric(horizontal: 5),
                         indicatorColor: Theme.of(context).primaryColor,
                         indicatorSize: TabBarIndicatorSize.label,
-                        labelStyle:  TextStyle(
-                            fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor),
+                        labelStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor),
                         unselectedLabelColor: Theme.of(context).primaryColor,
                         tabs: kChartPeriodTitles
                             .map(
@@ -69,7 +70,6 @@ class _HomePageState extends State<HomePage>
                             .toList(),
                       ),
                       DayNavigationWidget(),
-                     
                       Stack(
                         alignment: Alignment.center,
                         children: [
@@ -114,11 +114,10 @@ class _HomePageState extends State<HomePage>
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddTransactionPage(),
-                ));
+            Navigator.pushNamed(
+              context,
+              PageConst.addTransactionPage,
+            );
           },
           child: Icon(Icons.add),
         ),
@@ -145,7 +144,10 @@ class _HomePageState extends State<HomePage>
                 Icon(Icons.monetization_on),
                 Text(
                   "Main",
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Colors.white),
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(color: Colors.white),
                 ),
                 Icon(
                   Icons.arrow_drop_down_sharp,
@@ -172,7 +174,11 @@ class _HomePageState extends State<HomePage>
         ],
       ),
       actions: [
-        IconButton(onPressed: () {}, icon: const Icon(Icons.list_alt_rounded)),
+        IconButton(
+            onPressed: () {
+              Navigator.pushNamed(context, PageConst.transactionsPage);
+            },
+            icon: const Icon(Icons.list_alt_rounded)),
       ],
     );
   }

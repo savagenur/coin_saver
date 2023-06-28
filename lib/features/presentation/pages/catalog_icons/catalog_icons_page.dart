@@ -18,27 +18,8 @@ class CatalogIconsPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  Text(
-                    "Selected Icon:",
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge!
-                        .copyWith(fontWeight: FontWeight.normal),
-                  ),
-                  sizeHor(10),
-                  CircleAvatar(
-                    child: FaIcon(
-                      FontAwesomeIcons.question,
-                    ),
-                  )
-                ],
-              ),
-            ),
-            sizeVer(10),
+            
+            sizeVer(20),
             ...List.generate(
                 categoryIcons.length,
                 (keyIndex) => Column(
@@ -69,11 +50,11 @@ class CatalogIconsPage extends StatelessWidget {
                                         ),
                                         child: CircleAvatar(
                                           radius: 30,
-                                          backgroundColor: Colors.grey.shade300,
-                                          child: FaIcon(
+                                          backgroundColor: secondaryColor,
+                                          child: Icon(
                                             categoryIcons[categoryIcons.keys
                                                 .elementAt(
-                                                    keyIndex)]![valueIndex],
+                                                    keyIndex)]![valueIndex],color: Colors.white,
                                           ),
                                         ),
                                       ))

@@ -1,6 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+const List<IconData> mainIcons = [
+  FontAwesomeIcons.creditCard,
+    FontAwesomeIcons.motorcycle,
+    FontAwesomeIcons.basketShopping,
+    FontAwesomeIcons.bell,
+    FontAwesomeIcons.sun,
+    FontAwesomeIcons.umbrella,
+    FontAwesomeIcons.heart,
+    FontAwesomeIcons.house,
+    FontAwesomeIcons.book,
+    FontAwesomeIcons.piggyBank,
+    FontAwesomeIcons.fire,
+    FontAwesomeIcons.language,
+    FontAwesomeIcons.gamepad,
+    FontAwesomeIcons.paperclip,
+    FontAwesomeIcons.moon,
+
+
+];
 const Map<String, List<IconData>> categoryIcons = {
   'Finances': [
     FontAwesomeIcons.wallet,
@@ -31,7 +50,7 @@ const Map<String, List<IconData>> categoryIcons = {
   ],
   'Shopping': [
     FontAwesomeIcons.shoppingBag,
-    FontAwesomeIcons.shoppingBasket,
+    FontAwesomeIcons.basketShopping,
     FontAwesomeIcons.shoppingCart,
     FontAwesomeIcons.gift,
     FontAwesomeIcons.tags,
@@ -46,7 +65,7 @@ const Map<String, List<IconData>> categoryIcons = {
   ],
   'Food & Drink': [
     FontAwesomeIcons.utensils,
-    FontAwesomeIcons.glassMartini,
+    FontAwesomeIcons.martiniGlassEmpty,
     FontAwesomeIcons.coffee,
     FontAwesomeIcons.beer,
     FontAwesomeIcons.wineGlass,
@@ -201,7 +220,7 @@ const Map<String, List<IconData>> categoryIcons = {
     FontAwesomeIcons.baby,
     FontAwesomeIcons.handsHelping,
     FontAwesomeIcons.heartbeat,
-    FontAwesomeIcons.home,
+    FontAwesomeIcons.house,
     FontAwesomeIcons.birthdayCake,
     FontAwesomeIcons.tshirt,
     FontAwesomeIcons.gamepad,
@@ -210,7 +229,6 @@ const Map<String, List<IconData>> categoryIcons = {
   'Other': [
     FontAwesomeIcons.questionCircle,
     FontAwesomeIcons.exclamationCircle,
-    FontAwesomeIcons.ellipsisH,
     FontAwesomeIcons.search,
     FontAwesomeIcons.mapMarkerAlt,
     FontAwesomeIcons.paperclip,
@@ -227,4 +245,3 @@ const Map<String, List<IconData>> categoryIcons = {
     FontAwesomeIcons.bell,
   ],
 };
-

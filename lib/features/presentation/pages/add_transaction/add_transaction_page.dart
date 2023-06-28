@@ -1,4 +1,7 @@
 import 'package:coin_saver/constants/constants.dart';
+import 'package:coin_saver/constants/main_categories.dart';
+import 'package:coin_saver/features/domain/entities/category/category_entity.dart';
+import 'package:coin_saver/features/presentation/pages/add_category/add_category_page.dart';
 import 'package:flutter/material.dart';
 
 import '../../widgets/my_button_widget.dart';
@@ -66,7 +69,8 @@ class AddTransactionPageState extends State<AddTransactionPage> {
                             style: Theme.of(context)
                                 .textTheme
                                 .titleLarge!
-                                .copyWith(color: Theme.of(context).primaryColor),
+                                .copyWith(
+                                    color: Theme.of(context).primaryColor),
                           ),
                           IconButton(
                               onPressed: () {},
@@ -77,25 +81,26 @@ class AddTransactionPageState extends State<AddTransactionPage> {
                   ],
                 ),
                 sizeVer(20),
-                Text("Account:"),
+                Text("Account:",style: TextStyle(color: Colors.grey),),
                 TextButton(
                   onPressed: () {},
                   child: Text(
                     "Not selected",
                     style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor),
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor),
                   ),
                 ),
                 Divider(),
                 sizeVer(10),
-                Text("Categories:"),
+                Text("Categories:",style: TextStyle(color: Colors.grey),),
                 sizeVer(10),
                 _buildGridView(),
                 Divider(),
                 sizeVer(10),
                 _buildSelectDay(context, _selectedDay),
                 sizeVer(20),
-                Text("Comment:"),
+                Text("Comment:",style: TextStyle(color: Colors.grey),),
                 sizeVer(10),
                 TextFormField(
                   maxLength: 4000,
@@ -112,12 +117,10 @@ class AddTransactionPageState extends State<AddTransactionPage> {
             ? null
             : MyButtonWidget(
                 title: 'Add',
-                width: MediaQuery.of(context).size.width*.5,
+                width: MediaQuery.of(context).size.width * .5,
                 borderRadius: BorderRadius.circular(30),
                 paddingVertical: 15,
-                onTap: () {
-                  
-                },
+                onTap: () {},
               ),
       ),
     );
@@ -202,29 +205,39 @@ class AddTransactionPageState extends State<AddTransactionPage> {
           crossAxisCount: 4, mainAxisSpacing: 5, crossAxisSpacing: 5),
       itemCount: 8,
       itemBuilder: (BuildContext context, int index) {
+        CategoryEntity categoryEntity = mainCategories[index];
         return index == 7
-            ? Column(
-                children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.grey[300],
-                    radius: 25,
-                    child: Icon(Icons.add),
-                  ),
-                  Text(
-                    "More",
-                    maxLines: 1,
-                  ),
-                ],
+            ? GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, PageConst.addCategoryPage,
+                      arguments: AddCategoryPage(isIncome: false));
+                },
+                child: Column(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: secondaryColor,
+                      radius: 25,
+                      child: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Text(
+                      "More",
+                      maxLines: 1,
+                    ),
+                  ],
+                ),
               )
             : Column(
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    child: Icon(Icons.bus_alert),
+                    backgroundColor: categoryEntity.color,
+                    child: Icon(categoryEntity.iconData,color: Colors.white,),
                   ),
                   Text(
-                    "Transactions",
-                    style: Theme.of(context).textTheme.titleSmall,
+                    categoryEntity.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -236,7 +249,6 @@ class AddTransactionPageState extends State<AddTransactionPage> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      toolbarHeight: 70,
       centerTitle: true,
       title: Text("Add Transactions"),
       bottom: TabBar(

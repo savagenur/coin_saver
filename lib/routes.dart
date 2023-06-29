@@ -3,6 +3,8 @@ import 'package:coin_saver/features/presentation/pages/add_transaction/add_trans
 import 'package:coin_saver/features/presentation/pages/catalog_icons/catalog_icons_page.dart';
 import 'package:coin_saver/features/presentation/pages/colors/colors_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
+import 'package:coin_saver/features/presentation/pages/main_transaction/main_transaction_page.dart';
+import 'package:coin_saver/features/presentation/pages/transaction_detail/transaction_detail_page.dart';
 import 'package:coin_saver/features/presentation/transactions/transactions_page.dart';
 import 'package:flutter/material.dart';
 
@@ -25,6 +27,10 @@ class AppRoute {
         return _routeBuilder(CreateCategoryPage());
       case PageConst.transactionsPage:
         return _routeBuilder(TransactionsPage());
+      case PageConst.mainTransactionPage:
+        return _routeBuilder(MainTransactionPage());
+      case PageConst.transactionDetailPage:
+        return _routeBuilder(TransactionDetailPage());
       case PageConst.addCategoryPage:
         args = args as AddCategoryPage;
         return _routeBuilder(AddCategoryPage(isIncome: args.isIncome,));

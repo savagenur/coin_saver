@@ -34,4 +34,6 @@ class PageConst {
   static const String addCategoryPage = "addCategoryPage";
   static const String createCategoryPage = "createCategoryPage";
   static const String transactionsPage = "transactionsPage";
+  static const String mainTransactionPage = "mainTransactionPage";
+  static const String transactionDetailPage = "transactionDetailPage";
 }

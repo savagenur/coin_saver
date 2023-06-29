@@ -105,7 +105,12 @@ class _HomePageState extends State<HomePage>
                 5,
                 (index) => Padding(
                   padding: EdgeInsets.only(right: 10, bottom: 10, left: 10),
-                  child: CategoryTile(),
+                  child: GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, PageConst.mainTransactionPage);
+                      },
+                      child: CategoryTile()),
                 ),
               ),
               sizeVer(70),
@@ -156,7 +161,7 @@ class _HomePageState extends State<HomePage>
             ),
           ),
           Text(
-            "\$31700",
+            "\$317001423423423423",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
         ],

@@ -14,9 +14,8 @@ class CategoryTile extends StatelessWidget {
         color: Colors.white,
       ),
       child: ListTile(
-        contentPadding: EdgeInsets.symmetric(horizontal: 10),
-        shape: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+        shape: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
         tileColor: Colors.black,
         leading: const CircleAvatar(
           child: Icon(Icons.people),
@@ -37,7 +36,7 @@ class CategoryTile extends StatelessWidget {
             .textTheme
             .bodyLarge!
             .copyWith(fontWeight: FontWeight.bold),
-        trailing: Text("\$20,005"),
+        trailing: Text("\$2032131", overflow: TextOverflow.ellipsis),
       ),
     );
   }

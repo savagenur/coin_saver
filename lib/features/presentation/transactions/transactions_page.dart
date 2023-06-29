@@ -33,7 +33,6 @@ class TransactionsPageState extends State<TransactionsPage>
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: ShadowedContainerWidget(
-                  // height: MediaQuery.of(context).size.height*.8,
                   borderRadius: BorderRadius.circular(30),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,6 +121,10 @@ class TransactionsPageState extends State<TransactionsPage>
                                         ),
                                       ),
                                       ListTile(
+                                        onTap: () {
+                                          Navigator.pushNamed(context,
+                                              PageConst.transactionDetailPage);
+                                        },
                                         contentPadding: EdgeInsets.zero,
                                         leading: CircleAvatar(
                                           child: Icon(Icons.bathtub_sharp),
@@ -176,7 +179,6 @@ class TransactionsPageState extends State<TransactionsPage>
                 ),
               ),
             ),
-
           ],
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

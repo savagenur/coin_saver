@@ -1,3 +1,5 @@
+import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
+import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 import 'package:hive/hive.dart';
 
 import '../../../domain/entities/account/account_entity.dart';
@@ -15,7 +17,7 @@ class AccountModel extends AccountEntity {
   @HiveField(3)
   final double balance;
   @HiveField(4)
-  final String currency;
+  final CurrencyEntity currency;
   @HiveField(5)
   final bool isPrimary;
   @HiveField(6)
@@ -101,7 +103,7 @@ class AccountModel extends AccountEntity {
     AccountType? type,
     PaymentType? paymentType,
     double? balance,
-    String? currency,
+    CurrencyEntity? currency,
     bool? isPrimary,
     bool? isActive,
     String? accountNumber,

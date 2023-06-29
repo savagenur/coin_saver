@@ -37,3 +37,9 @@ class PageConst {
   static const String mainTransactionPage = "mainTransactionPage";
   static const String transactionDetailPage = "transactionDetailPage";
 }
+
+class BoxConst {
+  static const String accounts = "accounts";
+  static const String currency = "currency";
+  static const String mainTransactions = "mainTransactions";
+}

@@ -147,6 +147,7 @@ class _HomePageState extends State<HomePage>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.monetization_on),
+                sizeHor(5),
                 Text(
                   "Main",
                   style: Theme.of(context)

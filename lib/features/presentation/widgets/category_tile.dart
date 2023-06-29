@@ -9,7 +9,9 @@ class CategoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        boxShadow: [BoxShadow(blurRadius: 1, spreadRadius: .001)],
+        boxShadow: [
+          BoxShadow(blurRadius: 1, spreadRadius: .001),
+        ],
         borderRadius: BorderRadius.circular(20),
         color: Colors.white,
       ),

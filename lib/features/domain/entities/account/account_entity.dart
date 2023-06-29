@@ -1,4 +1,7 @@
+import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:equatable/equatable.dart';
+
+import '../transaction/transaction_entity.dart';
 
 enum AccountType {
   bankAccount,
@@ -31,7 +34,7 @@ class AccountEntity extends Equatable {
   final AccountType type;
   final PaymentType? paymentType;
   final double balance;
-  final String currency;
+  final CurrencyEntity currency;
   final bool isPrimary;
   final bool isActive;
   final String? accountNumber;
@@ -99,12 +102,4 @@ class AccountEntity extends Equatable {
       ];
 }
 
-class TransactionEntity extends Equatable {
-  // Define transaction properties here
-  // Include relevant arguments such as id, date, amount, category, etc.
 
-  @override
-  List<Object?> get props => [
-        // Include relevant properties
-      ];
-}

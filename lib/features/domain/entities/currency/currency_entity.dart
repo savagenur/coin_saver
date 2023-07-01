@@ -13,4 +13,15 @@ class CurrencyEntity extends Equatable {
 
   @override
   List<Object?> get props => [code, name, symbol];
+  CurrencyEntity copyWith({
+    String? code,
+    String? name,
+    String? symbol,
+  }) {
+    return CurrencyEntity(
+      code: code ?? this.code,
+      name: name ?? this.name,
+      symbol: symbol ?? this.symbol,
+    );
+  }
 }

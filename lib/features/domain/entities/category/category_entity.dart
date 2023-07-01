@@ -24,4 +24,19 @@ class CategoryEntity extends Equatable {
         color,
         isIncome,
       ];
+  CategoryEntity copyWith({
+    String? id,
+    String? name,
+    IconData? iconData,
+    Color? color,
+    bool? isIncome,
+  }) {
+    return CategoryEntity(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      iconData: iconData ?? this.iconData,
+      color: color ?? this.color,
+      isIncome: isIncome ?? this.isIncome,
+    );
+  }
 }

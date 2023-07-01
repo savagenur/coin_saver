@@ -7,7 +7,9 @@ abstract class BaseHiveRepository {
   Future<void> initHive();
   // Account
   Future<List<AccountEntity>> getAccounts();
+  Future<void> putAccounts(List<AccountEntity> accounts);
   Future<void> createAccount(AccountEntity accountEntity);
+  Future<void> selectAccount(AccountEntity accountEntity,List<AccountEntity> accounts);
   Future<void> updateAccount(AccountEntity accountEntity);
   Future<void> deleteAccount(String id);
 

@@ -18,7 +18,7 @@ class CreateAccount extends AccountEvent {
     required this.accountEntity,
   });
   @override
-  List<Object> get props => [];
+  List<Object> get props => [accountEntity];
 }
 
 class UpdateAccount extends AccountEvent {
@@ -27,7 +27,21 @@ class UpdateAccount extends AccountEvent {
     required this.accountEntity,
   });
   @override
-  List<Object> get props => [];
+  List<Object> get props => [accountEntity];
+}
+
+class SelectAccount extends AccountEvent {
+  final AccountEntity accountEntity;
+  final List<AccountEntity> accounts;
+  const SelectAccount({
+    required this.accountEntity,
+    required this.accounts,
+  });
+  @override
+  List<Object> get props => [
+        accountEntity,
+        accounts,
+      ];
 }
 
 class DeleteAccount extends AccountEvent {
@@ -36,6 +50,7 @@ class DeleteAccount extends AccountEvent {
     required this.id,
   });
   @override
-  List<Object> get props => [];
+  List<Object> get props => [
+        id,
+      ];
 }
-

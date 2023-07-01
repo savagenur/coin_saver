@@ -157,7 +157,6 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
               openingDate: DateTime.now(),
               transactionHistory: const []));
     }
-    
   }
 
   @override
@@ -208,5 +207,49 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
             totalAmount: oldMainTransactionModel.totalAmount,
             dateTime: oldMainTransactionModel.dateTime));
     await box.delete(oldKey);
+  }
+
+  @override
+  Future<void> putAccounts(List<AccountEntity> accounts) async {
+    final Box accountsBox = await Hive.openBox<AccountModel>(BoxConst.accounts);
+    await accountsBox.clear();
+    await accountsBox.add(accounts);
+  }
+
+  @override
+  Future<void> selectAccount(
+      AccountEntity accountEntity, List<AccountEntity> accounts) async {
+    Box accountsBox = await Hive.openBox<AccountModel>(BoxConst.accounts);
+
+    List<AccountModel> accountModels = [];
+    for (var account in accounts) {
+      if (account == accountEntity) {
+        accountModels.add(AccountModel(
+            id: account.id,
+            name: account.name,
+            type: account.type,
+            balance: account.balance,
+            currency: account.currency,
+            isPrimary: true,
+            isActive: account.isActive,
+            ownershipType: account.ownershipType,
+            openingDate: account.openingDate,
+            transactionHistory: account.transactionHistory));
+      } else {
+        accountModels.add(AccountModel(
+            id: account.id,
+            name: account.name,
+            type: account.type,
+            balance: account.balance,
+            currency: account.currency,
+            isPrimary: false,
+            isActive: account.isActive,
+            ownershipType: account.ownershipType,
+            openingDate: account.openingDate,
+            transactionHistory: account.transactionHistory));
+      }
+      await accountsBox.clear();
+      await accountsBox.addAll(accountModels);
+    }
   }
 }

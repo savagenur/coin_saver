@@ -14,7 +14,8 @@ class HiveRepository implements BaseHiveRepository {
       hiveLocalDataSource.createAccount(accountEntity);
 
   @override
-  Future<void> createCurrency(CurrencyEntity currencyEntity) async => hiveLocalDataSource.createCurrency( currencyEntity);
+  Future<void> createCurrency(CurrencyEntity currencyEntity) async =>
+      hiveLocalDataSource.createCurrency(currencyEntity);
 
   @override
   Future<void> createMainTransaction(
@@ -49,10 +50,19 @@ class HiveRepository implements BaseHiveRepository {
       hiveLocalDataSource.updateAccount(accountEntity);
 
   @override
-  Future<void> updateCurrency(CurrencyEntity currencyEntity) async => hiveLocalDataSource.updateCurrency( currencyEntity);
+  Future<void> selectAccount(AccountEntity accountEntity,List<AccountEntity> accounts) async =>
+      hiveLocalDataSource.selectAccount(accountEntity,accounts);
 
   @override
-  Future<void> updateMainTransaction(String oldKey,
-          MainTransactionEntity mainTransactionEntity) async =>
-      hiveLocalDataSource.updateMainTransaction( oldKey,mainTransactionEntity);
+  Future<void> updateCurrency(CurrencyEntity currencyEntity) async =>
+      hiveLocalDataSource.updateCurrency(currencyEntity);
+
+  @override
+  Future<void> updateMainTransaction(
+          String oldKey, MainTransactionEntity mainTransactionEntity) async =>
+      hiveLocalDataSource.updateMainTransaction(oldKey, mainTransactionEntity);
+
+  @override
+  Future<void> putAccounts(List<AccountEntity> accounts) async =>
+      hiveLocalDataSource.putAccounts(accounts);
 }

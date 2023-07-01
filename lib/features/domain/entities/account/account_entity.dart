@@ -100,6 +100,53 @@ class AccountEntity extends Equatable {
         transactionHistory,
         monthlyStatement,
       ];
+      AccountEntity copyWith({
+    String? id,
+    String? name,
+    AccountType? type,
+    PaymentType? paymentType,
+    double? balance,
+    CurrencyEntity? currency,
+    bool? isPrimary,
+    bool? isActive,
+    String? accountNumber,
+    String? institution,
+    OwnershipType? ownershipType,
+    DateTime? openingDate,
+    DateTime? closingDate,
+    double? interestRate,
+    double? creditLimit,
+    int? dueDate,
+    double? minimumBalance,
+    List<String>? linkedAccounts,
+    String? notes,
+    List<TransactionEntity>? transactionHistory,
+    String? monthlyStatement,
+  }) {
+    return AccountEntity(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      type: type ?? this.type,
+      paymentType: paymentType ?? this.paymentType,
+      balance: balance ?? this.balance,
+      currency: currency ?? this.currency,
+      isPrimary: isPrimary ?? this.isPrimary,
+      isActive: isActive ?? this.isActive,
+      accountNumber: accountNumber ?? this.accountNumber,
+      institution: institution ?? this.institution,
+      ownershipType: ownershipType ?? this.ownershipType,
+      openingDate: openingDate ?? this.openingDate,
+      closingDate: closingDate ?? this.closingDate,
+      interestRate: interestRate ?? this.interestRate,
+      creditLimit: creditLimit ?? this.creditLimit,
+      dueDate: dueDate ?? this.dueDate,
+      minimumBalance: minimumBalance ?? this.minimumBalance,
+      linkedAccounts: linkedAccounts ?? this.linkedAccounts,
+      notes: notes ?? this.notes,
+      transactionHistory: transactionHistory ?? this.transactionHistory,
+      monthlyStatement: monthlyStatement ?? this.monthlyStatement,
+    );
+  }
 }
 
 

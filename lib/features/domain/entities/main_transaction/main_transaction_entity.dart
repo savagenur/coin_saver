@@ -29,4 +29,23 @@ class MainTransactionEntity extends Equatable {
         totalAmount,
         dateTime,
       ];
+      MainTransactionEntity copyWith({
+    String? id,
+    String? accountId,
+    String? name,
+    IconData? iconData,
+    Color? color,
+    double? totalAmount,
+    DateTime? dateTime,
+  }) {
+    return MainTransactionEntity(
+      id: id ?? this.id,
+      accountId: accountId ?? this.accountId,
+      name: name ?? this.name,
+      iconData: iconData ?? this.iconData,
+      color: color ?? this.color,
+      totalAmount: totalAmount ?? this.totalAmount,
+      dateTime: dateTime ?? this.dateTime,
+    );
+  }
 }

@@ -23,9 +23,12 @@ class MainTransactionModel extends MainTransactionEntity with HiveObjectMixin {
 
   @HiveField(5)
   final DateTime dateTime;
+  @HiveField(6)
+  final String accountId;
 
   MainTransactionModel({
     required this.id,
+    required this.accountId,
     required this.name,
     required this.iconData,
     required this.color,
@@ -33,6 +36,7 @@ class MainTransactionModel extends MainTransactionEntity with HiveObjectMixin {
     required this.dateTime,
   }) : super(
           id: id,
+          accountId: accountId,
           name: name,
           iconData: iconData,
           color: color,
@@ -42,6 +46,7 @@ class MainTransactionModel extends MainTransactionEntity with HiveObjectMixin {
 
   MainTransactionModel copyWith({
     String? id,
+    String? accountId,
     String? name,
     IconData? iconData,
     Color? color,
@@ -50,6 +55,7 @@ class MainTransactionModel extends MainTransactionEntity with HiveObjectMixin {
   }) {
     return MainTransactionModel(
       id: id ?? this.id,
+      accountId: accountId ?? this.accountId,
       name: name ?? this.name,
       iconData: iconData ?? this.iconData,
       color: color ?? this.color,

@@ -4,7 +4,7 @@ import '../../../domain/entities/transaction/transaction_entity.dart';
 part 'transaction_model.g.dart';
 
 
-@HiveType(typeId: 2)
+@HiveType(typeId: 5)
 class TransactionModel extends TransactionEntity with HiveObjectMixin {
   @HiveField(0)
   final String id;

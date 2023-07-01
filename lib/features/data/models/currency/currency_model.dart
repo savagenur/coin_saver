@@ -4,7 +4,7 @@ import 'package:coin_saver/features/domain/entities/currency/currency_entity.dar
 
 part 'currency_model.g.dart';
 
-@HiveType(typeId: 1)
+@HiveType(typeId: 3)
 class CurrencyModel extends CurrencyEntity with HiveObjectMixin {
   @HiveField(0)
   final String code;

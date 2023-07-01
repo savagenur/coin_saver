@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class MainTransactionEntity extends Equatable {
   final String id;
+  final String accountId;
   final String name;
   final IconData iconData;
   final Color color;
@@ -10,6 +11,7 @@ class MainTransactionEntity extends Equatable {
   final DateTime dateTime;
   const MainTransactionEntity({
     required this.id,
+    required this.accountId,
     required this.name,
     required this.iconData,
     required this.color,
@@ -20,6 +22,7 @@ class MainTransactionEntity extends Equatable {
   @override
   List<Object?> get props => [
         id,
+        accountId,
         name,
         iconData,
         color,

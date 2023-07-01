@@ -6,8 +6,8 @@ import '../../../domain/entities/account/account_entity.dart';
 
 part 'account_model.g.dart';
 
-@HiveType(typeId: 0)
-class AccountModel extends AccountEntity {
+@HiveType(typeId: 1)
+class AccountModel extends AccountEntity with HiveObjectMixin {
   @HiveField(0)
   final String id;
   @HiveField(1)

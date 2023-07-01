@@ -12,9 +12,10 @@ import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 
 class HiveLocalDataSource implements BaseHiveLocalDataSource {
-  final String id = const Uuid().v1();
+  final Uuid uuid = Uuid();
   @override
   Future<void> createAccount(AccountEntity accountEntity) async {
+    String id = uuid.v1();
     Box box = await Hive.openBox<AccountModel>(BoxConst.accounts);
     await box.put(
       id,
@@ -56,6 +57,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         mainTransactionEntity.name,
         MainTransactionModel(
             id: mainTransactionEntity.name,
+            accountId: mainTransactionEntity.accountId,
             name: mainTransactionEntity.name,
             iconData: mainTransactionEntity.iconData,
             color: mainTransactionEntity.color,
@@ -68,6 +70,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         mainTransactionEntity.name,
         MainTransactionModel(
             id: mainTransactionEntity.name,
+            accountId: mainTransactionEntity.accountId,
             name: mainTransactionEntity.name,
             iconData: mainTransactionEntity.iconData,
             color: mainTransactionEntity.color,
@@ -111,35 +114,26 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
 
   @override
   Future<void> initHive() async {
-    Hive.registerAdapter(AccountModelAdapter());
-    Hive.registerAdapter(CategoryModelAdapter());
-    Hive.registerAdapter(CurrencyModelAdapter());
-    Hive.registerAdapter(MainTransactionModelAdapter());
-    Hive.registerAdapter(TransactionModelAdapter());
+    Hive.registerAdapter<AccountType>(AccountTypeAdapter());
+    Hive.registerAdapter<OwnershipType>(OwnershipTypeAdapter());
+    Hive.registerAdapter<PaymentType>(PaymentTypeAdapter());
+    Hive.registerAdapter<CategoryModel>(CategoryModelAdapter());
+    Hive.registerAdapter<CurrencyModel>(CurrencyModelAdapter());
+    Hive.registerAdapter<AccountModel>(AccountModelAdapter());
+    Hive.registerAdapter<MainTransactionModel>(MainTransactionModelAdapter());
+    Hive.registerAdapter<TransactionModel>(TransactionModelAdapter());
 
     Box accountsBox = await Hive.openBox<AccountModel>(BoxConst.accounts);
-    Box currencyBox = await Hive.openBox<CategoryModel>(BoxConst.currency);
-    await Hive.openBox<MainTransactionModel>(BoxConst.mainTransactions);
+    Box currencyBox = await Hive.openBox<CurrencyModel>(BoxConst.currency);
     if (currencyBox.isEmpty) {
-      currencyBox.add(CurrencyModel(
-          code: "USD", name: "United States Dollar", symbol: "\$"));
-      await accountsBox.put(
-          "main",
-          AccountModel(
-              id: id,
-              name: "Main",
-              type: AccountType.cash,
-              balance: 0,
-              currency: currencyBox.getAt(0),
-              isPrimary: true,
-              isActive: true,
-              ownershipType: OwnershipType.individual,
-              openingDate: DateTime.now(),
-              transactionHistory: const []));
+      await currencyBox.put(
+          0,
+          CurrencyModel(
+              code: "USD", name: "United States Dollar", symbol: "\$"));
       await accountsBox.put(
           "total",
           AccountModel(
-              id: id,
+              id: "total",
               name: "Total",
               type: AccountType.cash,
               balance: 0,
@@ -149,12 +143,27 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
               ownershipType: OwnershipType.individual,
               openingDate: DateTime.now(),
               transactionHistory: const []));
+      await accountsBox.put(
+          "main",
+          AccountModel(
+              id: "main",
+              name: "Main",
+              type: AccountType.cash,
+              balance: 0,
+              currency: currencyBox.getAt(0),
+              isPrimary: true,
+              isActive: true,
+              ownershipType: OwnershipType.individual,
+              openingDate: DateTime.now(),
+              transactionHistory: const []));
     }
+    
   }
 
   @override
   Future<void> updateAccount(AccountEntity accountEntity) async {
     Box accountsBox = await Hive.openBox<AccountModel>(BoxConst.accounts);
+    String id = uuid.v1();
     await accountsBox.put(
         accountEntity.id,
         AccountModel(
@@ -192,6 +201,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         mainTransactionEntity.name,
         MainTransactionModel(
             id: mainTransactionEntity.name,
+            accountId: mainTransactionEntity.accountId,
             name: mainTransactionEntity.name,
             iconData: mainTransactionEntity.iconData,
             color: mainTransactionEntity.color,

@@ -4,7 +4,7 @@ import '../../../domain/entities/category/category_entity.dart';
 
 part 'category_model.g.dart';
 
-@HiveType(typeId: 3)
+@HiveType(typeId: 2)
 class CategoryModel extends CategoryEntity with HiveObjectMixin {
   @HiveField(0)
   final String id;

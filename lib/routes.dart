@@ -26,7 +26,8 @@ class AppRoute {
       case PageConst.createCategoryPage:
         return _routeBuilder(CreateCategoryPage());
       case PageConst.transactionsPage:
-        return _routeBuilder(TransactionsPage());
+      args = args as TransactionsPage;
+        return _routeBuilder(TransactionsPage(account: args.account,));
       case PageConst.mainTransactionPage:
         return _routeBuilder(MainTransactionPage());
       case PageConst.transactionDetailPage:

@@ -1,8 +1,16 @@
+import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../domain/entities/main_transaction/main_transaction_entity.dart';
+import '../bloc/main_transaction/main_transaction_bloc.dart';
 
 class DayNavigationWidget extends StatelessWidget {
+  final AccountEntity account;
+  final DateTime dateTime;
   const DayNavigationWidget({
     super.key,
+    required this.account, required this.dateTime,
   });
 
   @override
@@ -22,7 +30,11 @@ class DayNavigationWidget extends StatelessWidget {
             Row(
               children: [
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    
+
+                    // await  Hive.box<MainTransactionModel>(BoxConst.mainTransactions).clear();
+                  },
                   icon: Icon(
                     Icons.calendar_month_outlined,
                   ),
@@ -39,8 +51,7 @@ class DayNavigationWidget extends StatelessWidget {
         ),
         Text(
           "Yesterday, June 24",
-          style:
-              TextStyle(decoration: TextDecoration.underline),
+          style: TextStyle(decoration: TextDecoration.underline),
         ),
       ],
     );

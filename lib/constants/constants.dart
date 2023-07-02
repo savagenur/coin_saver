@@ -41,5 +41,6 @@ class PageConst {
 class BoxConst {
   static const String accounts = "accounts";
   static const String currency = "currency";
+  static const String categories = "categories";
   static const String mainTransactions = "mainTransactions";
 }

@@ -22,6 +22,7 @@ class MainTransactionModelAdapter extends TypeAdapter<MainTransactionModel> {
       name: fields[1] as String,
       iconData: fields[2] as IconData,
       color: fields[3] as Color,
+      isIncome: fields[7] as bool,
       totalAmount: fields[4] as double,
       dateTime: fields[5] as DateTime,
     );
@@ -30,7 +31,7 @@ class MainTransactionModelAdapter extends TypeAdapter<MainTransactionModel> {
   @override
   void write(BinaryWriter writer, MainTransactionModel obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class MainTransactionModelAdapter extends TypeAdapter<MainTransactionModel> {
       ..writeByte(5)
       ..write(obj.dateTime)
       ..writeByte(6)
-      ..write(obj.accountId);
+      ..write(obj.accountId)
+      ..writeByte(7)
+      ..write(obj.isIncome);
   }
 
   @override

@@ -9,6 +9,7 @@ class MainTransactionEntity extends Equatable {
   final Color color;
   final double totalAmount;
   final DateTime dateTime;
+  final bool isIncome;
   const MainTransactionEntity({
     required this.id,
     required this.accountId,
@@ -16,6 +17,7 @@ class MainTransactionEntity extends Equatable {
     required this.iconData,
     required this.color,
     required this.totalAmount,
+    required this.isIncome,
     required this.dateTime,
   });
 
@@ -23,6 +25,7 @@ class MainTransactionEntity extends Equatable {
   List<Object?> get props => [
         id,
         accountId,
+        isIncome,
         name,
         iconData,
         color,
@@ -36,6 +39,7 @@ class MainTransactionEntity extends Equatable {
     IconData? iconData,
     Color? color,
     double? totalAmount,
+    bool? isIncome,
     DateTime? dateTime,
   }) {
     return MainTransactionEntity(
@@ -44,6 +48,7 @@ class MainTransactionEntity extends Equatable {
       name: name ?? this.name,
       iconData: iconData ?? this.iconData,
       color: color ?? this.color,
+      isIncome: isIncome ?? this.isIncome,
       totalAmount: totalAmount ?? this.totalAmount,
       dateTime: dateTime ?? this.dateTime,
     );

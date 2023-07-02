@@ -1,4 +1,5 @@
 import 'package:coin_saver/constants/constants.dart';
+import 'package:coin_saver/constants/main_categories.dart';
 import 'package:coin_saver/features/data/datasources/local_datasource/base_hive_local_data_source.dart';
 import 'package:coin_saver/features/data/models/account/account_model.dart';
 import 'package:coin_saver/features/data/models/category/category_model.dart';
@@ -8,8 +9,15 @@ import 'package:coin_saver/features/data/models/transaction/transaction_model.da
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:coin_saver/features/domain/entities/main_transaction/main_transaction_entity.dart';
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../models/account_type.dart';
+import '../../models/color.dart';
+import '../../models/icon_data.dart';
+import '../../models/ownership_type.dart';
+import '../../models/payment_type.dart';
 
 class HiveLocalDataSource implements BaseHiveLocalDataSource {
   final Uuid uuid = Uuid();
@@ -19,7 +27,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     Box box = await Hive.openBox<AccountModel>(BoxConst.accounts);
     await box.put(
       id,
-      AccountEntity(
+      AccountModel(
           id: id,
           name: accountEntity.name,
           type: accountEntity.type,
@@ -49,31 +57,33 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       MainTransactionEntity mainTransactionEntity) async {
     Box box =
         await Hive.openBox<MainTransactionModel>(BoxConst.mainTransactions);
-
-    if (box.containsKey(mainTransactionEntity.name)) {
-      MainTransactionModel oldMainTransactionModel =
-          await box.get(mainTransactionEntity.name);
+    final String id =
+        mainTransactionEntity.name + mainTransactionEntity.accountId;
+    if (box.containsKey(id)) {
+      MainTransactionModel oldMainTransactionModel = await box.get(id);
       await box.put(
-        mainTransactionEntity.name,
+        id,
         MainTransactionModel(
-            id: mainTransactionEntity.name,
+            id: id,
             accountId: mainTransactionEntity.accountId,
             name: mainTransactionEntity.name,
             iconData: mainTransactionEntity.iconData,
             color: mainTransactionEntity.color,
+            isIncome: mainTransactionEntity.isIncome,
             totalAmount: oldMainTransactionModel.totalAmount +
                 mainTransactionEntity.totalAmount,
             dateTime: mainTransactionEntity.dateTime),
       );
     } else {
       await box.put(
-        mainTransactionEntity.name,
+        id,
         MainTransactionModel(
-            id: mainTransactionEntity.name,
+            id: id,
             accountId: mainTransactionEntity.accountId,
             name: mainTransactionEntity.name,
             iconData: mainTransactionEntity.iconData,
             color: mainTransactionEntity.color,
+            isIncome: mainTransactionEntity.isIncome,
             totalAmount: mainTransactionEntity.totalAmount,
             dateTime: mainTransactionEntity.dateTime),
       );
@@ -121,15 +131,25 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     Hive.registerAdapter<CurrencyModel>(CurrencyModelAdapter());
     Hive.registerAdapter<AccountModel>(AccountModelAdapter());
     Hive.registerAdapter<MainTransactionModel>(MainTransactionModelAdapter());
+    Hive.registerAdapter<IconData>(IconDataAdapter());
+    Hive.registerAdapter<Color>(ColorAdapter());
     Hive.registerAdapter<TransactionModel>(TransactionModelAdapter());
 
     Box accountsBox = await Hive.openBox<AccountModel>(BoxConst.accounts);
     Box currencyBox = await Hive.openBox<CurrencyModel>(BoxConst.currency);
+    Box categoriesBox = await Hive.openBox<CategoryModel>(BoxConst.categories);
+    Box mainTransactionBox =
+        await Hive.openBox<MainTransactionModel>(BoxConst.mainTransactions);
+    print(mainTransactionBox.length);
+    // await currencyBox.clear();
+    // await accountsBox.clear();
+    // await mainTransactionBox.clear();
     if (currencyBox.isEmpty) {
       await currencyBox.put(
           0,
           CurrencyModel(
               code: "USD", name: "United States Dollar", symbol: "\$"));
+      await categoriesBox.addAll(mainCategories);
       await accountsBox.put(
           "total",
           AccountModel(
@@ -204,6 +224,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
             name: mainTransactionEntity.name,
             iconData: mainTransactionEntity.iconData,
             color: mainTransactionEntity.color,
+            isIncome: mainTransactionEntity.isIncome,
             totalAmount: oldMainTransactionModel.totalAmount,
             dateTime: oldMainTransactionModel.dateTime));
     await box.delete(oldKey);

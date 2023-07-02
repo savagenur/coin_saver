@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 
+import 'package:coin_saver/features/domain/entities/main_transaction/main_transaction_entity.dart';
+
 class CategoryTile extends StatelessWidget {
+  final MainTransactionEntity mainTransaction;
+  final double totalExpense;
   const CategoryTile({
-    super.key,
-  });
+    Key? key,
+    required this.mainTransaction,
+    required this.totalExpense,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,17 +25,18 @@ class CategoryTile extends StatelessWidget {
         contentPadding: const EdgeInsets.symmetric(horizontal: 10),
         shape: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
         tileColor: Colors.black,
-        leading: const CircleAvatar(
-          child: Icon(Icons.people),
+        leading:  CircleAvatar(
+          child: Icon(mainTransaction.iconData),
         ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Education"),
+            Expanded(child: Text(mainTransaction.name)),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text("64%"),
+                Text(
+                    "%${( 100 * mainTransaction.totalAmount/totalExpense ).round()}"),
               ],
             )
           ],
@@ -38,7 +45,8 @@ class CategoryTile extends StatelessWidget {
             .textTheme
             .bodyLarge!
             .copyWith(fontWeight: FontWeight.bold),
-        trailing: Text("\$2032131", overflow: TextOverflow.ellipsis),
+        trailing: Text("\$${mainTransaction.totalAmount}",
+            overflow: TextOverflow.ellipsis),
       ),
     );
   }

@@ -25,6 +25,8 @@ class MainTransactionModel extends MainTransactionEntity with HiveObjectMixin {
   final DateTime dateTime;
   @HiveField(6)
   final String accountId;
+  @HiveField(7)
+  final bool isIncome;
 
   MainTransactionModel({
     required this.id,
@@ -32,6 +34,7 @@ class MainTransactionModel extends MainTransactionEntity with HiveObjectMixin {
     required this.name,
     required this.iconData,
     required this.color,
+    required this.isIncome,
     required this.totalAmount,
     required this.dateTime,
   }) : super(
@@ -40,6 +43,7 @@ class MainTransactionModel extends MainTransactionEntity with HiveObjectMixin {
           name: name,
           iconData: iconData,
           color: color,
+          isIncome: isIncome,
           totalAmount: totalAmount,
           dateTime: dateTime,
         );
@@ -50,6 +54,7 @@ class MainTransactionModel extends MainTransactionEntity with HiveObjectMixin {
     String? name,
     IconData? iconData,
     Color? color,
+    bool? isIncome,
     double? totalAmount,
     DateTime? dateTime,
   }) {
@@ -59,6 +64,7 @@ class MainTransactionModel extends MainTransactionEntity with HiveObjectMixin {
       name: name ?? this.name,
       iconData: iconData ?? this.iconData,
       color: color ?? this.color,
+      isIncome: isIncome ?? this.isIncome,
       totalAmount: totalAmount ?? this.totalAmount,
       dateTime: dateTime ?? this.dateTime,
     );

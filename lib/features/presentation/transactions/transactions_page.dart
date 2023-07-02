@@ -1,3 +1,4 @@
+import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:flutter/material.dart';
 
 import '../../../constants/constants.dart';
@@ -5,7 +6,8 @@ import '../widgets/day_navigation_widget.dart';
 import '../widgets/shadowed_container_widget.dart';
 
 class TransactionsPage extends StatefulWidget {
-  const TransactionsPage({super.key});
+  final AccountEntity account;
+  const TransactionsPage({super.key, required this.account});
 
   @override
   State<TransactionsPage> createState() => TransactionsPageState();
@@ -14,10 +16,13 @@ class TransactionsPage extends StatefulWidget {
 class TransactionsPageState extends State<TransactionsPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  DateTime dateTime = DateTime.now();
+  late AccountEntity account;
 
   @override
   void initState() {
     super.initState();
+    account = widget.account;
     _tabController = TabController(length: 5, vsync: this);
   }
 
@@ -61,7 +66,10 @@ class TransactionsPageState extends State<TransactionsPage>
                                 )
                                 .toList(),
                           ),
-                          DayNavigationWidget(),
+                          DayNavigationWidget(
+                            account: account,
+                            dateTime: dateTime,
+                          ),
                           Padding(
                             padding: EdgeInsets.all(10),
                             child: Row(

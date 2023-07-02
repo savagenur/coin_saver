@@ -100,47 +100,6 @@ class AccountModelAdapter extends TypeAdapter<AccountModel> {
           typeId == other.typeId;
 }
 
-class AccountTypeAdapter extends TypeAdapter<AccountType> {
-  @override
-  final int typeId = 6; // Unique ID for the adapter
 
-  @override
-  AccountType read(BinaryReader reader) {
-    return AccountType.values[reader.readInt()]; // Read the enum value using its index
-  }
 
-  @override
-  void write(BinaryWriter writer, AccountType obj) {
-    writer.writeInt(obj.index); // Write the index of the enum value
-  }
-}
 
-class OwnershipTypeAdapter extends TypeAdapter<OwnershipType> {
-  @override
-  final int typeId = 7; // Unique ID for the adapter
-
-  @override
-  OwnershipType read(BinaryReader reader) {
-    return OwnershipType.values[reader.readInt()]; // Read the enum value using its index
-  }
-
-  @override
-  void write(BinaryWriter writer, OwnershipType obj) {
-    writer.writeInt(obj.index); // Write the index of the enum value
-  }
-}
-
-class PaymentTypeAdapter extends TypeAdapter<PaymentType> {
-  @override
-  final int typeId = 8; // Unique ID for the adapter
-
-  @override
-  PaymentType read(BinaryReader reader) {
-    return PaymentType.values[reader.readInt()]; // Read the enum value using its index
-  }
-
-  @override
-  void write(BinaryWriter writer, PaymentType obj) {
-    writer.writeInt(obj.index); // Write the index of the enum value
-  }
-}

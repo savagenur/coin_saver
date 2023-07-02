@@ -63,9 +63,9 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
 
   FutureOr<void> _onSelectAccount(
       SelectAccount event, Emitter<AccountState> emit) async {
-    await selectAccountUsecase.call(event.accountEntity,event.accounts);
+    await selectAccountUsecase.call(event.accountEntity, event.accounts);
     final accounts = await getAccountsUsecase.call();
-    
+
     emit(AccountLoaded(accounts: accounts));
   }
 }

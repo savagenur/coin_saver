@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import '../../../domain/entities/transaction/transaction_entity.dart';
 
@@ -46,6 +47,8 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
   final List<String>? linkedTransactions;
   @HiveField(19)
   final bool? isVoid;
+  @HiveField(20)
+  final Color color;
 
   TransactionModel({
     required this.id,
@@ -54,6 +57,7 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
     required this.category,
     required this.account,
     required this.isIncome,
+    required this.color,
     this.description,
     this.tags,
     this.payee,
@@ -76,6 +80,7 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
           description: description,
           account: account,
           isIncome: isIncome,
+          color:color,
           tags: tags,
           payee: payee,
           currency: currency,
@@ -99,6 +104,7 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
     String? description,
     String? account,
     bool? isIncome,
+    Color? color,
     List<String>? tags,
     String? payee,
     String? currency,
@@ -121,6 +127,7 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
       description: description ?? this.description,
       account: account ?? this.account,
       isIncome: isIncome ?? this.isIncome,
+      color: color ?? this.color,
       tags: tags ?? this.tags,
       payee: payee ?? this.payee,
       currency: currency ?? this.currency,

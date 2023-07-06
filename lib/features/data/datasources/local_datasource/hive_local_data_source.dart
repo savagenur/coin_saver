@@ -7,10 +7,13 @@ import 'package:coin_saver/features/data/models/currency/currency_model.dart';
 import 'package:coin_saver/features/data/models/main_transaction/main_transaction_model.dart';
 import 'package:coin_saver/features/data/models/transaction/transaction_model.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
+import 'package:coin_saver/features/domain/entities/category/category_entity.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:coin_saver/features/domain/entities/main_transaction/main_transaction_entity.dart';
+import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../models/account_type.dart';
@@ -20,108 +23,9 @@ import '../../models/ownership_type.dart';
 import '../../models/payment_type.dart';
 
 class HiveLocalDataSource implements BaseHiveLocalDataSource {
-  final Uuid uuid = Uuid();
-  @override
-  Future<void> createAccount(AccountEntity accountEntity) async {
-    String id = uuid.v1();
-    Box box = await Hive.openBox<AccountModel>(BoxConst.accounts);
-    await box.put(
-      id,
-      AccountModel(
-          id: id,
-          name: accountEntity.name,
-          type: accountEntity.type,
-          balance: accountEntity.balance,
-          currency: accountEntity.currency,
-          isPrimary: true,
-          isActive: true,
-          ownershipType: accountEntity.ownershipType,
-          openingDate: accountEntity.openingDate,
-          transactionHistory: accountEntity.transactionHistory),
-    );
-  }
+  final Uuid uuid = const Uuid();
 
-  @override
-  Future<void> createCurrency(CurrencyEntity currencyEntity) async {
-    Box box = await Hive.openBox<CurrencyModel>(BoxConst.currency);
-    await box.put(
-        0,
-        CurrencyModel(
-            code: currencyEntity.code,
-            name: currencyEntity.name,
-            symbol: currencyEntity.symbol));
-  }
-
-  @override
-  Future<void> createMainTransaction(
-      MainTransactionEntity mainTransactionEntity) async {
-    Box box =
-        await Hive.openBox<MainTransactionModel>(BoxConst.mainTransactions);
-    final String id =
-        mainTransactionEntity.name + mainTransactionEntity.accountId;
-    if (box.containsKey(id)) {
-      MainTransactionModel oldMainTransactionModel = await box.get(id);
-      await box.put(
-        id,
-        MainTransactionModel(
-            id: id,
-            accountId: mainTransactionEntity.accountId,
-            name: mainTransactionEntity.name,
-            iconData: mainTransactionEntity.iconData,
-            color: mainTransactionEntity.color,
-            isIncome: mainTransactionEntity.isIncome,
-            totalAmount: oldMainTransactionModel.totalAmount +
-                mainTransactionEntity.totalAmount,
-            dateTime: mainTransactionEntity.dateTime),
-      );
-    } else {
-      await box.put(
-        id,
-        MainTransactionModel(
-            id: id,
-            accountId: mainTransactionEntity.accountId,
-            name: mainTransactionEntity.name,
-            iconData: mainTransactionEntity.iconData,
-            color: mainTransactionEntity.color,
-            isIncome: mainTransactionEntity.isIncome,
-            totalAmount: mainTransactionEntity.totalAmount,
-            dateTime: mainTransactionEntity.dateTime),
-      );
-    }
-  }
-
-  @override
-  Future<void> deleteAccount(String id) async {
-    Box box = await Hive.openBox<AccountModel>(BoxConst.accounts);
-    await box.delete(id);
-  }
-
-  @override
-  Future<void> deleteMainTransaction(String id) async {
-    Box box =
-        await Hive.openBox<MainTransactionModel>(BoxConst.mainTransactions);
-    await box.delete(id);
-  }
-
-  @override
-  Future<List<AccountEntity>> getAccounts() async {
-    Box box = await Hive.openBox<AccountModel>(BoxConst.accounts);
-    return box.values.toList().cast<AccountModel>();
-  }
-
-  @override
-  Future<CurrencyEntity> getCurrency() async {
-    Box box = await Hive.openBox<CurrencyModel>(BoxConst.currency);
-    return box.getAt(0);
-  }
-
-  @override
-  Future<List<MainTransactionEntity>> getMainTransactions() async {
-    Box box =
-        await Hive.openBox<MainTransactionModel>(BoxConst.mainTransactions);
-    return box.values.toList().cast<MainTransactionModel>();
-  }
-
+  // * Initialization Hive
   @override
   Future<void> initHive() async {
     Hive.registerAdapter<AccountType>(AccountTypeAdapter());
@@ -179,14 +83,54 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     }
   }
 
+  // * Account
+  @override
+  Future<void> putAccounts(List<AccountEntity> accounts) async {
+    final Box accountsBox = await Hive.openBox<AccountModel>(BoxConst.accounts);
+    await accountsBox.clear();
+    await accountsBox.add(accounts);
+  }
+
+  @override
+  Future<void> createAccount(AccountEntity accountEntity) async {
+    String id = uuid.v1();
+    Box box = await Hive.openBox<AccountModel>(BoxConst.accounts);
+    await box.put(
+      id,
+      AccountModel(
+          id: id,
+          name: accountEntity.name,
+          type: accountEntity.type,
+          balance: accountEntity.balance,
+          currency: accountEntity.currency,
+          isPrimary: true,
+          isActive: true,
+          ownershipType: accountEntity.ownershipType,
+          openingDate: accountEntity.openingDate,
+          transactionHistory: accountEntity.transactionHistory),
+    );
+  }
+
+  @override
+  Future<void> deleteAccount(String id) async {
+    Box box = await Hive.openBox<AccountModel>(BoxConst.accounts);
+    await box.delete(id);
+  }
+
+  @override
+  Future<List<AccountEntity>> getAccounts() async {
+    Box box = await Hive.openBox<AccountModel>(BoxConst.accounts);
+    return box.values.toList().cast<AccountModel>();
+  }
+
   @override
   Future<void> updateAccount(AccountEntity accountEntity) async {
     Box accountsBox = await Hive.openBox<AccountModel>(BoxConst.accounts);
-    String id = uuid.v1();
+
     await accountsBox.put(
         accountEntity.id,
         AccountModel(
-            id: id,
+            id: accountEntity.id,
             name: accountEntity.name,
             type: accountEntity.type,
             balance: accountEntity.balance,
@@ -196,45 +140,6 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
             ownershipType: accountEntity.ownershipType,
             openingDate: accountEntity.openingDate,
             transactionHistory: accountEntity.transactionHistory));
-    ;
-  }
-
-  @override
-  Future<void> updateCurrency(CurrencyEntity currencyEntity) async {
-    Box box = await Hive.openBox<CurrencyModel>(BoxConst.currency);
-    await box.put(
-        0,
-        CurrencyModel(
-            code: currencyEntity.code,
-            name: currencyEntity.name,
-            symbol: currencyEntity.symbol));
-  }
-
-  @override
-  Future<void> updateMainTransaction(
-      String oldKey, MainTransactionEntity mainTransactionEntity) async {
-    Box box =
-        await Hive.openBox<MainTransactionModel>(BoxConst.mainTransactions);
-    MainTransactionModel oldMainTransactionModel = await box.get(oldKey);
-    await box.put(
-        mainTransactionEntity.name,
-        MainTransactionModel(
-            id: mainTransactionEntity.name,
-            accountId: mainTransactionEntity.accountId,
-            name: mainTransactionEntity.name,
-            iconData: mainTransactionEntity.iconData,
-            color: mainTransactionEntity.color,
-            isIncome: mainTransactionEntity.isIncome,
-            totalAmount: oldMainTransactionModel.totalAmount,
-            dateTime: oldMainTransactionModel.dateTime));
-    await box.delete(oldKey);
-  }
-
-  @override
-  Future<void> putAccounts(List<AccountEntity> accounts) async {
-    final Box accountsBox = await Hive.openBox<AccountModel>(BoxConst.accounts);
-    await accountsBox.clear();
-    await accountsBox.add(accounts);
   }
 
   @override
@@ -270,7 +175,293 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
             transactionHistory: account.transactionHistory));
       }
       await accountsBox.clear();
-      await accountsBox.addAll(accountModels);
     }
+    for (var element in accountModels) {
+      await accountsBox.put(element.id, element);
+    }
+  }
+
+  // * Currency
+  @override
+  Future<void> createCurrency(CurrencyEntity currencyEntity) async {
+    Box box = await Hive.openBox<CurrencyModel>(BoxConst.currency);
+    await box.put(
+        0,
+        CurrencyModel(
+            code: currencyEntity.code,
+            name: currencyEntity.name,
+            symbol: currencyEntity.symbol));
+  }
+
+  @override
+  Future<CurrencyEntity> getCurrency() async {
+    Box box = await Hive.openBox<CurrencyModel>(BoxConst.currency);
+    return box.getAt(0);
+  }
+
+  @override
+  Future<void> updateCurrency(CurrencyEntity currencyEntity) async {
+    Box box = await Hive.openBox<CurrencyModel>(BoxConst.currency);
+    await box.put(
+        0,
+        CurrencyModel(
+            code: currencyEntity.code,
+            name: currencyEntity.name,
+            symbol: currencyEntity.symbol));
+  }
+
+  // * MainTransaction
+  @override
+  Future<void> createMainTransaction(
+      MainTransactionEntity mainTransactionEntity) async {
+    Box box =
+        await Hive.openBox<MainTransactionModel>(BoxConst.mainTransactions);
+    // name + accountId + dateTime = id
+    final String id = mainTransactionEntity.name +
+        mainTransactionEntity.accountId +
+        DateFormat('yyyy-MM-dd').format(mainTransactionEntity.dateTime);
+    if (box.containsKey(id)) {
+      MainTransactionModel oldMainTransactionModel = await box.get(id);
+      await box.put(
+        id,
+        MainTransactionModel(
+            id: id,
+            accountId: mainTransactionEntity.accountId,
+            name: mainTransactionEntity.name,
+            iconData: mainTransactionEntity.iconData,
+            color: mainTransactionEntity.color,
+            isIncome: mainTransactionEntity.isIncome,
+            totalAmount: oldMainTransactionModel.totalAmount +
+                mainTransactionEntity.totalAmount,
+            dateTime: mainTransactionEntity.dateTime),
+      );
+    } else {
+      await box.put(
+        id,
+        MainTransactionModel(
+            id: id,
+            accountId: mainTransactionEntity.accountId,
+            name: mainTransactionEntity.name,
+            iconData: mainTransactionEntity.iconData,
+            color: mainTransactionEntity.color,
+            isIncome: mainTransactionEntity.isIncome,
+            totalAmount: mainTransactionEntity.totalAmount,
+            dateTime: mainTransactionEntity.dateTime),
+      );
+    }
+  }
+
+  @override
+  Future<void> deleteMainTransaction(String id) async {
+    Box box =
+        await Hive.openBox<MainTransactionModel>(BoxConst.mainTransactions);
+    await box.delete(id);
+  }
+
+  @override
+  Future<List<MainTransactionEntity>> getMainTransactions() async {
+    Box box =
+        await Hive.openBox<MainTransactionModel>(BoxConst.mainTransactions);
+    return box.values.toList().cast<MainTransactionModel>();
+  }
+
+  @override
+  Future<void> updateMainTransaction(
+      String oldKey, MainTransactionEntity mainTransactionEntity) async {
+    Box box =
+        await Hive.openBox<MainTransactionModel>(BoxConst.mainTransactions);
+    MainTransactionModel oldMainTransactionModel = await box.get(oldKey);
+    await box.put(
+        mainTransactionEntity.name,
+        MainTransactionModel(
+            id: mainTransactionEntity.name,
+            accountId: mainTransactionEntity.accountId,
+            name: mainTransactionEntity.name,
+            iconData: mainTransactionEntity.iconData,
+            color: mainTransactionEntity.color,
+            isIncome: mainTransactionEntity.isIncome,
+            totalAmount: oldMainTransactionModel.totalAmount,
+            dateTime: oldMainTransactionModel.dateTime));
+    await box.delete(oldKey);
+  }
+
+  // * Category
+  @override
+  Future<void> createCategory(CategoryEntity categoryEntity) async {
+    Box box = await Hive.openBox<CategoryModel>(BoxConst.categories);
+    final String id = uuid.v1();
+    final categories = box.values.toList().cast<CategoryModel>();
+    categories.insert(
+        0,
+        CategoryModel(
+            id: id,
+            name: categoryEntity.name,
+            iconData: categoryEntity.iconData,
+            color: categoryEntity.color,
+            isIncome: categoryEntity.isIncome));
+
+    await box.clear();
+    await box.addAll(categories);
+  }
+
+  @override
+  Future<void> deleteCategory(int index) async {
+    Box box = await Hive.openBox<CategoryModel>(BoxConst.categories);
+    await box.deleteAt(index);
+  }
+
+  @override
+  Future<List<CategoryEntity>> getCategories() async {
+    Box box = await Hive.openBox<CategoryModel>(BoxConst.categories);
+
+    List<CategoryEntity> categories = box.values.toList().cast<CategoryModel>();
+    return categories;
+  }
+
+  @override
+  Future<void> updateCategory(int index, CategoryEntity categoryEntity) async {
+    Box box = await Hive.openBox<CategoryModel>(BoxConst.categories);
+    CategoryModel oldCategory = await box.getAt(index);
+    await box.putAt(
+        index,
+        CategoryModel(
+            id: oldCategory.id,
+            name: categoryEntity.name,
+            iconData: categoryEntity.iconData,
+            color: categoryEntity.color,
+            isIncome: categoryEntity.isIncome));
+  }
+
+  // * Selected Date MainTransaction
+  @override
+  List<MainTransactionEntity> getMainTransactionsForToday() {
+    Box box = Hive.box<MainTransactionModel>(BoxConst.mainTransactions);
+    final List<MainTransactionModel> totalTransactions =
+        box.values.toList().cast<MainTransactionModel>();
+    final selectedDate = DateTime.now();
+    return totalTransactions.where((transaction) {
+      return transaction.dateTime.day == selectedDate.day &&
+          transaction.dateTime.month == selectedDate.month &&
+          transaction.dateTime.year == selectedDate.year;
+    }).toList();
+  }
+
+  @override
+  List<MainTransactionEntity> fetchMainTransactionsForDay(DateTime selectedDate,
+      List<MainTransactionEntity> totalMainTransactions) {
+    return totalMainTransactions.where((mainTransaction) {
+      return mainTransaction.dateTime.day == selectedDate.day &&
+          mainTransaction.dateTime.month == selectedDate.month &&
+          mainTransaction.dateTime.year == selectedDate.year;
+    }).toList();
+  }
+
+  @override
+  List<MainTransactionEntity> fetchMainTransactionsForMonth(
+      DateTime selectedDate,
+      List<MainTransactionEntity> totalMainTransactions) {
+    final startOfMonth = DateTime(selectedDate.year, selectedDate.month);
+    final endOfMonth = DateTime(selectedDate.year, selectedDate.month + 1)
+        .subtract(const Duration(days: 0));
+    List<MainTransactionEntity> monthTransactions =
+        totalMainTransactions.where((mainTransaction) {
+      DateTime transactionDate = mainTransaction.dateTime;
+      return transactionDate.isAfter(startOfMonth) &&
+          transactionDate.isBefore(endOfMonth);
+    }).toList();
+
+    return monthTransactions;
+  }
+
+  @override
+  List<MainTransactionEntity> fetchMainTransactionsForWeek(
+      DateTime selectedDate,
+      List<MainTransactionEntity> totalMainTransactions) {
+    final startOfWeek =
+        selectedDate.subtract(Duration(days: selectedDate.weekday - 1));
+    final endOfWeek = startOfWeek.add(const Duration(days: 6));
+    List<MainTransactionEntity> weekTransactions =
+        totalMainTransactions.where((mainTransaction) {
+      DateTime mainTransactionDate = mainTransaction.dateTime;
+      return mainTransactionDate
+              .isAfter(startOfWeek.subtract(const Duration(days: 1))) &&
+          mainTransactionDate.isBefore(endOfWeek.add(const Duration(days: 1)));
+    }).toList();
+
+    return weekTransactions;
+  }
+
+  @override
+  List<MainTransactionEntity> fetchMainTransactionsForYear(
+      DateTime selectedDate,
+      List<MainTransactionEntity> totalMainTransactions) {
+    List<MainTransactionEntity> yearTransactions =
+        totalMainTransactions.where((mainTransaction) {
+      int transactionYear = mainTransaction.dateTime.year;
+      return transactionYear == selectedDate.year;
+    }).toList();
+
+    return yearTransactions;
+  }
+
+  // * Selected Date Transaction
+  @override
+  List<TransactionEntity> fetchTransactionsForDay(
+      DateTime selectedDate, List<TransactionEntity> totalTransactions) {
+    return totalTransactions.where((transaction) {
+      return transaction.date.day == selectedDate.day &&
+          transaction.date.month == selectedDate.month &&
+          transaction.date.year == selectedDate.year;
+    }).toList();
+  }
+
+  @override
+  List<TransactionEntity> getTransactionsForToday() {
+    return [];
+  }
+
+  @override
+  List<TransactionEntity> fetchTransactionsForMonth(
+      DateTime selectedDate, List<TransactionEntity> totalTransactions) {
+    final startOfMonth = DateTime(selectedDate.year, selectedDate.month);
+    final endOfMonth = DateTime(selectedDate.year, selectedDate.month + 1)
+        .subtract(const Duration(days: 1));
+    List<TransactionEntity> monthTransactions =
+        totalTransactions.where((transaction) {
+      DateTime transactionDate = transaction.date;
+      return transactionDate.isAfter(startOfMonth) &&
+          transactionDate.isBefore(endOfMonth);
+    }).toList();
+
+    return monthTransactions;
+  }
+
+  @override
+  List<TransactionEntity> fetchTransactionsForWeek(
+      DateTime selectedDate, List<TransactionEntity> totalTransactions) {
+    final startOfWeek =
+        selectedDate.subtract(Duration(days: selectedDate.weekday - 1));
+    final endOfWeek = startOfWeek.add(const Duration(days: 6));
+    List<TransactionEntity> weekTransactions =
+        totalTransactions.where((transaction) {
+      DateTime transactionDate = transaction.date;
+      return transactionDate
+              .isAfter(startOfWeek.subtract(const Duration(days: 1))) &&
+          transactionDate.isBefore(endOfWeek.add(const Duration(days: 1)));
+    }).toList();
+
+    return weekTransactions;
+  }
+
+  @override
+  List<TransactionEntity> fetchTransactionsForYear(
+      DateTime selectedDate, List<TransactionEntity> totalTransactions) {
+    List<TransactionEntity> yearTransactions =
+        totalTransactions.where((transaction) {
+      int transactionYear = transaction.date.year;
+      return transactionYear == selectedDate.year;
+    }).toList();
+
+    return yearTransactions;
   }
 }

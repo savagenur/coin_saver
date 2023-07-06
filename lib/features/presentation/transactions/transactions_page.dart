@@ -68,7 +68,9 @@ class TransactionsPageState extends State<TransactionsPage>
                           ),
                           DayNavigationWidget(
                             account: account,
+                            isIncome: true,
                             dateTime: dateTime,
+                            transactions: [],
                           ),
                           Padding(
                             padding: EdgeInsets.all(10),

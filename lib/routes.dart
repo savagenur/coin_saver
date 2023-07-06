@@ -16,9 +16,13 @@ class AppRoute {
     var args = settings.arguments;
     switch (settings.name) {
       case PageConst.homePage:
-        return _routeBuilder(HomePage());
+      args = args as HomePage;
+
+        return _routeBuilder(HomePage(dateTime: args.dateTime,isIncome: args.isIncome,));
       case PageConst.addTransactionPage:
-        return _routeBuilder(AddTransactionPage());
+      args = args as AddTransactionPage;
+
+        return _routeBuilder(AddTransactionPage(isIncome: args.isIncome, account: args.account, dateTime: args.dateTime));
       case PageConst.catalogIconsPage:
         return _routeBuilder(CatalogIconsPage());
       case PageConst.colorsPage:
@@ -34,7 +38,7 @@ class AppRoute {
         return _routeBuilder(TransactionDetailPage());
       case PageConst.addCategoryPage:
         args = args as AddCategoryPage;
-        return _routeBuilder(AddCategoryPage(isIncome: args.isIncome,));
+        return _routeBuilder(AddCategoryPage(isIncome: args.isIncome, categories: args.categories,));
       default:
         return _routeBuilder(const NotFoundPage());
     }

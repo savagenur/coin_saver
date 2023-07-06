@@ -26,7 +26,8 @@ class CategoryTile extends StatelessWidget {
         shape: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
         tileColor: Colors.black,
         leading:  CircleAvatar(
-          child: Icon(mainTransaction.iconData),
+          backgroundColor: mainTransaction.color,
+          child: Icon(mainTransaction.iconData,color: Colors.white,),
         ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -36,7 +37,7 @@ class CategoryTile extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                    "%${( 100 * mainTransaction.totalAmount/totalExpense ).round()}"),
+                    "%${ totalExpense!=0?( 100 * mainTransaction.totalAmount/totalExpense ).round():0}"),
               ],
             )
           ],

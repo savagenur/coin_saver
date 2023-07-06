@@ -23,6 +23,7 @@ class TransactionModelAdapter extends TypeAdapter<TransactionModel> {
       category: fields[3] as String,
       account: fields[5] as String,
       isIncome: fields[6] as bool,
+      color: fields[20] as Color,
       description: fields[4] as String?,
       tags: (fields[7] as List?)?.cast<String>(),
       payee: fields[8] as String?,
@@ -43,7 +44,7 @@ class TransactionModelAdapter extends TypeAdapter<TransactionModel> {
   @override
   void write(BinaryWriter writer, TransactionModel obj) {
     writer
-      ..writeByte(20)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -83,7 +84,9 @@ class TransactionModelAdapter extends TypeAdapter<TransactionModel> {
       ..writeByte(18)
       ..write(obj.linkedTransactions)
       ..writeByte(19)
-      ..write(obj.isVoid);
+      ..write(obj.isVoid)
+      ..writeByte(20)
+      ..write(obj.color);
   }
 
   @override

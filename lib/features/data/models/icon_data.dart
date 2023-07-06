@@ -1,17 +1,20 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
 class IconDataAdapter extends TypeAdapter<IconData> {
   @override
-  final typeId = 13; // Choose a unique ID for the adapter
+  final typeId = 13; // Unique identifier for the adapter
 
   @override
   IconData read(BinaryReader reader) {
-    int codePoint = reader.readInt();
-    String fontFamily = reader.readString();
+    final codePoint = reader.readInt();
+    final fontFamily = reader.readString();
+    final fontPackage = reader.readString();
+
     return IconData(
       codePoint,
       fontFamily: fontFamily,
+      fontPackage: fontPackage,
     );
   }
 
@@ -19,5 +22,6 @@ class IconDataAdapter extends TypeAdapter<IconData> {
   void write(BinaryWriter writer, IconData icon) {
     writer.writeInt(icon.codePoint);
     writer.writeString(icon.fontFamily??"");
+    writer.writeString(icon.fontPackage??"");
   }
 }

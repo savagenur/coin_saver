@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 
 class AddCategoryPage extends StatefulWidget {
   final bool isIncome;
-  const AddCategoryPage({super.key, required this.isIncome});
+  final List<CategoryEntity> categories;
+  const AddCategoryPage({super.key, required this.isIncome, required this.categories});
 
   @override
   State<AddCategoryPage> createState() => _AddCategoryPageState();
@@ -16,7 +17,7 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
   @override
   void initState() {
     super.initState();
-    categories = getMainCategoriesList();
+    categories = widget.categories;
   }
 
   List<CategoryEntity> getMainCategoriesList() {

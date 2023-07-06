@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 
 enum TransactionCategory {
   food,
@@ -21,6 +22,7 @@ class TransactionEntity extends Equatable {
   final String category;
   final String account;
   final bool isIncome;
+  final Color color;
   final String? description;
   final List<String>? tags;
   final String? payee;
@@ -43,6 +45,7 @@ class TransactionEntity extends Equatable {
     required this.category,
     required this.account,
     required this.isIncome,
+    required this.color,
      this.description,
      this.tags,
      this.payee,
@@ -68,6 +71,7 @@ class TransactionEntity extends Equatable {
         description,
         account,
         isIncome,
+        color,
         tags,
         payee,
         currency,
@@ -90,6 +94,7 @@ class TransactionEntity extends Equatable {
     String? description,
     String? account,
     bool? isIncome,
+    Color? color,
     List<String>? tags,
     String? payee,
     String? currency,
@@ -112,6 +117,7 @@ class TransactionEntity extends Equatable {
       description: description ?? this.description,
       account: account ?? this.account,
       isIncome: isIncome ?? this.isIncome,
+      color: color ?? this.color,
       tags: tags ?? this.tags,
       payee: payee ?? this.payee,
       currency: currency ?? this.currency,

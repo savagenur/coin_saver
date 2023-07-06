@@ -99,7 +99,3 @@ class AccountModelAdapter extends TypeAdapter<AccountModel> {
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
-
-
-
-

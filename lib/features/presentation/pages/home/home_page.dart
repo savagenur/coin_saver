@@ -1,13 +1,13 @@
 import 'package:coin_saver/constants/period_enum.dart';
-import 'package:coin_saver/features/data/models/currency/currency_model.dart';
-import 'package:coin_saver/features/data/models/main_transaction/main_transaction_model.dart';
 import 'package:coin_saver/features/domain/entities/main_transaction/main_transaction_entity.dart';
+import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:coin_saver/features/presentation/transactions/transactions_page.dart';
 import 'package:coin_saver/features/presentation/widgets/day_navigation_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'package:coin_saver/constants/constants.dart';
@@ -15,8 +15,10 @@ import 'package:coin_saver/features/domain/entities/account/account_entity.dart'
 import 'package:coin_saver/features/presentation/widgets/shadowed_container_widget.dart';
 
 import '../../bloc/account/account_bloc.dart';
+import '../../bloc/cubit/selected_date/selected_date_cubit.dart';
 import '../../bloc/main_time_period/main_time_period_bloc.dart';
 import '../../widgets/category_tile.dart';
+import 'package:coin_saver/injection_container.dart' as di;
 
 class HomePage extends StatefulWidget {
   final DateTime? dateTime;
@@ -32,20 +34,17 @@ class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late final _tooltipBehavior;
   late final TabController _tabController;
-  bool _isIncome = false;
+  late bool _isIncome;
   // Selected Period
-  Period _selectedPeriod = periodValues[0]!;
+  late Period _selectedPeriod;
 
   // DateTime
   late DateTime _dateTime;
   @override
   void initState() {
     super.initState();
+    _isIncome = widget.isIncome!;
     // SetDayPeriod
-    // DateTime if null
-    widget.dateTime == null
-        ? _dateTime = DateTime.now()
-        : _dateTime = widget.dateTime!;
 
     _tabController = TabController(length: 5, vsync: this);
 
@@ -59,159 +58,201 @@ class _HomePageState extends State<HomePage>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AccountBloc, AccountState>(
-      builder: (context, accountState) {
-        if (accountState is AccountLoaded) {
-          return BlocConsumer<MainTransactionBloc, MainTransactionState>(
-            listener: (context, mainTransactionState) {
-              if (mainTransactionState is MainTransactionLoaded) {}
-            },
-            builder: (context, mainTransactionState) {
-              if (mainTransactionState is MainTransactionLoaded) {
-                return BlocBuilder<MainTimePeriodBloc, MainTimePeriodState>(
-                  builder: (context, mainTimePeriodState) {
-                    // Primary Account
-                    AccountEntity account = accountState.accounts
-                        .firstWhere((account) => account.isPrimary == true);
-                    // Selected DateTime
-                    _dateTime = mainTimePeriodState.selectedPeriod;
+  void dispose() {
+    super.dispose();
+  }
 
-                    // MainTransactions Sort
-                    List<MainTransactionEntity> mainTransactions =
-                        mainTimePeriodState.transactions
-                            .where((mainTransaction) =>
-                                mainTransaction.accountId == account.id &&
-                                mainTransaction.isIncome == _isIncome)
-                            .toList();
-                    // Total amountMoney of MainTransactions
-                    double totalExpense = mainTransactions.fold(
-                        0,
-                        (previousValue, element) =>
-                            previousValue + element.totalAmount);
-                    return DefaultTabController(
-                      length: 2,
-                      child: Scaffold(
-                        appBar: _buildAppBar(account, accountState.accounts),
-                        body: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: ShadowedContainerWidget(
-                                  borderRadius: BorderRadius.circular(30),
-                                  child: Column(
-                                    children: [
-                                      _buildTabBar(context),
-                                      DayNavigationWidget(
-                                        selectedPeriod: _selectedPeriod,
-                                        account: account,
-                                        transactions: mainTransactionState
-                                            .mainTransactions,
-                                        dateTime: _dateTime,
-                                        isIncome: _isIncome,
-                                      ),
-                                      Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          mainTransactions.isEmpty
-                                              ? _buildEmptySfCircularChart()
-                                              : SfCircularChart(
-                                                  tooltipBehavior:
-                                                      _tooltipBehavior,
-                                                  series: [
-                                                    DoughnutSeries<
-                                                        MainTransactionEntity,
-                                                        String>(
-                                                      animationDelay: 1,
-                                                      animationDuration: 1,
-                                                      explode: true,
-                                                      strokeColor: Colors.white,
-                                                      strokeWidth: 2,
-                                                      innerRadius: "70",
-                                                      opacity: 1,
-                                                      dataSource:
-                                                          mainTransactions,
-                                                      xValueMapper:
-                                                          (MainTransactionEntity
-                                                                  data,
-                                                              index) {
-                                                        return data.name;
-                                                      },
-                                                      pointColorMapper:
-                                                          (datum, index) {
-                                                        return datum.color;
-                                                      },
-                                                      yValueMapper:
-                                                          (MainTransactionEntity
-                                                                      data,
-                                                                  index) =>
-                                                              data.totalAmount,
-                                                    ),
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SelectedDateCubit, DateTime>(
+      builder: (context, selectedDate) {
+        return BlocBuilder<AccountBloc, AccountState>(
+          builder: (context, accountState) {
+            if (accountState is AccountLoaded) {
+              return BlocBuilder<MainTimePeriodBloc, MainTimePeriodState>(
+                builder: (context, mainTimePeriodState) {
+                  if (mainTimePeriodState is MainTimePeriodLoaded) {
+                    return BlocBuilder<MainTransactionBloc,
+                        MainTransactionState>(
+                      builder: (context, mainTransactionState) {
+                        if (mainTransactionState is MainTransactionLoaded) {
+                          // Selected DateTime
+                          _dateTime = selectedDate;
+                          // Primary Account
+                          AccountEntity account = accountState.accounts
+                              .firstWhere(
+                                  (account) => account.isPrimary == true);
+
+                          // MainTransactions Sort
+                          List<MainTransactionEntity> mainTransactions =
+                              mainTimePeriodState.transactions
+                                  .where((mainTransaction) =>
+                                      mainTransaction.accountId == account.id &&
+                                      mainTransaction.isIncome == _isIncome)
+                                  .toList()
+                                ..sort(
+                                  (a, b) =>
+                                      b.totalAmount.compareTo(a.totalAmount),
+                                );
+                          print(mainTransactions.map((e) => e).toList());
+                          // Total amountMoney of MainTransactions
+                          double totalExpense = mainTransactions.fold(
+                              0,
+                              (previousValue, element) =>
+                                  previousValue + element.totalAmount);
+                          return BlocBuilder<PeriodCubit, Period>(
+                            builder: (context, selectedPeriod) {
+                              _selectedPeriod = selectedPeriod;
+                              return DefaultTabController(
+                                initialIndex: _isIncome ? 1 : 0,
+                                length: 2,
+                                child: Scaffold(
+                                  appBar: _buildAppBar(
+                                      account, accountState.accounts),
+                                  body: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(10),
+                                          child: ShadowedContainerWidget(
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                            child: Column(
+                                              children: [
+                                                _buildTabBar(context),
+                                                DayNavigationWidget(
+                                                  selectedPeriod:
+                                                      _selectedPeriod,
+                                                  account: account,
+                                                  transactions:
+                                                      mainTransactionState
+                                                          .mainTransactions,
+                                                  dateTime: _dateTime,
+                                                  isIncome: _isIncome,
+                                                ),
+                                                Stack(
+                                                  alignment: Alignment.center,
+                                                  children: [
+                                                    mainTransactions.isEmpty
+                                                        ? _buildEmptySfCircularChart()
+                                                        : SfCircularChart(
+                                                            tooltipBehavior:
+                                                                _tooltipBehavior,
+                                                            series: [
+                                                              DoughnutSeries<
+                                                                  MainTransactionEntity,
+                                                                  String>(
+                                                                animationDelay:
+                                                                    1,
+                                                                animationDuration:
+                                                                    1,
+                                                                explode: true,
+                                                                strokeColor:
+                                                                    Colors
+                                                                        .white,
+                                                                strokeWidth: 2,
+                                                                innerRadius:
+                                                                    "70",
+                                                                opacity: 1,
+                                                                dataSource:
+                                                                    mainTransactions,
+                                                                xValueMapper:
+                                                                    (MainTransactionEntity
+                                                                            data,
+                                                                        index) {
+                                                                  return data
+                                                                      .name;
+                                                                },
+                                                                pointColorMapper:
+                                                                    (datum,
+                                                                        index) {
+                                                                  return datum
+                                                                      .color;
+                                                                },
+                                                                yValueMapper: (MainTransactionEntity
+                                                                            data,
+                                                                        index) =>
+                                                                    data.totalAmount,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                    Text(
+                                                      "$totalExpense",
+                                                      style: TextStyle(
+                                                          fontSize: 22),
+                                                    )
                                                   ],
                                                 ),
-                                          Text(
-                                            "$totalExpense",
-                                            style: TextStyle(fontSize: 22),
-                                          )
-                                        ],
-                                      ),
-                                    ],
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        ...List.generate(
+                                          mainTransactions.length,
+                                          (index) => Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 10,
+                                                bottom: 10,
+                                                left: 10),
+                                            child: GestureDetector(
+                                                onTap: () {
+                                                  Navigator.pushNamed(
+                                                      context,
+                                                      PageConst
+                                                          .mainTransactionPage);
+                                                },
+                                                child: CategoryTile(
+                                                  totalExpense: totalExpense,
+                                                  mainTransaction:
+                                                      mainTransactions[index],
+                                                )),
+                                          ),
+                                        ),
+                                        sizeVer(70),
+                                      ],
+                                    ),
+                                  ),
+                                  floatingActionButton: BlocProvider.value(
+                                    value: di.sl<MainTimePeriodBloc>(),
+                                    child: FloatingActionButton(
+                                      onPressed: () {
+                                        Navigator.pushNamed(context,
+                                            PageConst.addTransactionPage,
+                                            arguments: AddTransactionPage(
+                                              selectedDate: selectedDate,
+                                              isIncome: _isIncome,
+                                              account: account,
+                                            ));
+                                      },
+                                      child: const Icon(Icons.add),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              ...List.generate(
-                                mainTransactions.length,
-                                (index) => Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: 10, bottom: 10, left: 10),
-                                  child: GestureDetector(
-                                      onTap: () {
-                                        Navigator.pushNamed(context,
-                                            PageConst.mainTransactionPage);
-                                      },
-                                      child: CategoryTile(
-                                        totalExpense: totalExpense,
-                                        mainTransaction:
-                                            mainTransactions[index],
-                                      )),
-                                ),
-                              ),
-                              sizeVer(70),
-                            ],
+                              );
+                            },
+                          );
+                        }
+                        return const Scaffold(
+                          body: Center(
+                            child: CircularProgressIndicator(),
                           ),
-                        ),
-                        floatingActionButton: FloatingActionButton(
-                          onPressed: () {
-                            Navigator.pushNamed(
-                                context, PageConst.addTransactionPage,
-                                arguments: AddTransactionPage(
-                                  isIncome: _isIncome,
-                                  account: account,
-                                  dateTime: _dateTime,
-                                ));
-                          },
-                          child: const Icon(Icons.add),
-                        ),
-                      ),
+                        );
+                      },
                     );
-                  },
-                );
-              }
+                  } else {
+                    return const Scaffold();
+                  }
+                },
+              );
+            } else {
               return const Scaffold(
                 body: Center(
                   child: CircularProgressIndicator(),
                 ),
               );
-            },
-          );
-        } else {
-          return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
+            }
+          },
+        );
       },
     );
   }
@@ -228,36 +269,42 @@ class _HomePageState extends State<HomePage>
       unselectedLabelColor: Theme.of(context).primaryColor,
       onTap: (value) {
         setState(() {
-          
-        _selectedPeriod = periodValues[value]!;
-
+          _selectedPeriod = periodValues[value]!;
         });
         switch (_selectedPeriod) {
           case Period.day:
             context
                 .read<MainTimePeriodBloc>()
                 .add(SetDayPeriod(selectedDate: _dateTime));
+            context.read<PeriodCubit>().changePeriod(_selectedPeriod);
             break;
           case Period.week:
             context
                 .read<MainTimePeriodBloc>()
                 .add(SetWeekPeriod(selectedDate: _dateTime));
+            context.read<PeriodCubit>().changePeriod(_selectedPeriod);
+
             break;
           case Period.month:
             context
                 .read<MainTimePeriodBloc>()
                 .add(SetMonthPeriod(selectedDate: _dateTime));
+            context.read<PeriodCubit>().changePeriod(_selectedPeriod);
 
             break;
           case Period.year:
             context
                 .read<MainTimePeriodBloc>()
                 .add(SetYearPeriod(selectedDate: _dateTime));
+            context.read<PeriodCubit>().changePeriod(_selectedPeriod);
+
             break;
           case Period.period:
             context
                 .read<MainTimePeriodBloc>()
                 .add(SetYearPeriod(selectedDate: _dateTime));
+            context.read<PeriodCubit>().changePeriod(_selectedPeriod);
+
             break;
           default:
             0;
@@ -284,38 +331,61 @@ class _HomePageState extends State<HomePage>
         onPressed: () {},
         icon: Icon(Icons.menu),
       ),
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 5),
-            child: GestureDetector(
-              onTapUp: (details) =>
-                  _showPopupMenu(context, details.globalPosition, accounts),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.account_balance_wallet_outlined),
-                  sizeHor(5),
-                  Text(
-                    account.name,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(color: Colors.white),
-                  ),
-                  const Icon(
-                    Icons.arrow_drop_down_sharp,
-                  ),
-                ],
+      title: PullDownButton(
+        itemBuilder: (context) {
+          return [
+            ...List.generate(
+              accounts.length,
+              (index) => PullDownMenuItem.selectable(
+                onTap: () {
+                  context.read<AccountBloc>().add(SetPrimaryAccount(
+                      accountId: accounts[index].id));
+                  print(accounts.map((e) => e.isPrimary).toList());
+                },
+                selected: accounts[index].isPrimary,
+                title: accounts[index].name,
               ),
             ),
-          ),
-          Text(
-            "\$${account.balance.round()}",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ],
+          ];
+        },
+        buttonBuilder: (context, showMenu) {
+          return GestureDetector(
+            onTap: showMenu,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 5),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.account_balance_wallet_outlined),
+                      sizeHor(5),
+                      Text(
+                        account.name,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium!
+                            .copyWith(color: Colors.white),
+                      ),
+                      const Icon(
+                        Icons.arrow_drop_down_sharp,
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  "\$${account.balance.round()}",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: account.balance.round() > 0
+                          ? Colors.white
+                          : Colors.red.shade300),
+                ),
+              ],
+            ),
+          );
+        },
       ),
       bottom: TabBar(
         onTap: (value) {
@@ -336,7 +406,7 @@ class _HomePageState extends State<HomePage>
         padding: EdgeInsets.symmetric(horizontal: 20),
         indicatorPadding: EdgeInsets.only(bottom: 5),
         labelStyle: TextStyle(fontWeight: FontWeight.bold),
-        tabs: [
+        tabs: const [
           Tab(
             child: Text("EXPENSES"),
           ),
@@ -383,42 +453,6 @@ class _HomePageState extends State<HomePage>
           yValueMapper: (MainTransactionEntity data, index) => 1,
         )
       ],
-    );
-  }
-
-  void _showPopupMenu(BuildContext context, Offset position,
-      List<AccountEntity> accounts) async {
-    final RenderBox overlay =
-        Overlay.of(context).context.findRenderObject() as RenderBox;
-    final RelativeRect positionPopup = RelativeRect.fromRect(
-      Rect.fromPoints(position, position),
-      Offset.zero & overlay.size,
-    );
-    bool _selectedItem =
-        accounts.firstWhere((account) => account.isPrimary).isPrimary;
-    await showMenu(
-      context: context,
-      position: positionPopup,
-      initialValue: _selectedItem,
-      items: [
-        ...List.generate(
-          accounts.length,
-          (index) => PopupMenuItem(
-            value: accounts[index].isPrimary,
-            child: RadioListTile(
-              value: accounts[index].isPrimary,
-              groupValue: _selectedItem,
-              onChanged: (value) {
-                context.read<AccountBloc>().add(SelectAccount(
-                    accountEntity: accounts[index], accounts: accounts));
-                Navigator.pop(context);
-              },
-              title: Text(accounts[index].name),
-            ),
-          ),
-        ),
-      ],
-      elevation: 8.0,
     );
   }
 }

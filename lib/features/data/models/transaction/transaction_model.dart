@@ -4,7 +4,6 @@ import '../../../domain/entities/transaction/transaction_entity.dart';
 
 part 'transaction_model.g.dart';
 
-
 @HiveType(typeId: 5)
 class TransactionModel extends TransactionEntity with HiveObjectMixin {
   @HiveField(0)
@@ -18,7 +17,7 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
   @HiveField(4)
   final String? description;
   @HiveField(5)
-  final String account;
+  final String accountId;
   @HiveField(6)
   final bool isIncome;
   @HiveField(7)
@@ -55,7 +54,7 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
     required this.date,
     required this.amount,
     required this.category,
-    required this.account,
+    required this.accountId,
     required this.isIncome,
     required this.color,
     this.description,
@@ -78,9 +77,9 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
           amount: amount,
           category: category,
           description: description,
-          account: account,
+          accountId: accountId,
           isIncome: isIncome,
-          color:color,
+          color: color,
           tags: tags,
           payee: payee,
           currency: currency,
@@ -102,7 +101,7 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
     double? amount,
     String? category,
     String? description,
-    String? account,
+    String? accountId,
     bool? isIncome,
     Color? color,
     List<String>? tags,
@@ -125,7 +124,7 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
       amount: amount ?? this.amount,
       category: category ?? this.category,
       description: description ?? this.description,
-      account: account ?? this.account,
+      accountId: accountId ?? this.accountId,
       isIncome: isIncome ?? this.isIncome,
       color: color ?? this.color,
       tags: tags ?? this.tags,
@@ -141,6 +140,58 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
       notes: notes ?? this.notes,
       linkedTransactions: linkedTransactions ?? this.linkedTransactions,
       isVoid: isVoid ?? this.isVoid,
+    );
+  }
+
+  TransactionEntity toEntity() {
+    return TransactionEntity(
+      id: id,
+      date: date,
+      amount: amount,
+      category: category,
+      accountId: accountId,
+      isIncome: isIncome,
+      color: color,
+      currency: currency,
+      description: description,
+      frequency: frequency,
+      isCleared: isCleared,
+      isRecurring: isRecurring,
+      isVoid: isVoid,
+      linkedTransactions: linkedTransactions,
+      location: location,
+      notes: notes,
+      payee: payee,
+      paymentMethod: paymentMethod,
+      receiptImage: receiptImage,
+      reminderDate: reminderDate,
+      tags: tags,
+    );
+  }
+
+  static TransactionModel fromEntity(TransactionEntity entity) {
+    return TransactionModel(
+      id: entity.id,
+      date: entity.date,
+      amount: entity.amount,
+      category: entity.category,
+      accountId: entity.accountId,
+      isIncome: entity.isIncome,
+      color: entity.color,
+      currency: entity.currency,
+      description: entity.description,
+      frequency: entity.frequency,
+      isCleared: entity.isCleared,
+      isRecurring: entity.isRecurring,
+      isVoid: entity.isVoid,
+      linkedTransactions: entity.linkedTransactions,
+      location: entity.location,
+      notes: entity.notes,
+      payee: entity.payee,
+      paymentMethod: entity.paymentMethod,
+      receiptImage: entity.receiptImage,
+      reminderDate: entity.reminderDate,
+      tags: entity.tags,
     );
   }
 }

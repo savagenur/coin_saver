@@ -14,7 +14,14 @@ abstract class BaseHiveRepository {
   Future<void> selectAccount(
       AccountEntity accountEntity, List<AccountEntity> accounts);
   Future<void> updateAccount(AccountEntity accountEntity);
+  Future<void> addTransaction({
+    required AccountEntity accountEntity,
+    required TransactionEntity transactionEntity,
+    required bool isIncome,
+    required double amount,
+  });
   Future<void> deleteAccount(String id);
+  Future<void> setPrimaryAccount(String accountId);
 
   // MainTransaction
   Future<List<MainTransactionEntity>> getMainTransactions();
@@ -37,16 +44,23 @@ abstract class BaseHiveRepository {
 
   // Selected Date Transactions
   List<TransactionEntity> getTransactionsForToday();
-  List<TransactionEntity> fetchTransactionsForDay(DateTime selectedDate, List<TransactionEntity> totalTransactions);
-  List<TransactionEntity> fetchTransactionsForWeek(DateTime selectedDate, List<TransactionEntity> totalTransactions);
-  List<TransactionEntity> fetchTransactionsForMonth(DateTime selectedDate, List<TransactionEntity> totalTransactions);
-  List<TransactionEntity> fetchTransactionsForYear(DateTime selectedDate, List<TransactionEntity> totalTransactions);
+  List<TransactionEntity> fetchTransactionsForDay(
+      DateTime selectedDate, List<TransactionEntity> totalTransactions);
+  List<TransactionEntity> fetchTransactionsForWeek(
+      DateTime selectedDate, List<TransactionEntity> totalTransactions);
+  List<TransactionEntity> fetchTransactionsForMonth(
+      DateTime selectedDate, List<TransactionEntity> totalTransactions);
+  List<TransactionEntity> fetchTransactionsForYear(
+      DateTime selectedDate, List<TransactionEntity> totalTransactions);
 
   // Date MainTransactions
   List<MainTransactionEntity> getMainTransactionsForToday();
-  List<MainTransactionEntity> fetchMainTransactionsForDay(DateTime selectedDate, List<MainTransactionEntity> totalMainTransactions);
-  List<MainTransactionEntity> fetchMainTransactionsForWeek(DateTime selectedDate, List<MainTransactionEntity> totalTransactions);
-  List<MainTransactionEntity> fetchMainTransactionsForMonth(DateTime selectedDate, List<MainTransactionEntity> totalMainTransactions);
-  List<MainTransactionEntity> fetchMainTransactionsForYear(DateTime selectedDate, List<MainTransactionEntity> totalMainTransactions);
-
+  List<MainTransactionEntity> fetchMainTransactionsForDay(
+      DateTime selectedDate, List<MainTransactionEntity> totalMainTransactions);
+  List<MainTransactionEntity> fetchMainTransactionsForWeek(
+      DateTime selectedDate, List<MainTransactionEntity> totalTransactions);
+  List<MainTransactionEntity> fetchMainTransactionsForMonth(
+      DateTime selectedDate, List<MainTransactionEntity> totalMainTransactions);
+  List<MainTransactionEntity> fetchMainTransactionsForYear(
+      DateTime selectedDate, List<MainTransactionEntity> totalMainTransactions);
 }

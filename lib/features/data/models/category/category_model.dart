@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+
 import '../../../domain/entities/category/category_entity.dart';
 
 part 'category_model.g.dart';
 
 @HiveType(typeId: 2)
-class CategoryModel extends CategoryEntity with HiveObjectMixin {
+class CategoryModel extends CategoryEntity {
   @HiveField(0)
   final String id;
 
@@ -19,20 +20,24 @@ class CategoryModel extends CategoryEntity with HiveObjectMixin {
   final Color color;
   @HiveField(4)
   final bool isIncome;
+  @HiveField(5)
+  final DateTime dateTime;
 
-  CategoryModel({
+  const CategoryModel({
     required this.id,
     required this.name,
     required this.iconData,
     required this.color,
     required this.isIncome,
+    required this.dateTime,
   }) : super(
-          id: id,
-          name: name,
-          iconData: iconData,
-          color: color,
-          isIncome: isIncome,
-        );
+            id: id,
+            name: name,
+            iconData: iconData,
+            color: color,
+            isIncome: isIncome,
+            dateTime: dateTime,
+          );
 
   CategoryModel copyWith({
     String? id,
@@ -40,6 +45,7 @@ class CategoryModel extends CategoryEntity with HiveObjectMixin {
     IconData? iconData,
     Color? color,
     bool? isIncome,
+    DateTime? dateTime,
   }) {
     return CategoryModel(
       id: id ?? this.id,
@@ -47,6 +53,7 @@ class CategoryModel extends CategoryEntity with HiveObjectMixin {
       iconData: iconData ?? this.iconData,
       color: color ?? this.color,
       isIncome: isIncome ?? this.isIncome,
+      dateTime: dateTime ?? this.dateTime,
     );
   }
 }

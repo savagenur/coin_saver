@@ -22,7 +22,7 @@ class AppRoute {
       case PageConst.addTransactionPage:
       args = args as AddTransactionPage;
 
-        return _routeBuilder(AddTransactionPage(isIncome: args.isIncome, account: args.account, dateTime: args.dateTime));
+        return _routeBuilder(AddTransactionPage(isIncome: args.isIncome, account: args.account, selectedDate: args.selectedDate,));
       case PageConst.catalogIconsPage:
         return _routeBuilder(CatalogIconsPage());
       case PageConst.colorsPage:

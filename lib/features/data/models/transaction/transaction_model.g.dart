@@ -21,7 +21,7 @@ class TransactionModelAdapter extends TypeAdapter<TransactionModel> {
       date: fields[1] as DateTime,
       amount: fields[2] as double,
       category: fields[3] as String,
-      account: fields[5] as String,
+      accountId: fields[5] as String,
       isIncome: fields[6] as bool,
       color: fields[20] as Color,
       description: fields[4] as String?,
@@ -56,7 +56,7 @@ class TransactionModelAdapter extends TypeAdapter<TransactionModel> {
       ..writeByte(4)
       ..write(obj.description)
       ..writeByte(5)
-      ..write(obj.account)
+      ..write(obj.accountId)
       ..writeByte(6)
       ..write(obj.isIncome)
       ..writeByte(7)

@@ -6,7 +6,6 @@ import 'package:coin_saver/features/domain/usecases/main_transaction/delete_main
 import 'package:coin_saver/features/domain/usecases/main_transaction/get_main_transactions_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/main_transaction/update_main_transaction_usecase.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 
 import '../../../domain/entities/main_transaction/main_transaction_entity.dart';
 

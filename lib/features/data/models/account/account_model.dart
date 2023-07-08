@@ -1,3 +1,4 @@
+import 'package:coin_saver/features/data/models/transaction/transaction_model.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 import 'package:hive/hive.dart';
@@ -7,7 +8,7 @@ import '../../../domain/entities/account/account_entity.dart';
 part 'account_model.g.dart';
 
 @HiveType(typeId: 1)
-class AccountModel extends AccountEntity with HiveObjectMixin {
+class AccountModel extends AccountEntity {
   @HiveField(0)
   final String id;
   @HiveField(1)
@@ -45,7 +46,7 @@ class AccountModel extends AccountEntity with HiveObjectMixin {
   @HiveField(17)
   final String? notes;
   @HiveField(18)
-  final List<TransactionEntity> transactionHistory;
+  final List<TransactionModel> transactionHistory;
   @HiveField(19)
   final String? monthlyStatement;
   @HiveField(20)
@@ -93,10 +94,12 @@ class AccountModel extends AccountEntity with HiveObjectMixin {
           minimumBalance: minimumBalance,
           linkedAccounts: linkedAccounts,
           notes: notes,
-          transactionHistory: transactionHistory,
+          transactionHistory:
+              transactionHistory.map((model) => model.toEntity()).toList(),
           monthlyStatement: monthlyStatement,
         );
 
+  @override
   AccountModel copyWith({
     String? id,
     String? name,
@@ -140,8 +143,13 @@ class AccountModel extends AccountEntity with HiveObjectMixin {
       minimumBalance: minimumBalance ?? this.minimumBalance,
       linkedAccounts: linkedAccounts ?? this.linkedAccounts,
       notes: notes ?? this.notes,
-      transactionHistory: transactionHistory ?? this.transactionHistory,
+      transactionHistory: transactionHistory
+              ?.map((entity) => TransactionModel.fromEntity(entity))
+              .toList() ??
+          this.transactionHistory,
       monthlyStatement: monthlyStatement ?? this.monthlyStatement,
     );
   }
+
+ 
 }

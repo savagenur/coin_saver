@@ -1,10 +1,14 @@
 import 'package:coin_saver/constants/period_enum.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/main_transaction/main_transaction_entity.dart';
+import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/main_time_period/main_time_period_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+
+import '../bloc/cubit/selected_date/selected_date_cubit.dart';
+
 
 class DayNavigationWidget extends StatefulWidget {
   final AccountEntity account;
@@ -26,108 +30,151 @@ class DayNavigationWidget extends StatefulWidget {
 }
 
 class _DayNavigationWidgetState extends State<DayNavigationWidget> {
-  String formatDate(DateTime dateTime) {
+  String formatDateyMMMMd(DateTime dateTime) {
     String formattedDate = DateFormat.yMMMMd().format(dateTime);
 
     return formattedDate;
   }
 
-  String _selectedPeriodText = "";
+  String formatDateM(DateTime dateTime) {
+    String formattedDate = DateFormat.MMMMd().format(dateTime);
+
+    return formattedDate;
+  }
 
   @override
   void initState() {
     super.initState();
-    updateSelectedPeriodText();
   }
 
-  void updateSelectedPeriodText() {
-    setState(() {
-      switch (widget.selectedPeriod) {
-        case Period.day:
-          _selectedPeriodText =
-              formatDate(widget.dateTime) == formatDate(DateTime.now())
-                  ? "Today"
-                  : formatDate(widget.dateTime) ==
-                          formatDate(
-                              DateTime.now().subtract(const Duration(days: 1)))
-                      ? "Yesterday"
-                      : formatDate(widget.dateTime);
-        case Period.week:
-          _selectedPeriodText =
-              "${formatDate(widget.dateTime.subtract(Duration(days: widget.dateTime.weekday - 1)))} - ${formatDate(widget.dateTime.subtract(Duration(days: widget.dateTime.weekday - 7)))}";
-          break;
-        case Period.month:
-          break;
-        case Period.year:
-          break;
-        case Period.period:
-          break;
-        default:
-          break;
-      }
-    });
+  String updateSelectedPeriodText(selectedPeriod, DateTime selectedDate) {
+    switch (selectedPeriod) {
+      case Period.day:
+        context
+            .read<MainTimePeriodBloc>()
+            .add(SetDayPeriod(selectedDate: selectedDate));
+        return formatDateyMMMMd(selectedDate) ==
+                formatDateyMMMMd(DateTime.now())
+            ? "Today"
+            : formatDateyMMMMd(selectedDate) ==
+                    formatDateyMMMMd(
+                        DateTime.now().subtract(const Duration(days: 1)))
+                ? "Yesterday"
+                : formatDateyMMMMd(selectedDate);
+      case Period.week:
+        context
+            .read<MainTimePeriodBloc>()
+            .add(SetWeekPeriod(selectedDate: selectedDate));
+        return "${formatDateM(selectedDate.subtract(Duration(days: selectedDate.weekday - 1)))} - ${formatDateyMMMMd(selectedDate.subtract(Duration(days: selectedDate.weekday - 7)))}";
+
+      case Period.month:
+        context
+            .read<MainTimePeriodBloc>()
+            .add(SetMonthPeriod(selectedDate: selectedDate));
+        final startOfMonth = DateTime(selectedDate.year, selectedDate.month);
+        final endOfMonth = DateTime(selectedDate.year, selectedDate.month + 1)
+            .subtract(const Duration(days: 1));
+        return "${formatDateM(startOfMonth)} - ${formatDateM(endOfMonth)}";
+      case Period.year:
+        context
+            .read<MainTimePeriodBloc>()
+            .add(SetYearPeriod(selectedDate: selectedDate));
+        return DateFormat("yyyy").format(selectedDate);
+      case Period.period:
+        return "";
+      default:
+        return "";
+    }
+    ;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              onPressed: () async {
-                // MainTransactions Sort
-                context.read<MainTimePeriodBloc>().add(SetDayPeriod(
-                      selectedDate:
-                          widget.dateTime.subtract(const Duration(days: 1)),
-                    ));
-                await Future.delayed(Duration(milliseconds: 200));
-
-                updateSelectedPeriodText();
-              },
-              icon: Icon(
-                Icons.arrow_back_ios,
-              ),
-            ),
-            Row(
+    return BlocBuilder<PeriodCubit, Period>(
+      builder: (context, selectedPeriod) {
+        return BlocBuilder<SelectedDateCubit, DateTime>(
+          builder: (context, selectedDate) {
+            return Column(
               children: [
-                IconButton(
-                  onPressed: () async {
-                    // await  Hive.box<MainTransactionModel>(BoxConst.mainTransactions).clear();
-                  },
-                  icon: Icon(
-                    Icons.calendar_month_outlined,
-                  ),
-                ),
-                IconButton(
-                  onPressed: widget.dateTime.isBefore(
-                          DateTime.now().subtract(const Duration(days: 1)))
-                      ? () async {
-                          // Can't go forward from today
-                          context.read<MainTimePeriodBloc>().add(SetDayPeriod(
-                                selectedDate: widget.dateTime
-                                    .add(const Duration(days: 1)),
-                              ));
-                          await Future.delayed(Duration(milliseconds: 200));
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: IconButton(
+                          onPressed: () {
+                            // SelectedDate
+                            context
+                                .read<SelectedDateCubit>()
+                                .moveBackward(selectedPeriod);
 
-                          updateSelectedPeriodText();
-                        }
-                      : null,
-                  icon: Icon(
-                    Icons.arrow_forward_ios,
-                  ),
+                            // MainTransactions Sort
+                            context.read<MainTimePeriodBloc>().add(SetDayPeriod(
+                                  selectedDate: selectedDate,
+                                ));
+                            updateSelectedPeriodText(
+                                selectedPeriod, selectedDate);
+                          },
+                          icon: Icon(
+                            Icons.arrow_back_ios,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 3,
+                      child: Text(
+                        updateSelectedPeriodText(selectedPeriod, selectedDate),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            decoration: TextDecoration.underline),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                              // await  Hive.box<MainTransactionModel>(BoxConst.mainTransactions).clear();
+                            },
+                            child: Icon(
+                              Icons.calendar_month_outlined,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: selectedDate.isBefore(DateTime.now()
+                                    .subtract(const Duration(days: 1)))
+                                ? () {
+                                    // SelectedDate
+                                    context
+                                        .read<SelectedDateCubit>()
+                                        .moveForward(
+                                          selectedPeriod,
+                                        );
+                                    updateSelectedPeriodText(
+                                        selectedPeriod, selectedDate);
+                                  }
+                                : null,
+                            icon: Icon(
+                              Icons.arrow_forward_ios,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ],
-            ),
-          ],
-        ),
-        Text(
-          _selectedPeriodText,
-          style: TextStyle(decoration: TextDecoration.underline),
-        ),
-      ],
+            );
+          },
+        );
+      },
     );
   }
 }

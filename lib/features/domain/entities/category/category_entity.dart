@@ -7,6 +7,7 @@ class CategoryEntity extends Equatable {
   final IconData iconData;
   final Color color;
   final bool isIncome;
+  final DateTime dateTime;
 
   const CategoryEntity({
     required this.id,
@@ -14,6 +15,7 @@ class CategoryEntity extends Equatable {
     required this.iconData,
     required this.color,
     required this.isIncome,
+    required this.dateTime,
   });
 
   @override
@@ -23,6 +25,7 @@ class CategoryEntity extends Equatable {
         iconData,
         color,
         isIncome,
+        dateTime,
       ];
   CategoryEntity copyWith({
     String? id,
@@ -30,6 +33,7 @@ class CategoryEntity extends Equatable {
     IconData? iconData,
     Color? color,
     bool? isIncome,
+    DateTime? dateTime,
   }) {
     return CategoryEntity(
       id: id ?? this.id,
@@ -37,6 +41,7 @@ class CategoryEntity extends Equatable {
       iconData: iconData ?? this.iconData,
       color: color ?? this.color,
       isIncome: isIncome ?? this.isIncome,
+      dateTime: dateTime ?? this.dateTime,
     );
   }
 }

@@ -30,17 +30,34 @@ class UpdateAccount extends AccountEvent {
   List<Object> get props => [accountEntity];
 }
 
-class SelectAccount extends AccountEvent {
+class SetPrimaryAccount extends AccountEvent {
+  final String accountId;
+  const SetPrimaryAccount({
+    required this.accountId,
+  });
+  @override
+  List<Object> get props => [
+        accountId,
+      ];
+}
+
+class AddTransaction extends AccountEvent {
   final AccountEntity accountEntity;
-  final List<AccountEntity> accounts;
-  const SelectAccount({
+  final TransactionEntity transactionEntity;
+  final bool isIncome;
+  final double amount;
+  const AddTransaction({
     required this.accountEntity,
-    required this.accounts,
+    required this.transactionEntity,
+    required this.isIncome,
+    required this.amount,
   });
   @override
   List<Object> get props => [
         accountEntity,
-        accounts,
+        transactionEntity,
+        isIncome,
+        amount,
       ];
 }
 

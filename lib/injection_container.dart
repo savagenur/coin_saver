@@ -6,6 +6,8 @@ import 'package:coin_saver/features/domain/usecases/account/create_account_useca
 import 'package:coin_saver/features/domain/usecases/account/delete_account_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/account/get_accounts_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/account/select_account_usecase.dart';
+import 'package:coin_saver/features/domain/usecases/account/set_primary_account_usecase.dart';
+import 'package:coin_saver/features/domain/usecases/account/transaction/add_transaction_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/account/update_account_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/hive/init_hive_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/main_transaction/get_main_transactions_usecase.dart';
@@ -13,6 +15,7 @@ import 'package:coin_saver/features/domain/usecases/main_transaction/update_main
 import 'package:coin_saver/features/domain/usecases/time_period/fetch_transactions_for_day_usecase.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
+import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/time_period/time_period_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -31,6 +34,7 @@ import 'features/domain/usecases/main_transaction/delete_main_transaction_usecas
 import 'features/domain/usecases/time_period/fetch_transactions_for_month_usecase.dart';
 import 'features/domain/usecases/time_period/fetch_transactions_for_week_usecase.dart';
 import 'features/domain/usecases/time_period/fetch_transactions_for_year_usecase.dart';
+import 'features/presentation/bloc/cubit/selected_date/selected_date_cubit.dart';
 import 'features/presentation/bloc/main_time_period/main_time_period_bloc.dart';
 
 final GetIt sl = GetIt.instance;
@@ -41,7 +45,8 @@ Future<void> init() async {
       createAccountUsecase: sl.call(),
       getAccountsUsecase: sl.call(),
       updateAccountUsecase: sl.call(),
-      selectAccountUsecase: sl.call(),
+      setPrimaryAccountUsecase: sl.call(),
+      addTransactionUsecase: sl.call(),
       deleteAccountUsecase: sl.call()));
 
   sl.registerFactory(
@@ -77,12 +82,22 @@ Future<void> init() async {
       getMainTransactionsUsecase: sl.call(),
     ),
   );
+  sl.registerFactory(
+    () => PeriodCubit(),
+  );
+  sl.registerFactory(
+    () => SelectedDateCubit(),
+  );
+
 // * Account usecases
   sl.registerLazySingleton(() => CreateAccountUsecase(repository: sl.call()));
   sl.registerLazySingleton(() => GetAccountsUsecase(repository: sl.call()));
   sl.registerLazySingleton(() => UpdateAccountUsecase(repository: sl.call()));
   sl.registerLazySingleton(() => SelectAccountUsecase(repository: sl.call()));
   sl.registerLazySingleton(() => DeleteAccountUsecase(repository: sl.call()));
+  sl.registerLazySingleton(() => AddTransactionUsecase(repository: sl.call()));
+  sl.registerLazySingleton(
+      () => SetPrimaryAccountUsecase(repository: sl.call()));
   sl.registerLazySingleton(() => InitHiveUsecase(repository: sl.call()));
 
 // * MainTransaction usecases

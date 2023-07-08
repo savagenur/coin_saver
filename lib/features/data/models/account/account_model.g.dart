@@ -36,7 +36,7 @@ class AccountModelAdapter extends TypeAdapter<AccountModel> {
       minimumBalance: fields[15] as double?,
       linkedAccounts: (fields[16] as List?)?.cast<String>(),
       notes: fields[17] as String?,
-      transactionHistory: (fields[18] as List).cast<TransactionEntity>(),
+      transactionHistory: (fields[18] as List).cast<TransactionModel>(),
       monthlyStatement: fields[19] as String?,
     );
   }

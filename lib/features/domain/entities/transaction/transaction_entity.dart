@@ -20,7 +20,7 @@ class TransactionEntity extends Equatable {
   final DateTime date;
   final double amount;
   final String category;
-  final String account;
+  final String accountId;
   final bool isIncome;
   final Color color;
   final String? description;
@@ -43,23 +43,23 @@ class TransactionEntity extends Equatable {
     required this.date,
     required this.amount,
     required this.category,
-    required this.account,
+    required this.accountId,
     required this.isIncome,
     required this.color,
-     this.description,
-     this.tags,
-     this.payee,
-     this.currency,
-     this.location,
-     this.receiptImage,
-     this.paymentMethod,
-     this.isRecurring,
-     this.frequency,
-     this.reminderDate,
-     this.isCleared,
-     this.notes,
-     this.linkedTransactions,
-     this.isVoid,
+    this.description,
+    this.tags,
+    this.payee,
+    this.currency,
+    this.location,
+    this.receiptImage,
+    this.paymentMethod,
+    this.isRecurring,
+    this.frequency,
+    this.reminderDate,
+    this.isCleared,
+    this.notes,
+    this.linkedTransactions,
+    this.isVoid,
   });
 
   @override
@@ -69,7 +69,7 @@ class TransactionEntity extends Equatable {
         amount,
         category,
         description,
-        account,
+        accountId,
         isIncome,
         color,
         tags,
@@ -86,13 +86,13 @@ class TransactionEntity extends Equatable {
         linkedTransactions,
         isVoid,
       ];
-      TransactionEntity copyWith({
+  TransactionEntity copyWith({
     String? id,
     DateTime? date,
     double? amount,
     String? category,
     String? description,
-    String? account,
+    String? accountId,
     bool? isIncome,
     Color? color,
     List<String>? tags,
@@ -115,7 +115,7 @@ class TransactionEntity extends Equatable {
       amount: amount ?? this.amount,
       category: category ?? this.category,
       description: description ?? this.description,
-      account: account ?? this.account,
+      accountId: accountId ?? this.accountId,
       isIncome: isIncome ?? this.isIncome,
       color: color ?? this.color,
       tags: tags ?? this.tags,

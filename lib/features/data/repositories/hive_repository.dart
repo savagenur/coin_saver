@@ -17,11 +17,13 @@ class HiveRepository implements BaseHiveRepository {
   @override
   Future<void> initHive() async => hiveLocalDataSource.initHive();
 
-
   // Account
   @override
   Future<void> createAccount(AccountEntity accountEntity) async =>
       hiveLocalDataSource.createAccount(accountEntity);
+  @override
+  Future<void> setPrimaryAccount(String accountId) async =>
+      hiveLocalDataSource.setPrimaryAccount(accountId);
 
   @override
   Future<void> deleteAccount(String id) async =>
@@ -30,6 +32,19 @@ class HiveRepository implements BaseHiveRepository {
   @override
   Future<List<AccountEntity>> getAccounts() async =>
       hiveLocalDataSource.getAccounts();
+
+  @override
+  Future<void> addTransaction({
+    required AccountEntity accountEntity,
+    required TransactionEntity transactionEntity,
+    required bool isIncome,
+    required double amount,
+  }) async =>
+      hiveLocalDataSource.addTransaction(
+          accountEntity: accountEntity,
+          transactionEntity: transactionEntity,
+          isIncome: isIncome,
+          amount: amount);
 
   // MainTransaction
   @override
@@ -90,44 +105,60 @@ class HiveRepository implements BaseHiveRepository {
       hiveLocalDataSource.updateCategory(index, categoryEntity);
 
   // Selected Date Transactions
-     @override
-  List<TransactionEntity> getTransactionsForToday()  =>
+  @override
+  List<TransactionEntity> getTransactionsForToday() =>
       hiveLocalDataSource.getTransactionsForToday();
   @override
-  List<TransactionEntity> fetchTransactionsForDay(DateTime selectedDate,List<TransactionEntity> totalTransactions)  =>
-      hiveLocalDataSource.fetchTransactionsForDay(selectedDate,totalTransactions);
+  List<TransactionEntity> fetchTransactionsForDay(
+          DateTime selectedDate, List<TransactionEntity> totalTransactions) =>
+      hiveLocalDataSource.fetchTransactionsForDay(
+          selectedDate, totalTransactions);
 
   @override
-  List<TransactionEntity> fetchTransactionsForMonth(DateTime selectedDate,List<TransactionEntity> totalTransactions)  =>
-      hiveLocalDataSource.fetchTransactionsForMonth(selectedDate,totalTransactions);
+  List<TransactionEntity> fetchTransactionsForMonth(
+          DateTime selectedDate, List<TransactionEntity> totalTransactions) =>
+      hiveLocalDataSource.fetchTransactionsForMonth(
+          selectedDate, totalTransactions);
   @override
   List<TransactionEntity> fetchTransactionsForWeek(
-          DateTime selectedDate,List<TransactionEntity> totalTransactions)  =>
-      hiveLocalDataSource.fetchTransactionsForWeek(selectedDate,totalTransactions);
+          DateTime selectedDate, List<TransactionEntity> totalTransactions) =>
+      hiveLocalDataSource.fetchTransactionsForWeek(
+          selectedDate, totalTransactions);
 
   @override
-  List<TransactionEntity> fetchTransactionsForYear(DateTime selectedDate,List<TransactionEntity> totalTransactions)  =>
-      hiveLocalDataSource.fetchTransactionsForYear(selectedDate,totalTransactions);
-      
+  List<TransactionEntity> fetchTransactionsForYear(
+          DateTime selectedDate, List<TransactionEntity> totalTransactions) =>
+      hiveLocalDataSource.fetchTransactionsForYear(
+          selectedDate, totalTransactions);
+
   // Selected Date MainTransactions
-   @override
-  List<MainTransactionEntity> getMainTransactionsForToday()  =>
+  @override
+  List<MainTransactionEntity> getMainTransactionsForToday() =>
       hiveLocalDataSource.getMainTransactionsForToday();
 
   @override
-  List<MainTransactionEntity> fetchMainTransactionsForDay(DateTime selectedDate,List<MainTransactionEntity> totalTransactions)  =>
-      hiveLocalDataSource.fetchMainTransactionsForDay(selectedDate,totalTransactions);
+  List<MainTransactionEntity> fetchMainTransactionsForDay(DateTime selectedDate,
+          List<MainTransactionEntity> totalTransactions) =>
+      hiveLocalDataSource.fetchMainTransactionsForDay(
+          selectedDate, totalTransactions);
 
   @override
-  List<MainTransactionEntity> fetchMainTransactionsForMonth(DateTime selectedDate,List<MainTransactionEntity> totalTransactions)  =>
-      hiveLocalDataSource.fetchMainTransactionsForMonth(selectedDate,totalTransactions);
+  List<MainTransactionEntity> fetchMainTransactionsForMonth(
+          DateTime selectedDate,
+          List<MainTransactionEntity> totalTransactions) =>
+      hiveLocalDataSource.fetchMainTransactionsForMonth(
+          selectedDate, totalTransactions);
   @override
   List<MainTransactionEntity> fetchMainTransactionsForWeek(
-          DateTime selectedDate,List<MainTransactionEntity> totalTransactions)  =>
-      hiveLocalDataSource.fetchMainTransactionsForWeek(selectedDate,totalTransactions);
+          DateTime selectedDate,
+          List<MainTransactionEntity> totalTransactions) =>
+      hiveLocalDataSource.fetchMainTransactionsForWeek(
+          selectedDate, totalTransactions);
 
   @override
-  List<MainTransactionEntity> fetchMainTransactionsForYear(DateTime selectedDate,List<MainTransactionEntity> totalTransactions)  =>
-      hiveLocalDataSource.fetchMainTransactionsForYear(selectedDate,totalTransactions);
-      
+  List<MainTransactionEntity> fetchMainTransactionsForYear(
+          DateTime selectedDate,
+          List<MainTransactionEntity> totalTransactions) =>
+      hiveLocalDataSource.fetchMainTransactionsForYear(
+          selectedDate, totalTransactions);
 }

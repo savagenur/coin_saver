@@ -1,5 +1,6 @@
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:equatable/equatable.dart';
+import 'package:hive/hive.dart';
 
 import '../transaction/transaction_entity.dart';
 
@@ -55,7 +56,7 @@ class AccountEntity extends Equatable {
     required this.id,
     required this.name,
     required this.type,
-     this.paymentType,
+    this.paymentType,
     required this.balance,
     required this.currency,
     required this.isPrimary,
@@ -79,7 +80,6 @@ class AccountEntity extends Equatable {
   List<Object?> get props => [
         id,
         name,
-        paymentType,
         type,
         paymentType,
         balance,
@@ -100,7 +100,7 @@ class AccountEntity extends Equatable {
         transactionHistory,
         monthlyStatement,
       ];
-      AccountEntity copyWith({
+  AccountEntity copyWith({
     String? id,
     String? name,
     AccountType? type,
@@ -148,5 +148,3 @@ class AccountEntity extends Equatable {
     );
   }
 }
-
-

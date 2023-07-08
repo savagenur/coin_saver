@@ -10,6 +10,7 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'features/presentation/bloc/cubit/category/selected_category_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_date/selected_date_cubit.dart';
 import 'features/presentation/bloc/main_time_period/main_time_period_bloc.dart';
 import 'features/presentation/pages/home/home_page.dart';
@@ -65,6 +66,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (_) => di.sl<SelectedDateCubit>(),
+        ),
+        BlocProvider(
+          create: (_) => di.sl<SelectedCategoryCubit>(),
         ),
       ],
       child: MaterialApp(

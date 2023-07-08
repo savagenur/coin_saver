@@ -15,6 +15,7 @@ import 'package:coin_saver/features/domain/usecases/main_transaction/update_main
 import 'package:coin_saver/features/domain/usecases/time_period/fetch_transactions_for_day_usecase.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
+import 'package:coin_saver/features/presentation/bloc/cubit/category/selected_category_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/time_period/time_period_bloc.dart';
@@ -87,6 +88,9 @@ Future<void> init() async {
   );
   sl.registerFactory(
     () => SelectedDateCubit(),
+  );
+  sl.registerFactory(
+    () => SelectedCategoryCubit(),
   );
 
 // * Account usecases

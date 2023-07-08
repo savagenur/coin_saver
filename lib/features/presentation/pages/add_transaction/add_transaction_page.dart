@@ -8,6 +8,7 @@ import 'package:coin_saver/features/domain/entities/transaction/transaction_enti
 import 'package:coin_saver/features/domain/usecases/account/set_primary_account_usecase.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
+import 'package:coin_saver/features/presentation/bloc/cubit/category/selected_category_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/main_time_period/main_time_period_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
@@ -68,7 +69,16 @@ class AddTransactionPageState extends State<AddTransactionPage>
 
   // Category
   CategoryEntity? _category;
-  int? _selectedCategoryIndex;
+
+  // Blocs
+  late SelectedCategoryCubit selectedCategoryCubit;
+  late AccountBloc accountBloc;
+  late MainTimePeriodBloc mainTimePeriodBloc;
+  late MainTransactionBloc mainTransactionBloc;
+  late PeriodCubit periodCubit;
+  late SelectedDateCubit selectedDateCubit;
+    
+
   @override
   void initState() {
     super.initState();
@@ -84,6 +94,14 @@ class AddTransactionPageState extends State<AddTransactionPage>
     _transactionHistory = widget.account.transactionHistory;
     // DateTime select init
     selectDay();
+
+    // Blocs
+    selectedCategoryCubit = context.read<SelectedCategoryCubit>();
+    accountBloc = context.read<AccountBloc>();
+    mainTimePeriodBloc = context.read<MainTimePeriodBloc>();
+    mainTransactionBloc = context.read<MainTransactionBloc>();
+    periodCubit = context.read<PeriodCubit>();
+    selectedDateCubit = context.read<SelectedDateCubit>();
   }
 
   @override
@@ -104,171 +122,179 @@ class AddTransactionPageState extends State<AddTransactionPage>
                 _categories = categoryState.categories
                     .where((category) => category.isIncome == _isIncome)
                     .toList();
-                _selectedCategoryIndex != null
-                    ? _category = _categories[_selectedCategoryIndex!]
-                    : _category;
 
                 return BlocBuilder<SelectedDateCubit, DateTime>(
                   builder: (context, selectedDate) {
                     _selectedDate = selectedDate;
-                    return DefaultTabController(
-                      length: 2,
-                      child: Scaffold(
-                        appBar: _buildAppBar(),
-                        body: Padding(
-                          padding: EdgeInsets.all(10),
-                          child: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
+                    return BlocBuilder<SelectedCategoryCubit, CategoryEntity?>(
+                      builder: (context, selectedCategory) {
+                        _category = selectedCategory;
+                        return DefaultTabController(
+                          length: 2,
+                          child: Scaffold(
+                            appBar: _buildAppBar(),
+                            body: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Spacer(
-                                      flex: 1,
-                                    ),
-                                    Expanded(
-                                      child: SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                .3,
-                                        child: TextFormField(
-                                          controller: _amountController,
-                                          maxLength: 10,
-                                          autofocus: true,
-                                          keyboardType: TextInputType.number,
-                                          maxLines: 1,
-                                          textAlign: TextAlign.center,
-                                          showCursor: false,
-                                          decoration:
-                                              InputDecoration(hintText: "0"),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleLarge!
-                                              .copyWith(
-                                                  color: Theme.of(context)
-                                                      .primaryColor),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        const Spacer(
+                                          flex: 1,
                                         ),
-                                      ),
+                                        Expanded(
+                                          child: SizedBox(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                .3,
+                                            child: TextFormField(
+                                              controller: _amountController,
+                                              maxLength: 10,
+                                              autofocus: true,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              maxLines: 1,
+                                              textAlign: TextAlign.center,
+                                              showCursor: false,
+                                              decoration: const InputDecoration(
+                                                  hintText: "0"),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleLarge!
+                                                  .copyWith(
+                                                      color: Theme.of(context)
+                                                          .primaryColor),
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "USD",
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleLarge!
+                                                    .copyWith(
+                                                        color: Theme.of(context)
+                                                            .primaryColor),
+                                              ),
+                                              IconButton(
+                                                  onPressed: () {},
+                                                  icon: const Icon(Icons
+                                                      .calculate_outlined)),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    Expanded(
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            "USD",
+                                    sizeVer(20),
+                                    const Text(
+                                      "Account:",
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                    PullDownButton(
+                                      itemBuilder: (context) {
+                                        return [
+                                          ...List.generate(
+                                            _accounts.length,
+                                            (index) =>
+                                                PullDownMenuItem.selectable(
+                                              onTap: () {
+                                                _selectedAccountId =
+                                                    _accounts[index].id;
+                                                _account = _accounts.firstWhere(
+                                                    (element) =>
+                                                        element.id ==
+                                                        _selectedAccountId);
+                                              },
+                                              selected: _selectedAccountId ==
+                                                  _accounts[index].id,
+                                              title: _accounts[index].name,
+                                            ),
+                                          ),
+                                        ];
+                                      },
+                                      buttonBuilder: (context, showMenu) {
+                                        return TextButton(
+                                          onPressed: showMenu,
+                                          child: Text(
+                                            _account!.name,
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .titleLarge!
+                                                .titleMedium!
                                                 .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                    decoration: TextDecoration
+                                                        .underline,
                                                     color: Theme.of(context)
                                                         .primaryColor),
                                           ),
-                                          IconButton(
-                                              onPressed: () {},
-                                              icon: Icon(
-                                                  Icons.calculate_outlined)),
-                                        ],
+                                        );
+                                      },
+                                    ),
+                                    const Divider(),
+                                    sizeVer(10),
+                                    const Text(
+                                      "Categories:",
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                    sizeVer(10),
+                                    _buildGridView(
+                                        _categories, selectedCategory),
+                                    const Divider(),
+                                    sizeVer(10),
+                                    _buildSelectDay(context, _selectedDay),
+                                    sizeVer(20),
+                                    const Text(
+                                      "Comment:",
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                    sizeVer(10),
+                                    TextFormField(
+                                      controller: _descriptionController,
+                                      maxLength: 4000,
+                                      decoration: const InputDecoration(
+                                        hintText: "Comment...",
                                       ),
                                     ),
                                   ],
                                 ),
-                                sizeVer(20),
-                                const Text(
-                                  "Account:",
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                PullDownButton(
-                                  itemBuilder: (context) {
-                                    return [
-                                      ...List.generate(
-                                        _accounts.length,
-                                        (index) => 
-                                         PullDownMenuItem.selectable(
-                                          onTap: () {
-                                            _selectedAccountId =
-                                                _accounts[index].id;
-                                            _account = _accounts.firstWhere(
-                                                (element) =>
-                                                    element.id ==
-                                                    _selectedAccountId);
-                                          },
-                                          selected: _selectedAccountId ==
-                                              _accounts[index].id,
-                                          title: _accounts[index].name,
-                                        ),
-                                      ),
-                                    ];
-                                  },
-                                  buttonBuilder: (context, showMenu) {
-                                    return TextButton(
-                                      onPressed: showMenu,
-                                      child: Text(
-                                        _account!.name,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium!
-                                            .copyWith(
-                                                fontWeight: FontWeight.bold,
-                                                decoration:
-                                                    TextDecoration.underline,
-                                                color: Theme.of(context)
-                                                    .primaryColor),
-                                      ),
-                                    );
-                                  },
-                                ),
-                               const Divider(),
-                                sizeVer(10),
-                               const Text(
-                                  "Categories:",
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                sizeVer(10),
-                                _buildGridView(_categories),
-                                Divider(),
-                                sizeVer(10),
-                                _buildSelectDay(context, _selectedDay),
-                                sizeVer(20),
-                               const Text(
-                                  "Comment:",
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                sizeVer(10),
-                                TextFormField(
-                                  controller: _descriptionController,
-                                  maxLength: 4000,
-                                  decoration:const InputDecoration(
-                                    hintText: "Comment...",
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
+                            floatingActionButtonLocation:
+                                FloatingActionButtonLocation.centerDocked,
+                            floatingActionButton: MediaQuery.of(context)
+                                        .viewInsets
+                                        .bottom !=
+                                    0
+                                ? null
+                                : MyButtonWidget(
+                                    title: 'Add',
+                                    width:
+                                        MediaQuery.of(context).size.width * .5,
+                                    borderRadius: BorderRadius.circular(30),
+                                    paddingVertical: 15,
+                                    onTap: _amountController.text.isEmpty ||
+                                            _amountController.text
+                                                .contains("-") ||
+                                            double.parse(
+                                                    _amountController.text) <=
+                                                0 ||
+                                            _category == null ||
+                                            _account == null
+                                        ? null
+                                        : _buildAddTransaction),
                           ),
-                        ),
-                        floatingActionButtonLocation:
-                            FloatingActionButtonLocation.centerDocked,
-                        floatingActionButton: MediaQuery.of(context)
-                                    .viewInsets
-                                    .bottom !=
-                                0
-                            ? null
-                            : MyButtonWidget(
-                                title: 'Add',
-                                width: MediaQuery.of(context).size.width * .5,
-                                borderRadius: BorderRadius.circular(30),
-                                paddingVertical: 15,
-                                onTap: _amountController.text.isEmpty ||
-                                        _amountController.text
-                                            .contains("-") ||
-                                        double.parse(
-                                                _amountController.text) <=
-                                            0 ||
-                                        _category == null ||
-                                        _account == null
-                                    ? null
-                                    : _buildAddTransaction),
-                      ),
+                        );
+                      },
                     );
                   },
                 );
@@ -298,13 +324,13 @@ class AddTransactionPageState extends State<AddTransactionPage>
       color: _category!.color,
     );
 
-    context.read<AccountBloc>().add(AddTransaction(
+    accountBloc.add(AddTransaction(
         accountEntity: _account!,
         transactionEntity: transaction,
         isIncome: _isIncome,
         amount: _amount));
 
-    context.read<MainTransactionBloc>().add(CreateMainTransaction(
+    mainTransactionBloc.add(CreateMainTransaction(
         mainTransaction: MainTransactionEntity(
             id: "",
             accountId: _account!.id,
@@ -315,10 +341,10 @@ class AddTransactionPageState extends State<AddTransactionPage>
             isIncome: _isIncome,
             dateTime: _selectedDate)));
 
-    BlocProvider.of<MainTimePeriodBloc>(context).add(SetDayPeriod(
+    mainTimePeriodBloc.add(SetDayPeriod(
       selectedDate: _selectedDate,
     ));
-    context.read<PeriodCubit>().changePeriod(Period.day);
+    periodCubit.changePeriod(Period.day);
 
     Navigator.pushNamed(context, PageConst.homePage,
         arguments: HomePage(
@@ -368,8 +394,8 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                 ? Theme.of(context).primaryColor
                                 : Colors.white,
                           ),
-                          padding: EdgeInsets.all(5),
-                          margin: EdgeInsets.only(right: 10),
+                          padding: const EdgeInsets.all(5),
+                          margin: const EdgeInsets.only(right: 10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -400,13 +426,14 @@ class AddTransactionPageState extends State<AddTransactionPage>
                       )),
             ],
           ),
-          IconButton(onPressed: () {}, icon: Icon(Icons.calendar_month))
+          IconButton(onPressed: () {}, icon: const Icon(Icons.calendar_month))
         ],
       ),
     );
   }
 
-  GridView _buildGridView(List<CategoryEntity> categories) {
+  GridView _buildGridView(
+      List<CategoryEntity> categories, CategoryEntity? selectedCategory) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -446,15 +473,17 @@ class AddTransactionPageState extends State<AddTransactionPage>
           return GestureDetector(
             onTap: () {
               setState(() {
-                _selectedCategoryIndex = index;
-                _category = categories[index];
+                // _category = categories[index];
+                context
+                    .read<SelectedCategoryCubit>()
+                    .changeCategory(categoryEntity);
               });
             },
-            child: index == _selectedCategoryIndex
+            child: _category == categoryEntity
                 ? Column(
                     children: [
                       Container(
-                        padding: EdgeInsets.all(2),
+                        padding: const EdgeInsets.all(2),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5),
                           color: categoryEntity.color,
@@ -501,6 +530,12 @@ class AddTransactionPageState extends State<AddTransactionPage>
   AppBar _buildAppBar() {
     return AppBar(
       centerTitle: true,
+      leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+            selectedCategoryCubit.changeCategory(null);
+          },
+          icon: const Icon(Icons.arrow_back)),
       title: const Text("Add Transactions"),
       bottom: TabBar(
         controller: _tabController,
@@ -518,11 +553,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
               break;
             default:
           }
-          setState(() {
-            // Unselect category
-            _selectedCategoryIndex = null;
-            _category = null;
-          });
+          selectedCategoryCubit.changeCategory(null);
         },
         padding: const EdgeInsets.symmetric(horizontal: 20),
         indicatorPadding: const EdgeInsets.only(bottom: 5),

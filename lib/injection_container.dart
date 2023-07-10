@@ -15,11 +15,13 @@ import 'package:coin_saver/features/domain/usecases/main_transaction/update_main
 import 'package:coin_saver/features/domain/usecases/time_period/fetch_transactions_for_day_usecase.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
-import 'package:coin_saver/features/presentation/bloc/cubit/category/selected_category_cubit.dart';
+import 'package:coin_saver/features/presentation/bloc/cubit/selected_category/selected_category_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
+import 'package:coin_saver/features/presentation/bloc/cubit/selected_icon/selected_icon_cubit.dart';
+import 'package:coin_saver/features/presentation/bloc/cubit/time_period/time_period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
-import 'package:coin_saver/features/presentation/bloc/time_period/time_period_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:uuid/uuid.dart';
 
 import 'features/domain/usecases/category/create_category_usecase.dart';
 import 'features/domain/usecases/category/delete_category_usecase.dart';
@@ -35,118 +37,141 @@ import 'features/domain/usecases/main_transaction/delete_main_transaction_usecas
 import 'features/domain/usecases/time_period/fetch_transactions_for_month_usecase.dart';
 import 'features/domain/usecases/time_period/fetch_transactions_for_week_usecase.dart';
 import 'features/domain/usecases/time_period/fetch_transactions_for_year_usecase.dart';
+import 'features/presentation/bloc/cubit/main_colors/main_colors_cubit.dart';
+import 'features/presentation/bloc/cubit/selected_color/selected_color_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_date/selected_date_cubit.dart';
 import 'features/presentation/bloc/main_time_period/main_time_period_bloc.dart';
 
-final GetIt sl = GetIt.instance;
+final GetIt getIt = GetIt.instance;
 
 Future<void> init() async {
   // * Blocs
-  sl.registerFactory(() => AccountBloc(
-      createAccountUsecase: sl.call(),
-      getAccountsUsecase: sl.call(),
-      updateAccountUsecase: sl.call(),
-      setPrimaryAccountUsecase: sl.call(),
-      addTransactionUsecase: sl.call(),
-      deleteAccountUsecase: sl.call()));
+  getIt.registerFactory(() => AccountBloc(
+      createAccountUsecase: getIt.call(),
+      getAccountsUsecase: getIt.call(),
+      updateAccountUsecase: getIt.call(),
+      setPrimaryAccountUsecase: getIt.call(),
+      addTransactionUsecase: getIt.call(),
+      deleteAccountUsecase: getIt.call()));
 
-  sl.registerFactory(
+  getIt.registerFactory(
     () => MainTransactionBloc(
-      getMainTransactionsUsecase: sl.call(),
-      createMainTransactionUsecase: sl.call(),
-      updateMainTransactionUsecase: sl.call(),
-      deleteMainTransactionUsecase: sl.call(),
+      getMainTransactionsUsecase: getIt.call(),
+      createMainTransactionUsecase: getIt.call(),
+      updateMainTransactionUsecase: getIt.call(),
+      deleteMainTransactionUsecase: getIt.call(),
     ),
   );
-  sl.registerFactory(
+  getIt.registerFactory(
     () => CategoryBloc(
-        getCategoriesUsecase: sl.call(),
-        createCategoryUsecase: sl.call(),
-        updateCategoryUsecase: sl.call(),
-        deleteCategoryUsecase: sl.call()),
+        getCategoriesUsecase: getIt.call(),
+        createCategoryUsecase: getIt.call(),
+        updateCategoryUsecase: getIt.call(),
+        deleteCategoryUsecase: getIt.call()),
   );
-  sl.registerFactory(
-    () => TimePeriodBloc(
-      fetchTransactionsForDayUsecase: sl.call(),
-      fetchTransactionsForWeekUsecase: sl.call(),
-      fetchTransactionsForMonthUsecase: sl.call(),
-      fetchTransactionsForYearUsecase: sl.call(),
-    ),
-  );
-  sl.registerFactory(
+
+  getIt.registerFactory(
     () => MainTimePeriodBloc(
-      fetchMainTransactionsForDayUsecase: sl.call(),
-      fetchMainTransactionsForWeekUsecase: sl.call(),
-      fetchMainTransactionsForMonthUsecase: sl.call(),
-      fetchMainTransactionsForYearUsecase: sl.call(),
-      getMainTransactionsForTodayUsecase: sl.call(),
-      getMainTransactionsUsecase: sl.call(),
+      fetchMainTransactionsForDayUsecase: getIt.call(),
+      fetchMainTransactionsForWeekUsecase: getIt.call(),
+      fetchMainTransactionsForMonthUsecase: getIt.call(),
+      fetchMainTransactionsForYearUsecase: getIt.call(),
+      getMainTransactionsForTodayUsecase: getIt.call(),
+      getMainTransactionsUsecase: getIt.call(),
     ),
   );
-  sl.registerFactory(
+  getIt.registerFactory(
+    () => TimePeriodCubit(
+      fetchTransactionsForDayUsecase: getIt.call(),
+      fetchTransactionsForWeekUsecase: getIt.call(),
+      fetchTransactionsForMonthUsecase: getIt.call(),
+      fetchTransactionsForYearUsecase: getIt.call(),
+    ),
+  );
+  getIt.registerFactory(
     () => PeriodCubit(),
   );
-  sl.registerFactory(
+  getIt.registerFactory(
     () => SelectedDateCubit(),
   );
-  sl.registerFactory(
+  getIt.registerFactory(
     () => SelectedCategoryCubit(),
+  );
+  getIt.registerFactory(
+    () => SelectedIconCubit(),
+  );
+  getIt.registerFactory(
+    () => SelectedColorCubit(),
+  );
+  getIt.registerFactory(
+    () => MainColorsCubit(),
   );
 
 // * Account usecases
-  sl.registerLazySingleton(() => CreateAccountUsecase(repository: sl.call()));
-  sl.registerLazySingleton(() => GetAccountsUsecase(repository: sl.call()));
-  sl.registerLazySingleton(() => UpdateAccountUsecase(repository: sl.call()));
-  sl.registerLazySingleton(() => SelectAccountUsecase(repository: sl.call()));
-  sl.registerLazySingleton(() => DeleteAccountUsecase(repository: sl.call()));
-  sl.registerLazySingleton(() => AddTransactionUsecase(repository: sl.call()));
-  sl.registerLazySingleton(
-      () => SetPrimaryAccountUsecase(repository: sl.call()));
-  sl.registerLazySingleton(() => InitHiveUsecase(repository: sl.call()));
+  getIt.registerLazySingleton(
+      () => CreateAccountUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => GetAccountsUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => UpdateAccountUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => SelectAccountUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => DeleteAccountUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => AddTransactionUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => SetPrimaryAccountUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(() => InitHiveUsecase(repository: getIt.call()));
 
 // * MainTransaction usecases
-  sl.registerLazySingleton(
-      () => GetMainTransactionsUsecase(repository: sl.call()));
-  sl.registerLazySingleton(
-      () => UpdateMainTransactionUsecase(repository: sl.call()));
-  sl.registerLazySingleton(
-      () => CreateMainTransactionUsecase(repository: sl.call()));
-  sl.registerLazySingleton(
-      () => DeleteMainTransactionUsecase(repository: sl.call()));
+  getIt.registerLazySingleton(
+      () => GetMainTransactionsUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => UpdateMainTransactionUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => CreateMainTransactionUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => DeleteMainTransactionUsecase(repository: getIt.call()));
 
 // * Category usecases
-  sl.registerLazySingleton(() => GetCategoriesUsecase(repository: sl.call()));
-  sl.registerLazySingleton(() => UpdateCategoryUsecase(repository: sl.call()));
-  sl.registerLazySingleton(() => CreateCategoryUsecase(repository: sl.call()));
-  sl.registerLazySingleton(() => DeleteCategoryUsecase(repository: sl.call()));
+  getIt.registerLazySingleton(
+      () => GetCategoriesUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => UpdateCategoryUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => CreateCategoryUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => DeleteCategoryUsecase(repository: getIt.call()));
 
 // * Currency usecases
 
 // * Time Period usecases
-  sl.registerLazySingleton(
-      () => FetchTransactionsForDayUsecase(repository: sl.call()));
-  sl.registerLazySingleton(
-      () => FetchTransactionsForWeekUsecase(repository: sl.call()));
-  sl.registerLazySingleton(
-      () => FetchTransactionsForMonthUsecase(repository: sl.call()));
-  sl.registerLazySingleton(
-      () => FetchTransactionsForYearUsecase(repository: sl.call()));
+  getIt.registerLazySingleton(
+      () => FetchTransactionsForDayUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => FetchTransactionsForWeekUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => FetchTransactionsForMonthUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => FetchTransactionsForYearUsecase(repository: getIt.call()));
 
 // * Main Time Period usecases
-  sl.registerLazySingleton(
-      () => GetMainTransactionsForTodayUsecase(repository: sl.call()));
-  sl.registerLazySingleton(
-      () => FetchMainTransactionsForDayUsecase(repository: sl.call()));
-  sl.registerLazySingleton(
-      () => FetchMainTransactionsForWeekUsecase(repository: sl.call()));
-  sl.registerLazySingleton(
-      () => FetchMainTransactionsForMonthUsecase(repository: sl.call()));
-  sl.registerLazySingleton(
-      () => FetchMainTransactionsForYearUsecase(repository: sl.call()));
+  getIt.registerLazySingleton(
+      () => GetMainTransactionsForTodayUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => FetchMainTransactionsForDayUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => FetchMainTransactionsForWeekUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => FetchMainTransactionsForMonthUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => FetchMainTransactionsForYearUsecase(repository: getIt.call()));
 
 // * Hive repositories
-  sl.registerLazySingleton<BaseHiveRepository>(
-      () => HiveRepository(hiveLocalDataSource: sl.call()));
-  sl.registerLazySingleton<BaseHiveLocalDataSource>(
+  getIt.registerLazySingleton<BaseHiveRepository>(
+      () => HiveRepository(hiveLocalDataSource: getIt.call()));
+  getIt.registerLazySingleton<BaseHiveLocalDataSource>(
       () => HiveLocalDataSource());
+  getIt.registerLazySingleton(() => const Uuid());
 }

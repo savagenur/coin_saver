@@ -65,11 +65,8 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   FutureOr<void> _onAddTransaction(
       AddTransaction event, Emitter<AccountState> emit) async {
     await setPrimaryAccountUsecase.call(event.accountEntity.id);
-    await addTransactionUsecase.call(
-        event.accountEntity,
-        event.transactionEntity,
-        event.isIncome,
-        event.amount);
+    await addTransactionUsecase.call(event.accountEntity,
+        event.transactionEntity, event.isIncome, event.amount);
 
     final accounts = await getAccountsUsecase.call();
 

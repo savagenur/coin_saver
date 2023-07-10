@@ -23,8 +23,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     required this.getCategoriesUsecase,
     required this.createCategoryUsecase,
     required this.updateCategoryUsecase,
-    required this.deleteCategoryUsecase,}
-  ) : super(CategoryInitial()) {
+    required this.deleteCategoryUsecase,
+  }) : super(CategoryInitial()) {
     on<GetCategories>(_onGetCategories);
     on<CreateCategory>(_onCreateCategory);
     on<UpdateCategory>(_onUpdateCategory);
@@ -52,11 +52,12 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     final List<CategoryEntity> categories = await getCategoriesUsecase.call();
     emit(CategoryLoading());
     emit(CategoryLoaded(categories: categories));
+    
   }
 
   FutureOr<void> _onDeleteCategory(
       DeleteCategory event, Emitter<CategoryState> emit) async {
-    await deleteCategoryUsecase.call(event.index);
+    await deleteCategoryUsecase.call(event.categoryId);
     final List<CategoryEntity> categories = await getCategoriesUsecase.call();
     emit(CategoryLoading());
     emit(CategoryLoaded(categories: categories));

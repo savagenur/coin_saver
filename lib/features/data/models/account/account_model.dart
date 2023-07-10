@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+
 import 'package:coin_saver/features/data/models/transaction/transaction_model.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
-import 'package:hive/hive.dart';
 
 import '../../../domain/entities/account/account_entity.dart';
 
@@ -51,12 +53,14 @@ class AccountModel extends AccountEntity {
   final String? monthlyStatement;
   @HiveField(20)
   final PaymentType? paymentType;
+  @HiveField(21)
+  final IconData iconData;
 
   AccountModel({
     required this.id,
     required this.name,
+    required this.iconData,
     required this.type,
-    this.paymentType = PaymentType.cash,
     required this.balance,
     required this.currency,
     required this.isPrimary,
@@ -74,35 +78,38 @@ class AccountModel extends AccountEntity {
     this.notes,
     required this.transactionHistory,
     this.monthlyStatement,
+    this.paymentType = PaymentType.cash,
   }) : super(
-          id: id,
-          name: name,
-          type: type,
-          paymentType: paymentType,
-          balance: balance,
-          currency: currency,
-          isPrimary: isPrimary,
-          isActive: isActive,
-          accountNumber: accountNumber,
-          institution: institution,
-          ownershipType: ownershipType,
-          openingDate: openingDate,
-          closingDate: closingDate,
-          interestRate: interestRate,
-          creditLimit: creditLimit,
-          dueDate: dueDate,
-          minimumBalance: minimumBalance,
-          linkedAccounts: linkedAccounts,
-          notes: notes,
-          transactionHistory:
-              transactionHistory.map((model) => model.toEntity()).toList(),
-          monthlyStatement: monthlyStatement,
-        );
+            id: id,
+            name: name,
+            iconData: iconData,
+            type: type,
+            paymentType: paymentType,
+            balance: balance,
+            currency: currency,
+            isPrimary: isPrimary,
+            isActive: isActive,
+            accountNumber: accountNumber,
+            institution: institution,
+            ownershipType: ownershipType,
+            openingDate: openingDate,
+            closingDate: closingDate,
+            interestRate: interestRate,
+            creditLimit: creditLimit,
+            dueDate: dueDate,
+            minimumBalance: minimumBalance,
+            linkedAccounts: linkedAccounts,
+            notes: notes,
+            transactionHistory:
+                transactionHistory.map((model) => model.toEntity()).toList(),
+            monthlyStatement: monthlyStatement,
+          );
 
   @override
   AccountModel copyWith({
     String? id,
     String? name,
+    IconData? iconData,
     AccountType? type,
     PaymentType? paymentType,
     double? balance,
@@ -126,6 +133,7 @@ class AccountModel extends AccountEntity {
     return AccountModel(
       id: id ?? this.id,
       name: name ?? this.name,
+      iconData: iconData ?? this.iconData,
       type: type ?? this.type,
       paymentType: paymentType ?? this.paymentType,
       balance: balance ?? this.balance,

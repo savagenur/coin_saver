@@ -21,12 +21,12 @@ class CreateCategory extends CategoryEvent {
   List<Object> get props => [category];
 }
 class DeleteCategory extends CategoryEvent {
-  final int index;
+  final String categoryId;
   const DeleteCategory({
-    required this.index,
+    required this.categoryId,
   });
   @override
-  List<Object> get props => [index];
+  List<Object> get props => [categoryId];
 }
 
 class UpdateCategory extends CategoryEvent {

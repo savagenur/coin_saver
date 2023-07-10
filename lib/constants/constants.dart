@@ -26,20 +26,21 @@ Widget sizeHor(double width) {
 }
 
 class PageConst {
-  static const String homePage = "homePage";
-  static const String addTransactionPage = "addTransactionPage";
-  static const String catalogIconsPage = "catalogIconsPage";
-  static const String colorsPage = "colorsPage";
-  static const String historyPage = "historyPage";
-  static const String addCategoryPage = "addCategoryPage";
-  static const String createCategoryPage = "createCategoryPage";
-  static const String transactionsPage = "transactionsPage";
-  static const String mainTransactionPage = "mainTransactionPage";
-  static const String transactionDetailPage = "transactionDetailPage";
+  static const String homePage = "/homePage";
+  static const String addTransactionPage = "/addTransactionPage";
+  static const String catalogIconsPage = "/catalogIconsPage";
+  static const String colorsPage = "/colorsPage";
+  static const String historyPage = "/historyPage";
+  static const String addCategoryPage = "/addCategoryPage";
+  static const String createCategoryPage = "/createCategoryPage";
+  static const String transactionsPage = "/transactionsPage";
+  static const String mainTransactionPage = "/mainTransactionPage";
+  static const String transactionDetailPage = "/transactionDetailPage";
 }
 
 class BoxConst {
   static const String accounts = "accounts";
+  static const String colors = "colors";
   static const String currency = "currency";
   static const String categories = "categories";
   static const String mainTransactions = "mainTransactions";

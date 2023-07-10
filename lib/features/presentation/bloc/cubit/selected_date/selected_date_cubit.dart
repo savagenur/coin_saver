@@ -1,9 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
 
 import '../../../../../constants/period_enum.dart';
 
-part 'selected_date_state.dart';
 
 class SelectedDateCubit extends Cubit<DateTime> {
   SelectedDateCubit() : super(DateTime.now());

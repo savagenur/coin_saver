@@ -19,8 +19,8 @@ class AccountModelAdapter extends TypeAdapter<AccountModel> {
     return AccountModel(
       id: fields[0] as String,
       name: fields[1] as String,
+      iconData: fields[21] as IconData,
       type: fields[2] as AccountType,
-      paymentType: fields[20] as PaymentType?,
       balance: fields[3] as double,
       currency: fields[4] as CurrencyEntity,
       isPrimary: fields[5] as bool,
@@ -38,13 +38,14 @@ class AccountModelAdapter extends TypeAdapter<AccountModel> {
       notes: fields[17] as String?,
       transactionHistory: (fields[18] as List).cast<TransactionModel>(),
       monthlyStatement: fields[19] as String?,
+      paymentType: fields[20] as PaymentType?,
     );
   }
 
   @override
   void write(BinaryWriter writer, AccountModel obj) {
     writer
-      ..writeByte(21)
+      ..writeByte(22)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -86,7 +87,9 @@ class AccountModelAdapter extends TypeAdapter<AccountModel> {
       ..writeByte(19)
       ..write(obj.monthlyStatement)
       ..writeByte(20)
-      ..write(obj.paymentType);
+      ..write(obj.paymentType)
+      ..writeByte(21)
+      ..write(obj.iconData);
   }
 
   @override

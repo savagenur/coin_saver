@@ -1,3 +1,4 @@
+import 'package:coin_saver/constants/colors.dart';
 import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/constants/main_categories.dart';
 import 'package:coin_saver/features/data/datasources/local_datasource/base_hive_local_data_source.dart';
@@ -11,6 +12,7 @@ import 'package:coin_saver/features/domain/entities/category/category_entity.dar
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:coin_saver/features/domain/entities/main_transaction/main_transaction_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
+import 'package:coin_saver/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
@@ -23,7 +25,7 @@ import '../../models/ownership_type.dart';
 import '../../models/payment_type.dart';
 
 class HiveLocalDataSource implements BaseHiveLocalDataSource {
-  final Uuid uuid = const Uuid();
+  final Uuid uuid = getIt<Uuid>();
 
   // * Initialization Hive
   @override
@@ -44,21 +46,28 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     Box categoriesBox = await Hive.openBox<CategoryModel>(BoxConst.categories);
     Box mainTransactionBox =
         await Hive.openBox<MainTransactionModel>(BoxConst.mainTransactions);
-    print(mainTransactionBox.length);
-    // await currencyBox.clear();
-    // await accountsBox.clear();
-    // await mainTransactionBox.clear();
+    Box colorsBox = await Hive.openBox<Color>(BoxConst.colors);
+
     if (currencyBox.isEmpty) {
+      await colorsBox.addAll(mainColors);
       await currencyBox.put(
           0,
           CurrencyModel(
               code: "USD", name: "United States Dollar", symbol: "\$"));
-      await categoriesBox.addAll(mainCategories);
+      // MainCategories
+      Map<String, CategoryModel> categoryMap = {};
+      for (var category in mainCategories) {
+        categoryMap[category.id] = category;
+      }
+      await categoriesBox.putAll(categoryMap);
+
+      // Accounts
       await accountsBox.put(
           "total",
           AccountModel(
               id: "total",
               name: "Total",
+              iconData: Icons.monetization_on,
               type: AccountType.cash,
               balance: 0,
               currency: currencyBox.getAt(0),
@@ -72,6 +81,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
           AccountModel(
               id: "main",
               name: "Main",
+              iconData: Icons.wallet,
               type: AccountType.cash,
               balance: 0,
               currency: currencyBox.getAt(0),
@@ -95,16 +105,19 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
   Future<void> setPrimaryAccount(String accountId) async {
     final Box accountsBox = await Hive.openBox<AccountModel>(BoxConst.accounts);
     final accounts = accountsBox.values.toList() as List<AccountModel>;
+    final Map<String, AccountModel> map = {};
     final primaryAccount = accounts
-        .firstWhere((account) => account.isPrimary)
+        .firstWhere(
+          (account) => account.isPrimary,
+        )
         .copyWith(isPrimary: false);
-
-    await accountsBox.put(primaryAccount.id, primaryAccount);
 
     final desiredAccount = accounts
         .firstWhere((account) => account.id == accountId)
         .copyWith(isPrimary: true);
-    await accountsBox.put(desiredAccount.id, desiredAccount);
+    map[primaryAccount.id] = primaryAccount;
+    map[desiredAccount.id] = desiredAccount;
+    await accountsBox.putAll(map);
   }
 
   @override
@@ -115,9 +128,9 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     required double amount,
   }) async {
     final Box accountsBox = await Hive.openBox<AccountModel>(BoxConst.accounts);
-    final String id = uuid.v1();
+    
     TransactionModel transaction = TransactionModel(
-      id: id,
+      id: transactionEntity.id,
       date: transactionEntity.date,
       amount: amount,
       category: transactionEntity.category,
@@ -129,12 +142,13 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     AccountModel account = AccountModel(
       id: accountEntity.id,
       name: accountEntity.name,
+      iconData: accountEntity.iconData,
       type: accountEntity.type,
       balance: isIncome
           ? accountEntity.balance + amount
           : accountEntity.balance - amount,
       currency: accountEntity.currency,
-      isPrimary: accountEntity.isPrimary,
+      isPrimary: true,
       isActive: accountEntity.isActive,
       ownershipType: accountEntity.ownershipType,
       openingDate: accountEntity.openingDate,
@@ -143,18 +157,18 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
           .toList()
         ..add(transaction),
     );
-    accountsBox.put(accountEntity.id, account);
+    await accountsBox.put(accountEntity.id, account);
   }
 
   @override
   Future<void> createAccount(AccountEntity accountEntity) async {
-    String id = uuid.v1();
     Box box = await Hive.openBox<AccountModel>(BoxConst.accounts);
     await box.put(
-      id,
+      accountEntity.id,
       AccountModel(
-          id: id,
+          id: accountEntity.id,
           name: accountEntity.name,
+      iconData: accountEntity.iconData,
           type: accountEntity.type,
           balance: accountEntity.balance,
           currency: accountEntity.currency,
@@ -189,6 +203,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         AccountModel(
             id: accountEntity.id,
             name: accountEntity.name,
+            iconData: accountEntity.iconData,
             type: accountEntity.type,
             balance: accountEntity.balance,
             currency: accountEntity.currency,
@@ -212,6 +227,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         accountModels.add(AccountModel(
             id: account.id,
             name: account.name,
+      iconData: account.iconData,
             type: account.type,
             balance: account.balance,
             currency: account.currency,
@@ -226,6 +242,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         accountModels.add(AccountModel(
             id: account.id,
             name: account.name,
+      iconData: account.iconData,
             type: account.type,
             balance: account.balance,
             currency: account.currency,
@@ -282,7 +299,6 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     List<MainTransactionModel> mainTransactions =
         box.values.toList() as List<MainTransactionModel>;
     // name + accountId + dateTime = id
-    final String id = uuid.v1();
 
     List mainTransactionList = mainTransactions
         .where(
@@ -295,9 +311,9 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         .toList();
     if (mainTransactionList.isEmpty) {
       await box.put(
-        id,
+        mainTransactionEntity.id,
         MainTransactionModel(
-            id: id,
+            id: mainTransactionEntity.id,
             accountId: mainTransactionEntity.accountId,
             name: mainTransactionEntity.name,
             iconData: mainTransactionEntity.iconData,
@@ -362,27 +378,21 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
   @override
   Future<void> createCategory(CategoryEntity categoryEntity) async {
     Box box = await Hive.openBox<CategoryModel>(BoxConst.categories);
-    final String id = uuid.v1();
-    final categories = box.values.toList().cast<CategoryModel>();
-    categories.insert(
-        0,
-        CategoryModel(
-          id: id,
-          name: categoryEntity.name,
-          iconData: categoryEntity.iconData,
-          color: categoryEntity.color,
-          isIncome: categoryEntity.isIncome,
-          dateTime: categoryEntity.dateTime,
-        ));
-
-    await box.clear();
-    await box.addAll(categories);
+    CategoryModel categoryModel = CategoryModel(
+      id: categoryEntity.id,
+      name: categoryEntity.name,
+      iconData: categoryEntity.iconData,
+      color: categoryEntity.color,
+      isIncome: categoryEntity.isIncome,
+      dateTime: categoryEntity.dateTime,
+    );
+    await box.put(categoryEntity.id, categoryModel);
   }
 
   @override
-  Future<void> deleteCategory(int index) async {
+  Future<void> deleteCategory(String categoryId) async {
     Box box = await Hive.openBox<CategoryModel>(BoxConst.categories);
-    await box.deleteAt(index);
+    await box.delete(categoryId);
   }
 
   @override
@@ -396,17 +406,18 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
   @override
   Future<void> updateCategory(int index, CategoryEntity categoryEntity) async {
     Box box = await Hive.openBox<CategoryModel>(BoxConst.categories);
-    CategoryModel oldCategory = await box.getAt(index);
-    await box.putAt(
-      index,
-      CategoryModel(
-        id: oldCategory.id,
-        name: categoryEntity.name,
-        iconData: categoryEntity.iconData,
-        color: categoryEntity.color,
-        isIncome: categoryEntity.isIncome,
-        dateTime: categoryEntity.dateTime,
-      ),
+    CategoryModel categoryModel = CategoryModel(
+      id: categoryEntity.id,
+      name: categoryEntity.name,
+      iconData: categoryEntity.iconData,
+      color: categoryEntity.color,
+      isIncome: categoryEntity.isIncome,
+      dateTime: categoryEntity.dateTime,
+    );
+
+    await box.put(
+      categoryEntity.id,
+      categoryModel,
     );
   }
 
@@ -502,12 +513,12 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
   @override
   List<TransactionEntity> fetchTransactionsForMonth(
       DateTime selectedDate, List<TransactionEntity> totalTransactions) {
-    final startOfMonth = DateTime(selectedDate.year, selectedDate.month);
-    final endOfMonth = DateTime(selectedDate.year, selectedDate.month + 1)
+    final startOfMonth = DateTime(selectedDate.year, selectedDate.month)
         .subtract(const Duration(days: 1));
+    final endOfMonth = DateTime(selectedDate.year, selectedDate.month + 1);
     List<TransactionEntity> monthTransactions =
-        totalTransactions.where((transaction) {
-      DateTime transactionDate = transaction.date;
+        totalTransactions.where((mainTransaction) {
+      DateTime transactionDate = mainTransaction.date;
       return transactionDate.isAfter(startOfMonth) &&
           transactionDate.isBefore(endOfMonth);
     }).toList();
@@ -518,15 +529,15 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
   @override
   List<TransactionEntity> fetchTransactionsForWeek(
       DateTime selectedDate, List<TransactionEntity> totalTransactions) {
-    final startOfWeek =
+   final startOfWeek =
         selectedDate.subtract(Duration(days: selectedDate.weekday - 1));
     final endOfWeek = startOfWeek.add(const Duration(days: 6));
     List<TransactionEntity> weekTransactions =
-        totalTransactions.where((transaction) {
-      DateTime transactionDate = transaction.date;
-      return transactionDate
+        totalTransactions.where((mainTransaction) {
+      DateTime mainTransactionDate = mainTransaction.date;
+      return mainTransactionDate
               .isAfter(startOfWeek.subtract(const Duration(days: 1))) &&
-          transactionDate.isBefore(endOfWeek.add(const Duration(days: 1)));
+          mainTransactionDate.isBefore(endOfWeek.add(const Duration(days: 1)));
     }).toList();
 
     return weekTransactions;
@@ -535,7 +546,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
   @override
   List<TransactionEntity> fetchTransactionsForYear(
       DateTime selectedDate, List<TransactionEntity> totalTransactions) {
-    List<TransactionEntity> yearTransactions =
+     List<TransactionEntity> yearTransactions =
         totalTransactions.where((transaction) {
       int transactionYear = transaction.date.year;
       return transactionYear == selectedDate.year;

@@ -16,29 +16,48 @@ class AppRoute {
     var args = settings.arguments;
     switch (settings.name) {
       case PageConst.homePage:
-      args = args as HomePage;
+        args = args as HomePage;
 
-        return _routeBuilder(HomePage(dateTime: args.dateTime,isIncome: args.isIncome,));
+        return _routeBuilder(HomePage(
+          dateTime: args.dateTime,
+          isIncome: args.isIncome,
+        ));
       case PageConst.addTransactionPage:
-      args = args as AddTransactionPage;
+        args = args as AddTransactionPage;
 
-        return _routeBuilder(AddTransactionPage(isIncome: args.isIncome, account: args.account, selectedDate: args.selectedDate,));
+        return _routeBuilder(AddTransactionPage(
+          isIncome: args.isIncome,
+          account: args.account,
+          selectedDate: args.selectedDate,
+        ));
       case PageConst.catalogIconsPage:
         return _routeBuilder(CatalogIconsPage());
       case PageConst.colorsPage:
         return _routeBuilder(ColorsPage());
       case PageConst.createCategoryPage:
-        return _routeBuilder(CreateCategoryPage());
+        args = args as CreateCategoryPage;
+
+        return _routeBuilder(CreateCategoryPage(
+          isIncome: args.isIncome,
+        ));
       case PageConst.transactionsPage:
-      args = args as TransactionsPage;
-        return _routeBuilder(TransactionsPage(account: args.account,));
+        args = args as TransactionsPage;
+        return _routeBuilder(TransactionsPage(
+          account: args.account,
+        ));
       case PageConst.mainTransactionPage:
-        return _routeBuilder(MainTransactionPage());
+        args = args as MainTransactionPage;
+
+        return _routeBuilder(MainTransactionPage(
+          mainTransaction: args.mainTransaction,
+        ));
       case PageConst.transactionDetailPage:
         return _routeBuilder(TransactionDetailPage());
       case PageConst.addCategoryPage:
         args = args as AddCategoryPage;
-        return _routeBuilder(AddCategoryPage(isIncome: args.isIncome, categories: args.categories,));
+        return _routeBuilder(AddCategoryPage(
+          isIncome: args.isIncome,
+        ));
       default:
         return _routeBuilder(const NotFoundPage());
     }

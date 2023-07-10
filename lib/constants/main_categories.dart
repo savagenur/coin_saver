@@ -1,11 +1,12 @@
 // Main Categories
+import 'package:coin_saver/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 import '../features/data/models/category/category_model.dart';
 
-const Uuid uuid = Uuid();
+ Uuid uuid = getIt<Uuid>();
 List<CategoryModel> mainCategories = [
   // EXPENSES
   CategoryModel(

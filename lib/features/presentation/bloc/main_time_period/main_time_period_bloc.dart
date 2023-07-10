@@ -43,7 +43,7 @@ class MainTimePeriodBloc
     final mainTransactions = await getMainTransactionsUsecase.call();
     emit(
       MainTimePeriodLoaded(
-        selectedPeriod: selectedDate,
+        selectedDate: selectedDate,
         transactions: fetchMainTransactionsForDayUsecase.call(
           selectedDate,
           mainTransactions,
@@ -56,7 +56,7 @@ class MainTimePeriodBloc
       GetTodayPeriod event, Emitter<MainTimePeriodState> emit) async {
     emit(
       MainTimePeriodLoaded(
-        selectedPeriod: DateTime.now(),
+        selectedDate: DateTime.now(),
         transactions: getMainTransactionsForTodayUsecase.call(),
       ),
     );
@@ -67,6 +67,43 @@ class MainTimePeriodBloc
     final selectedDate = event.selectedDate;
     final transactions = await getMainTransactionsUsecase.call();
     final totalTransactions = fetchMainTransactionsForWeekUsecase.call(
+      selectedDate,
+      transactions,
+    );
+    List<MainTransactionEntity> summedTransactions = [];
+
+    for (var transaction in totalTransactions) {
+      final existingTransaction = summedTransactions.firstWhere(
+          (t) =>
+              t.name == transaction.name &&
+              t.accountId == transaction.accountId,
+          orElse: () => transaction.copyWith(name: "nullNoneEmpty"));
+      if (existingTransaction.name != "nullNoneEmpty") {
+        double amount = existingTransaction.totalAmount;
+        final double totalAmount = amount + transaction.totalAmount;
+        summedTransactions.remove(existingTransaction);
+        summedTransactions
+            .add(existingTransaction.copyWith(totalAmount: totalAmount));
+      } else {
+        summedTransactions.add(
+          transaction,
+        );
+      }
+    }
+
+    emit(
+      MainTimePeriodLoaded(
+        selectedDate: event.selectedDate,
+        transactions: summedTransactions,
+      ),
+    );
+  }
+
+  void _onSetMonthPeriod(
+      SetMonthPeriod event, Emitter<MainTimePeriodState> emit) async {
+    final selectedDate = event.selectedDate;
+    final transactions = await getMainTransactionsUsecase.call();
+    final totalTransactions = fetchMainTransactionsForMonthUsecase.call(
       selectedDate,
       transactions,
     );
@@ -93,43 +130,7 @@ class MainTimePeriodBloc
 
     emit(
       MainTimePeriodLoaded(
-        selectedPeriod: event.selectedDate,
-        transactions: summedTransactions,
-      ),
-    );
-  }
-
-  void _onSetMonthPeriod(
-      SetMonthPeriod event, Emitter<MainTimePeriodState> emit) async {
-    final selectedDate = event.selectedDate;
-    final transactions = await getMainTransactionsUsecase.call();
-    final totalTransactions = fetchMainTransactionsForMonthUsecase.call(
-      selectedDate,
-      transactions,
-    );
-    List<MainTransactionEntity> summedTransactions = [];
-
-    for (var transaction in totalTransactions) {
-      final existingTransaction = summedTransactions.firstWhere(
-          (t) => t.name == transaction.name &&
-              t.accountId == transaction.accountId,
-          orElse: () => transaction.copyWith(name: "null"));
-      if (existingTransaction.name != "null") {
-        double amount = existingTransaction.totalAmount;
-        final double totalAmount = amount + transaction.totalAmount;
-        summedTransactions.remove(existingTransaction);
-        summedTransactions
-            .add(existingTransaction.copyWith(totalAmount: totalAmount));
-      } else {
-        summedTransactions.add(
-          transaction,
-        );
-      }
-    }
-
-    emit(
-      MainTimePeriodLoaded(
-        selectedPeriod: event.selectedDate,
+        selectedDate: event.selectedDate,
         transactions: summedTransactions,
       ),
     );
@@ -147,8 +148,10 @@ class MainTimePeriodBloc
 
     for (var transaction in totalTransactions) {
       final MainTransactionEntity existingTransaction =
-          summedTransactions.firstWhere((t) => t.name == transaction.name &&
-              t.accountId == transaction.accountId,
+          summedTransactions.firstWhere(
+              (t) =>
+                  t.name == transaction.name &&
+                  t.accountId == transaction.accountId,
               orElse: () => transaction.copyWith(name: "null"));
       if (existingTransaction.name != "null") {
         double amount = existingTransaction.totalAmount;
@@ -165,7 +168,7 @@ class MainTimePeriodBloc
 
     emit(
       MainTimePeriodLoaded(
-        selectedPeriod: event.selectedDate,
+        selectedDate: event.selectedDate,
         transactions: summedTransactions,
       ),
     );

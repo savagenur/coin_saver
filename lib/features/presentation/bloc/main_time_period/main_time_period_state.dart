@@ -12,15 +12,15 @@ abstract class MainTimePeriodState extends Equatable {
 }
 
 class MainTimePeriodLoaded extends MainTimePeriodState {
-  final DateTime selectedPeriod;
+  final DateTime selectedDate;
   final List<MainTransactionEntity> transactions;
   const MainTimePeriodLoaded({
-    required this.selectedPeriod,
+    required this.selectedDate,
     required this.transactions,
   });
   @override
   List<Object> get props => [
-        selectedPeriod,
+        selectedDate,
         transactions,
       ];
 }

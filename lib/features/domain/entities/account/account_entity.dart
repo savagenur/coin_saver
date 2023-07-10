@@ -1,5 +1,6 @@
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
 import '../transaction/transaction_entity.dart';
@@ -32,6 +33,7 @@ enum OwnershipType {
 class AccountEntity extends Equatable {
   final String id;
   final String name;
+  final IconData iconData;
   final AccountType type;
   final PaymentType? paymentType;
   final double balance;
@@ -55,6 +57,7 @@ class AccountEntity extends Equatable {
   const AccountEntity({
     required this.id,
     required this.name,
+    required this.iconData,
     required this.type,
     this.paymentType,
     required this.balance,
@@ -80,6 +83,7 @@ class AccountEntity extends Equatable {
   List<Object?> get props => [
         id,
         name,
+        iconData,
         type,
         paymentType,
         balance,
@@ -103,6 +107,7 @@ class AccountEntity extends Equatable {
   AccountEntity copyWith({
     String? id,
     String? name,
+    IconData? iconData,
     AccountType? type,
     PaymentType? paymentType,
     double? balance,
@@ -126,6 +131,7 @@ class AccountEntity extends Equatable {
     return AccountEntity(
       id: id ?? this.id,
       name: name ?? this.name,
+      iconData: iconData ?? this.iconData,
       type: type ?? this.type,
       paymentType: paymentType ?? this.paymentType,
       balance: balance ?? this.balance,

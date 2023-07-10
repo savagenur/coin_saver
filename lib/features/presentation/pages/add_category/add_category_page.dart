@@ -1,29 +1,38 @@
 import 'package:coin_saver/constants/constants.dart';
-import 'package:coin_saver/constants/main_categories.dart';
 import 'package:coin_saver/features/domain/entities/category/category_entity.dart';
+import 'package:coin_saver/features/presentation/pages/create_category/create_category_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../bloc/category/category_bloc.dart';
+import '../../bloc/cubit/selected_category/selected_category_cubit.dart';
 
 class AddCategoryPage extends StatefulWidget {
   final bool isIncome;
-  final List<CategoryEntity> categories;
-  const AddCategoryPage({super.key, required this.isIncome, required this.categories});
+
+  const AddCategoryPage({
+    super.key,
+    required this.isIncome,
+  });
 
   @override
   State<AddCategoryPage> createState() => _AddCategoryPageState();
 }
 
 class _AddCategoryPageState extends State<AddCategoryPage> {
-  late List<CategoryEntity> categories;
+  List<CategoryEntity> _categories = [];
+  late bool _isIncome;
+  late CategoryEntity? _category;
+
+  // Blocs
+  late SelectedCategoryCubit selectedCategoryCubit;
+  late CategoryBloc categoryBloc;
   @override
   void initState() {
+    selectedCategoryCubit = context.read<SelectedCategoryCubit>();
+    categoryBloc = context.read<CategoryBloc>();
+    _isIncome = widget.isIncome;
     super.initState();
-    categories = widget.categories;
-  }
-
-  List<CategoryEntity> getMainCategoriesList() {
-    return mainCategories
-        .where((category) => category.isIncome == widget.isIncome)
-        .toList();
   }
 
   @override
@@ -32,60 +41,120 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
       appBar: AppBar(
         title: const Text("Add Category"),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(10),
-        child: GridView.count(
-          crossAxisSpacing: 2,
-          mainAxisSpacing: 2,
-          crossAxisCount: 4,
-          children: <Widget>[
-            ...List.generate(categories.length, (index) {
-              CategoryEntity categoryEntity = categories[index];
-              return Container(
-                padding: EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundColor: categoryEntity.color,
-                      child: Icon(
-                        categoryEntity.iconData,
-                        color: Colors.white,
-                      ),
-                    ),
-                    sizeVer(5),
-                    Text(
-                      categoryEntity.name,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
+      body: BlocBuilder<CategoryBloc, CategoryState>(
+        builder: (context, categoryState) {
+          if (categoryState is CategoryLoaded) {
+            _categories = categoryState.categories
+                .where((category) => category.isIncome == _isIncome)
+                .toList()
+              ..sort(
+                (a, b) => b.dateTime.compareTo(a.dateTime),
               );
-            }),
-            GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, PageConst.createCategoryPage);
-              },
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 25,
-                    backgroundColor: secondaryColor,
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ),
+            return BlocBuilder<SelectedCategoryCubit, CategoryEntity?>(
+              builder: (context, selectedCategory) {
+                _category = selectedCategory;
+                return Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 4,
+                            mainAxisSpacing: 5,
+                            crossAxisSpacing: 5),
+                    itemCount: _categories.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (index == _categories.length) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, PageConst.createCategoryPage,arguments: CreateCategoryPage(isIncome: _isIncome,));
+                          },
+                          child: const Column(
+                            children: [
+                              CircleAvatar(
+                                backgroundColor: secondaryColor,
+                                radius: 25,
+                                child: Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Text(
+                                "Create",
+                                maxLines: 1,
+                              ),
+                            ],
+                          ),
+                        );
+                      } else {
+                        CategoryEntity categoryEntity = _categories[index];
+
+                        return GestureDetector(
+                          onTap: () {
+                            selectedCategoryCubit
+                                .changeCategory(categoryEntity);
+                            categoryBloc.add(UpdateCategory(
+                                index: index,
+                                category: categoryEntity.copyWith(
+                                    dateTime: DateTime.now())));
+                            Navigator.pop(context);
+                          },
+                          child: _category != null &&
+                                  _category!.id == categoryEntity.id
+                              ? Column(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(2),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(5),
+                                        color: categoryEntity.color,
+                                      ),
+                                      child: CircleAvatar(
+                                        radius: 30,
+                                        backgroundColor: categoryEntity.color,
+                                        child: Icon(
+                                          categoryEntity.iconData,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      categoryEntity.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                )
+                              : Column(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 30,
+                                      backgroundColor: categoryEntity.color,
+                                      child: Icon(
+                                        categoryEntity.iconData,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    Text(
+                                      categoryEntity.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                        );
+                      }
+                    },
                   ),
-                  Text("Create"),
-                ],
-              ),
-            )
-          ],
-        ),
+                );
+              },
+            );
+          } else {
+            return Container();
+          }
+        },
       ),
     );
   }

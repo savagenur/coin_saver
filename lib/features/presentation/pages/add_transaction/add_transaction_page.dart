@@ -8,7 +8,7 @@ import 'package:coin_saver/features/domain/entities/transaction/transaction_enti
 import 'package:coin_saver/features/domain/usecases/account/set_primary_account_usecase.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
-import 'package:coin_saver/features/presentation/bloc/cubit/category/selected_category_cubit.dart';
+import 'package:coin_saver/features/presentation/bloc/cubit/selected_category/selected_category_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/main_time_period/main_time_period_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
@@ -18,6 +18,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_down_button/pull_down_button.dart';
+import 'package:uuid/uuid.dart';
+import '../../../../injection_container.dart';
 import '../../bloc/cubit/selected_date/selected_date_cubit.dart';
 import '../../widgets/my_button_widget.dart';
 import 'package:coin_saver/injection_container.dart' as di;
@@ -77,7 +79,6 @@ class AddTransactionPageState extends State<AddTransactionPage>
   late MainTransactionBloc mainTransactionBloc;
   late PeriodCubit periodCubit;
   late SelectedDateCubit selectedDateCubit;
-    
 
   @override
   void initState() {
@@ -122,6 +123,9 @@ class AddTransactionPageState extends State<AddTransactionPage>
                 _categories = categoryState.categories
                     .where((category) => category.isIncome == _isIncome)
                     .toList();
+                _categories.sort(
+                  (a, b) => b.dateTime.compareTo(a.dateTime),
+                );
 
                 return BlocBuilder<SelectedDateCubit, DateTime>(
                   builder: (context, selectedDate) {
@@ -247,8 +251,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                       style: TextStyle(color: Colors.grey),
                                     ),
                                     sizeVer(10),
-                                    _buildGridView(
-                                        _categories, selectedCategory),
+                                    _buildGridView(_categories),
                                     const Divider(),
                                     sizeVer(10),
                                     _buildSelectDay(context, _selectedDay),
@@ -315,7 +318,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
   _buildAddTransaction() async {
     _amount = double.parse(_amountController.text);
     final TransactionEntity transaction = TransactionEntity(
-      id: "",
+      id: getIt<Uuid>().v1(),
       date: _selectedDate,
       amount: _amount,
       category: _category!.name,
@@ -324,15 +327,11 @@ class AddTransactionPageState extends State<AddTransactionPage>
       color: _category!.color,
     );
 
-    accountBloc.add(AddTransaction(
-        accountEntity: _account!,
-        transactionEntity: transaction,
-        isIncome: _isIncome,
-        amount: _amount));
+    
 
     mainTransactionBloc.add(CreateMainTransaction(
         mainTransaction: MainTransactionEntity(
-            id: "",
+            id: getIt<Uuid>().v1(),
             accountId: _account!.id,
             name: _category!.name,
             iconData: _category!.iconData,
@@ -344,13 +343,19 @@ class AddTransactionPageState extends State<AddTransactionPage>
     mainTimePeriodBloc.add(SetDayPeriod(
       selectedDate: _selectedDate,
     ));
+    accountBloc.add(AddTransaction(
+        accountEntity: _account!,
+        transactionEntity: transaction,
+        isIncome: _isIncome,
+        amount: _amount));
     periodCubit.changePeriod(Period.day);
-
+    selectedCategoryCubit.changeCategory(null);
     Navigator.pushNamed(context, PageConst.homePage,
         arguments: HomePage(
           dateTime: _selectedDate,
           isIncome: _isIncome,
         ));
+    print("${_isIncome} add transaction");
   }
 
   String formattedDate(DateTime dateTime) {
@@ -433,21 +438,24 @@ class AddTransactionPageState extends State<AddTransactionPage>
   }
 
   GridView _buildGridView(
-      List<CategoryEntity> categories, CategoryEntity? selectedCategory) {
+    List<CategoryEntity> categories,
+  ) {
+    final displayList = categories.take(7).toList();
+    displayList.add(displayList.last.copyWith(name: "null"));
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 4, mainAxisSpacing: 5, crossAxisSpacing: 5),
-      itemCount: categories.length < 8 ? categories.length + 1 : 8,
+      itemCount: displayList.length,
       itemBuilder: (BuildContext context, int index) {
-        if (index == categories.length) {
+        final item = displayList[index];
+        if (item.name == "null") {
           return GestureDetector(
             onTap: () {
               Navigator.pushNamed(context, PageConst.addCategoryPage,
                   arguments: AddCategoryPage(
                     isIncome: _isIncome,
-                    categories: categories,
                   ));
             },
             child: const Column(
@@ -472,14 +480,9 @@ class AddTransactionPageState extends State<AddTransactionPage>
 
           return GestureDetector(
             onTap: () {
-              setState(() {
-                // _category = categories[index];
-                context
-                    .read<SelectedCategoryCubit>()
-                    .changeCategory(categoryEntity);
-              });
+              selectedCategoryCubit.changeCategory(categoryEntity);
             },
-            child: _category == categoryEntity
+            child: _category != null && _category!.id == categoryEntity.id
                 ? Column(
                     children: [
                       Container(

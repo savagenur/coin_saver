@@ -34,7 +34,7 @@ abstract class BaseHiveLocalDataSource {
   Future<List<CategoryEntity>> getCategories();
   Future<void> createCategory(CategoryEntity categoryEntity);
   Future<void> updateCategory(int index, CategoryEntity categoryEntity);
-  Future<void> deleteCategory(int index);
+  Future<void> deleteCategory(String categoryId);
 
   // Currency
   Future<CurrencyEntity> getCurrency();

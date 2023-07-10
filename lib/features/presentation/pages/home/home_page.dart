@@ -1,12 +1,15 @@
 import 'package:coin_saver/constants/period_enum.dart';
+import 'package:coin_saver/features/data/models/account/account_model.dart';
 import 'package:coin_saver/features/domain/entities/main_transaction/main_transaction_entity.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
+import 'package:coin_saver/features/presentation/pages/main_transaction/main_transaction_page.dart';
 import 'package:coin_saver/features/presentation/transactions/transactions_page.dart';
 import 'package:coin_saver/features/presentation/widgets/day_navigation_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -18,7 +21,6 @@ import '../../bloc/account/account_bloc.dart';
 import '../../bloc/cubit/selected_date/selected_date_cubit.dart';
 import '../../bloc/main_time_period/main_time_period_bloc.dart';
 import '../../widgets/category_tile.dart';
-import 'package:coin_saver/injection_container.dart' as di;
 
 class HomePage extends StatefulWidget {
   final DateTime? dateTime;
@@ -42,8 +44,8 @@ class _HomePageState extends State<HomePage>
   late DateTime _dateTime;
   @override
   void initState() {
-    super.initState();
     _isIncome = widget.isIncome!;
+    super.initState();
     // SetDayPeriod
 
     _tabController = TabController(length: 5, vsync: this);
@@ -79,9 +81,10 @@ class _HomePageState extends State<HomePage>
                           // Selected DateTime
                           _dateTime = selectedDate;
                           // Primary Account
-                          AccountEntity account = accountState.accounts
-                              .firstWhere(
-                                  (account) => account.isPrimary == true);
+                          AccountEntity account =
+                              accountState.accounts.firstWhere(
+                            (account) => account.isPrimary == true,
+                          );
 
                           // MainTransactions Sort
                           List<MainTransactionEntity> mainTransactions =
@@ -94,7 +97,6 @@ class _HomePageState extends State<HomePage>
                                   (a, b) =>
                                       b.totalAmount.compareTo(a.totalAmount),
                                 );
-                          print(mainTransactions.map((e) => e).toList());
                           // Total amountMoney of MainTransactions
                           double totalExpense = mainTransactions.fold(
                               0,
@@ -199,7 +201,13 @@ class _HomePageState extends State<HomePage>
                                                   Navigator.pushNamed(
                                                       context,
                                                       PageConst
-                                                          .mainTransactionPage);
+                                                          .mainTransactionPage,
+                                                      arguments:
+                                                          MainTransactionPage(
+                                                        mainTransaction:
+                                                            mainTransactions[
+                                                                index],
+                                                      ));
                                                 },
                                                 child: CategoryTile(
                                                   totalExpense: totalExpense,
@@ -212,20 +220,17 @@ class _HomePageState extends State<HomePage>
                                       ],
                                     ),
                                   ),
-                                  floatingActionButton: BlocProvider.value(
-                                    value: di.sl<MainTimePeriodBloc>(),
-                                    child: FloatingActionButton(
-                                      onPressed: () {
-                                        Navigator.pushNamed(context,
-                                            PageConst.addTransactionPage,
-                                            arguments: AddTransactionPage(
-                                              selectedDate: selectedDate,
-                                              isIncome: _isIncome,
-                                              account: account,
-                                            ));
-                                      },
-                                      child: const Icon(Icons.add),
-                                    ),
+                                  floatingActionButton: FloatingActionButton(
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                          context, PageConst.addTransactionPage,
+                                          arguments: AddTransactionPage(
+                                            selectedDate: selectedDate,
+                                            isIncome: _isIncome,
+                                            account: account,
+                                          ));
+                                    },
+                                    child: const Icon(Icons.add),
                                   ),
                                 ),
                               );
@@ -338,12 +343,14 @@ class _HomePageState extends State<HomePage>
               accounts.length,
               (index) => PullDownMenuItem.selectable(
                 onTap: () {
-                  context.read<AccountBloc>().add(SetPrimaryAccount(
-                      accountId: accounts[index].id));
-                  print(accounts.map((e) => e.isPrimary).toList());
+                  context
+                      .read<AccountBloc>()
+                      .add(SetPrimaryAccount(accountId: accounts[index].id));
                 },
                 selected: accounts[index].isPrimary,
                 title: accounts[index].name,
+                subtitle: "\$${accounts[index].balance}",
+                icon: accounts[index].iconData,
               ),
             ),
           ];
@@ -359,7 +366,7 @@ class _HomePageState extends State<HomePage>
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.account_balance_wallet_outlined),
+                       Icon(account.iconData),
                       sizeHor(5),
                       Text(
                         account.name,

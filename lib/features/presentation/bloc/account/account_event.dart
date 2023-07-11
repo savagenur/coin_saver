@@ -41,6 +41,17 @@ class SetPrimaryAccount extends AccountEvent {
       ];
 }
 
+class DeleteAccount extends AccountEvent {
+  final String id;
+  const DeleteAccount({
+    required this.id,
+  });
+  @override
+  List<Object> get props => [
+        id,
+      ];
+}
+
 class AddTransaction extends AccountEvent {
   final AccountEntity accountEntity;
   final TransactionEntity transactionEntity;
@@ -61,13 +72,16 @@ class AddTransaction extends AccountEvent {
       ];
 }
 
-class DeleteAccount extends AccountEvent {
-  final String id;
-  const DeleteAccount({
-    required this.id,
+class DeleteTransaction extends AccountEvent {
+  final AccountEntity accountEntity;
+  final TransactionEntity transactionEntity;
+  const DeleteTransaction({
+    required this.accountEntity,
+    required this.transactionEntity,
   });
   @override
   List<Object> get props => [
-        id,
+        accountEntity,
+        transactionEntity,
       ];
 }

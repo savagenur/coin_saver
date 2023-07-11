@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/constants/period_enum.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
@@ -15,6 +16,7 @@ import 'package:coin_saver/features/presentation/bloc/main_transaction/main_tran
 import 'package:coin_saver/features/presentation/pages/add_category/add_category_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_down_button/pull_down_button.dart';
@@ -80,6 +82,11 @@ class AddTransactionPageState extends State<AddTransactionPage>
   late PeriodCubit periodCubit;
   late SelectedDateCubit selectedDateCubit;
 
+  // Validness checker
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  bool isErrorCategory = false;
+
   @override
   void initState() {
     super.initState();
@@ -133,168 +140,128 @@ class AddTransactionPageState extends State<AddTransactionPage>
                     return BlocBuilder<SelectedCategoryCubit, CategoryEntity?>(
                       builder: (context, selectedCategory) {
                         _category = selectedCategory;
-                        return DefaultTabController(
-                          length: 2,
-                          child: Scaffold(
-                            appBar: _buildAppBar(),
-                            body: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        const Spacer(
-                                          flex: 1,
-                                        ),
-                                        Expanded(
-                                          child: SizedBox(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                .3,
-                                            child: TextFormField(
-                                              controller: _amountController,
-                                              maxLength: 10,
-                                              autofocus: true,
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              maxLines: 1,
-                                              textAlign: TextAlign.center,
-                                              showCursor: false,
-                                              decoration: const InputDecoration(
-                                                  hintText: "0"),
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleLarge!
-                                                  .copyWith(
-                                                      color: Theme.of(context)
-                                                          .primaryColor),
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                "USD",
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .titleLarge!
-                                                    .copyWith(
-                                                        color: Theme.of(context)
-                                                            .primaryColor),
-                                              ),
-                                              IconButton(
-                                                  onPressed: () {},
-                                                  icon: const Icon(Icons
-                                                      .calculate_outlined)),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    sizeVer(20),
-                                    const Text(
-                                      "Account:",
-                                      style: TextStyle(color: Colors.grey),
-                                    ),
-                                    PullDownButton(
-                                      itemBuilder: (context) {
-                                        return [
-                                          ...List.generate(
-                                            _accounts.length,
-                                            (index) =>
-                                                PullDownMenuItem.selectable(
-                                              onTap: () {
-                                                _selectedAccountId =
-                                                    _accounts[index].id;
-                                                _account = _accounts.firstWhere(
-                                                    (element) =>
-                                                        element.id ==
-                                                        _selectedAccountId);
-                                              },
-                                              selected: _selectedAccountId ==
-                                                  _accounts[index].id,
-                                              title: _accounts[index].name,
-                                            ),
-                                          ),
-                                        ];
-                                      },
-                                      buttonBuilder: (context, showMenu) {
-                                        return TextButton(
-                                          onPressed: showMenu,
-                                          child: Text(
-                                            _account!.name,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium!
-                                                .copyWith(
-                                                    fontWeight: FontWeight.bold,
-                                                    decoration: TextDecoration
-                                                        .underline,
-                                                    color: Theme.of(context)
-                                                        .primaryColor),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                    const Divider(),
-                                    sizeVer(10),
-                                    const Text(
-                                      "Categories:",
-                                      style: TextStyle(color: Colors.grey),
-                                    ),
-                                    sizeVer(10),
-                                    _buildGridView(_categories),
-                                    const Divider(),
-                                    sizeVer(10),
-                                    _buildSelectDay(context, _selectedDay),
-                                    sizeVer(20),
-                                    const Text(
-                                      "Comment:",
-                                      style: TextStyle(color: Colors.grey),
-                                    ),
-                                    sizeVer(10),
-                                    TextFormField(
-                                      controller: _descriptionController,
-                                      maxLength: 4000,
-                                      decoration: const InputDecoration(
-                                        hintText: "Comment...",
+                        return Form(
+                          key: _formKey,
+                          child: DefaultTabController(
+                            length: 2,
+                            child: Scaffold(
+                              appBar: _buildAppBar(),
+                              body: Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: SingleChildScrollView(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      _buildInputAmount(context),
+                                      sizeVer(10),
+                                      const Text(
+                                        "Account:",
+                                        style: TextStyle(color: Colors.grey),
                                       ),
-                                    ),
-                                  ],
+                                      sizeVer(5),
+                                      PullDownButton(
+                                        itemBuilder: (context) {
+                                          return [
+                                            ...List.generate(
+                                              _accounts.length,
+                                              (index) =>
+                                                  PullDownMenuItem.selectable(
+                                                onTap: () {
+                                                  _account = _accounts[index];
+                                                },
+                                                selected: _accounts[index] ==
+                                                    _account,
+                                                title: _accounts[index].name,
+                                                subtitle:
+                                                    "\$${_accounts[index].balance}",
+                                                icon: _accounts[index].iconData,
+                                              ),
+                                            ),
+                                          ];
+                                        },
+                                        buttonBuilder: (context, showMenu) {
+                                          return GestureDetector(
+                                            onTap: showMenu,
+                                            child: Row(
+                                              children: [
+                                                Icon(
+                                                  _account!.iconData,
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                ),
+                                                sizeHor(5),
+                                                Text(
+                                                  _account!.name,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleMedium!
+                                                      .copyWith(
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                ),
+                                                const Icon(Icons
+                                                    .arrow_drop_down_outlined)
+                                              ],
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      const Divider(),
+                                      sizeVer(10),
+                                      Row(
+                                        children: [
+                                          const Text(
+                                            "Categories:",
+                                            style:
+                                                TextStyle(color: Colors.grey),
+                                          ),
+                                          Text(
+                                            isErrorCategory
+                                                ? " Please Select Category"
+                                                : "",
+                                            style: TextStyle(
+                                                color: Colors.red.shade900),
+                                          ),
+                                        ],
+                                      ),
+                                      sizeVer(10),
+                                      _buildGridView(_categories),
+                                      const Divider(),
+                                      sizeVer(10),
+                                      _buildSelectDay(context, _selectedDay),
+                                      sizeVer(20),
+                                      const Text(
+                                        "Comment:",
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                      sizeVer(10),
+                                      TextFormField(
+                                        controller: _descriptionController,
+                                        maxLength: 4000,
+                                        decoration: const InputDecoration(
+                                          hintText: "Comment...",
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
+                              floatingActionButtonLocation:
+                                  FloatingActionButtonLocation.centerDocked,
+                              floatingActionButton: MediaQuery.of(context)
+                                          .viewInsets
+                                          .bottom !=
+                                      0
+                                  ? null
+                                  : MyButtonWidget(
+                                      title: 'Add',
+                                      width: MediaQuery.of(context).size.width *
+                                          .5,
+                                      borderRadius: BorderRadius.circular(30),
+                                      paddingVertical: 15,
+                                      onTap: _buildAddTransaction),
                             ),
-                            floatingActionButtonLocation:
-                                FloatingActionButtonLocation.centerDocked,
-                            floatingActionButton: MediaQuery.of(context)
-                                        .viewInsets
-                                        .bottom !=
-                                    0
-                                ? null
-                                : MyButtonWidget(
-                                    title: 'Add',
-                                    width:
-                                        MediaQuery.of(context).size.width * .5,
-                                    borderRadius: BorderRadius.circular(30),
-                                    paddingVertical: 15,
-                                    onTap: _amountController.text.isEmpty ||
-                                            _amountController.text
-                                                .contains("-") ||
-                                            double.parse(
-                                                    _amountController.text) <=
-                                                0 ||
-                                            _category == null ||
-                                            _account == null
-                                        ? null
-                                        : _buildAddTransaction),
                           ),
                         );
                       },
@@ -315,47 +282,116 @@ class AddTransactionPageState extends State<AddTransactionPage>
     );
   }
 
-  _buildAddTransaction() async {
-    _amount = double.parse(_amountController.text);
-    final TransactionEntity transaction = TransactionEntity(
-      id: getIt<Uuid>().v1(),
-      date: _selectedDate,
-      amount: _amount,
-      category: _category!.name,
-      accountId: _account!.name,
-      isIncome: _isIncome,
-      color: _category!.color,
+  Row _buildInputAmount(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const Spacer(
+          flex: 1,
+        ),
+        Expanded(
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width * .3,
+            child: TextFormField(
+              controller: _amountController,
+              validator: (value) {
+                if (value == null || value.isEmpty ) {
+                  return "Please enter\nvalid amount.";
+                }
+                return null;
+              },
+              onSaved: (newValue) {
+                _amount = double.parse(newValue!);
+              },
+              maxLength: 12,
+              autofocus: true,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              showCursor: false,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))
+              ],
+              decoration: InputDecoration(
+                counterText: "",
+                hintText: "0",
+                
+              ),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge!
+                  .copyWith(color: Theme.of(context).primaryColor),
+            ),
+          ),
+        ),
+        Expanded(
+          child: Row(
+            children: [
+              Text(
+                "USD",
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(color: Theme.of(context).primaryColor),
+              ),
+              IconButton(
+                  onPressed: () {}, icon: const Icon(Icons.calculate_outlined)),
+            ],
+          ),
+        ),
+      ],
     );
+  }
 
-    
-
-    mainTransactionBloc.add(CreateMainTransaction(
-        mainTransaction: MainTransactionEntity(
-            id: getIt<Uuid>().v1(),
-            accountId: _account!.id,
-            name: _category!.name,
-            iconData: _category!.iconData,
-            color: _category!.color,
-            totalAmount: _amount,
-            isIncome: _isIncome,
-            dateTime: _selectedDate)));
-
-    mainTimePeriodBloc.add(SetDayPeriod(
-      selectedDate: _selectedDate,
-    ));
-    accountBloc.add(AddTransaction(
-        accountEntity: _account!,
-        transactionEntity: transaction,
+  _buildAddTransaction() async {
+    if (_category == null) {
+      setState(() {
+        isErrorCategory = true;
+      });
+    }
+    if (_formKey.currentState!.validate() &&
+        _category != null &&
+        _account != null) {
+      _formKey.currentState!.save();
+      final TransactionEntity transaction = TransactionEntity(
+        id: getIt<Uuid>().v1(),
+        date: _selectedDate,
+        amount: _amount,
+        category: _category!.name,
+        iconData: _category!.iconData,
+        accountId: _account!.name,
         isIncome: _isIncome,
-        amount: _amount));
-    periodCubit.changePeriod(Period.day);
-    selectedCategoryCubit.changeCategory(null);
-    Navigator.pushNamed(context, PageConst.homePage,
-        arguments: HomePage(
-          dateTime: _selectedDate,
+        color: _category!.color,
+      );
+
+      mainTransactionBloc.add(CreateMainTransaction(
+          mainTransaction: MainTransactionEntity(
+              id: getIt<Uuid>().v1(),
+              accountId: _account!.id,
+              name: _category!.name,
+              iconData: _category!.iconData,
+              color: _category!.color,
+              totalAmount: _amount,
+              isIncome: _isIncome,
+              dateTime: _selectedDate)));
+
+      mainTimePeriodBloc.add(SetDayPeriod(
+        selectedDate: _selectedDate,
+      ));
+      accountBloc.add(AddTransaction(
+          accountEntity: _account!,
+          transactionEntity: transaction,
           isIncome: _isIncome,
-        ));
-    print("${_isIncome} add transaction");
+          amount: _amount));
+      periodCubit.changePeriod(Period.day);
+      selectedCategoryCubit.changeCategory(null);
+      Navigator.pushNamed(context, PageConst.homePage,
+          arguments: HomePage(
+            dateTime: _selectedDate,
+            isIncome: _isIncome,
+          ));
+    }
   }
 
   String formattedDate(DateTime dateTime) {
@@ -481,6 +517,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
           return GestureDetector(
             onTap: () {
               selectedCategoryCubit.changeCategory(categoryEntity);
+              isErrorCategory = false;
             },
             child: _category != null && _category!.id == categoryEntity.id
                 ? Column(

@@ -55,12 +55,15 @@ class AccountModel extends AccountEntity {
   final PaymentType? paymentType;
   @HiveField(21)
   final IconData iconData;
+  @HiveField(22)
+  final Color color;
 
   AccountModel({
     required this.id,
     required this.name,
     required this.iconData,
     required this.type,
+    required this.color,
     required this.balance,
     required this.currency,
     required this.isPrimary,
@@ -84,6 +87,7 @@ class AccountModel extends AccountEntity {
             name: name,
             iconData: iconData,
             type: type,
+            color: color,
             paymentType: paymentType,
             balance: balance,
             currency: currency,
@@ -111,6 +115,7 @@ class AccountModel extends AccountEntity {
     String? name,
     IconData? iconData,
     AccountType? type,
+    Color? color,
     PaymentType? paymentType,
     double? balance,
     CurrencyEntity? currency,
@@ -135,6 +140,7 @@ class AccountModel extends AccountEntity {
       name: name ?? this.name,
       iconData: iconData ?? this.iconData,
       type: type ?? this.type,
+      color: color ?? this.color,
       paymentType: paymentType ?? this.paymentType,
       balance: balance ?? this.balance,
       currency: currency ?? this.currency,

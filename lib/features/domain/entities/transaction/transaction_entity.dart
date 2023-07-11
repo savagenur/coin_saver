@@ -20,6 +20,7 @@ class TransactionEntity extends Equatable {
   final DateTime date;
   final double amount;
   final String category;
+  final IconData iconData;
   final String accountId;
   final bool isIncome;
   final Color color;
@@ -43,6 +44,7 @@ class TransactionEntity extends Equatable {
     required this.date,
     required this.amount,
     required this.category,
+    required this.iconData,
     required this.accountId,
     required this.isIncome,
     required this.color,
@@ -68,6 +70,7 @@ class TransactionEntity extends Equatable {
         date,
         amount,
         category,
+        iconData,
         description,
         accountId,
         isIncome,
@@ -91,6 +94,7 @@ class TransactionEntity extends Equatable {
     DateTime? date,
     double? amount,
     String? category,
+    IconData? iconData,
     String? description,
     String? accountId,
     bool? isIncome,
@@ -114,6 +118,7 @@ class TransactionEntity extends Equatable {
       date: date ?? this.date,
       amount: amount ?? this.amount,
       category: category ?? this.category,
+      iconData: iconData ?? this.iconData,
       description: description ?? this.description,
       accountId: accountId ?? this.accountId,
       isIncome: isIncome ?? this.isIncome,

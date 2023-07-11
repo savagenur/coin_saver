@@ -38,11 +38,11 @@ class GetMainTransactions extends MainTransactionEvent {
 }
 
 class DeleteMainTransaction extends MainTransactionEvent {
-  final String id;
+  final TransactionEntity transactionEntity;
   const DeleteMainTransaction({
-    required this.id,
+    required this.transactionEntity,
   });
 
   @override
-  List<Object> get props => [id];
+  List<Object> get props => [ transactionEntity];
 }

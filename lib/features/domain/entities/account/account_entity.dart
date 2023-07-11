@@ -1,7 +1,6 @@
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 
 import '../transaction/transaction_entity.dart';
 
@@ -10,7 +9,6 @@ enum AccountType {
   creditCard,
   cash,
   investment,
-  // Add more account types as needed
 }
 
 enum PaymentType {
@@ -27,13 +25,13 @@ enum OwnershipType {
   individual,
   joint,
   business,
-  // Add more ownership types as needed
 }
 
 class AccountEntity extends Equatable {
   final String id;
   final String name;
   final IconData iconData;
+  final Color color;
   final AccountType type;
   final PaymentType? paymentType;
   final double balance;
@@ -58,6 +56,7 @@ class AccountEntity extends Equatable {
     required this.id,
     required this.name,
     required this.iconData,
+    required this.color,
     required this.type,
     this.paymentType,
     required this.balance,
@@ -85,6 +84,7 @@ class AccountEntity extends Equatable {
         name,
         iconData,
         type,
+        color,
         paymentType,
         balance,
         currency,
@@ -109,6 +109,7 @@ class AccountEntity extends Equatable {
     String? name,
     IconData? iconData,
     AccountType? type,
+    Color? color,
     PaymentType? paymentType,
     double? balance,
     CurrencyEntity? currency,
@@ -134,6 +135,7 @@ class AccountEntity extends Equatable {
       iconData: iconData ?? this.iconData,
       type: type ?? this.type,
       paymentType: paymentType ?? this.paymentType,
+      color: color ?? this.color,
       balance: balance ?? this.balance,
       currency: currency ?? this.currency,
       isPrimary: isPrimary ?? this.isPrimary,

@@ -21,6 +21,7 @@ class AccountModelAdapter extends TypeAdapter<AccountModel> {
       name: fields[1] as String,
       iconData: fields[21] as IconData,
       type: fields[2] as AccountType,
+      color: fields[22] as Color,
       balance: fields[3] as double,
       currency: fields[4] as CurrencyEntity,
       isPrimary: fields[5] as bool,
@@ -45,7 +46,7 @@ class AccountModelAdapter extends TypeAdapter<AccountModel> {
   @override
   void write(BinaryWriter writer, AccountModel obj) {
     writer
-      ..writeByte(22)
+      ..writeByte(23)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -89,7 +90,9 @@ class AccountModelAdapter extends TypeAdapter<AccountModel> {
       ..writeByte(20)
       ..write(obj.paymentType)
       ..writeByte(21)
-      ..write(obj.iconData);
+      ..write(obj.iconData)
+      ..writeByte(22)
+      ..write(obj.color);
   }
 
   @override

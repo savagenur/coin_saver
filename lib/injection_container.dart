@@ -21,8 +21,10 @@ import 'package:coin_saver/features/presentation/bloc/cubit/selected_icon/select
 import 'package:coin_saver/features/presentation/bloc/cubit/time_period/time_period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
+import 'features/domain/usecases/account/transaction/delete_transaction_usecase.dart';
 import 'features/domain/usecases/category/create_category_usecase.dart';
 import 'features/domain/usecases/category/delete_category_usecase.dart';
 import 'features/domain/usecases/category/get_categories_usecase.dart';
@@ -52,6 +54,7 @@ Future<void> init() async {
       updateAccountUsecase: getIt.call(),
       setPrimaryAccountUsecase: getIt.call(),
       addTransactionUsecase: getIt.call(),
+      deleteTransactionUsecase: getIt.call(),
       deleteAccountUsecase: getIt.call()));
 
   getIt.registerFactory(
@@ -119,10 +122,14 @@ Future<void> init() async {
   getIt.registerLazySingleton(
       () => DeleteAccountUsecase(repository: getIt.call()));
   getIt.registerLazySingleton(
-      () => AddTransactionUsecase(repository: getIt.call()));
-  getIt.registerLazySingleton(
       () => SetPrimaryAccountUsecase(repository: getIt.call()));
   getIt.registerLazySingleton(() => InitHiveUsecase(repository: getIt.call()));
+
+// * Transaction
+  getIt.registerLazySingleton(
+      () => AddTransactionUsecase(repository: getIt.call()));
+  getIt.registerLazySingleton(
+      () => DeleteTransactionUsecase(repository: getIt.call()));
 
 // * MainTransaction usecases
   getIt.registerLazySingleton(

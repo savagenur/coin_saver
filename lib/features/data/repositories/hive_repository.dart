@@ -24,6 +24,9 @@ class HiveRepository implements BaseHiveRepository {
   @override
   Future<void> setPrimaryAccount(String accountId) async =>
       hiveLocalDataSource.setPrimaryAccount(accountId);
+ @override
+  Future<void> setAllUnPrimaryAccount(String accountId) async =>
+      hiveLocalDataSource.setPrimaryAccount(accountId);
 
   @override
   Future<void> deleteAccount(String id) async =>
@@ -33,6 +36,7 @@ class HiveRepository implements BaseHiveRepository {
   Future<List<AccountEntity>> getAccounts() async =>
       hiveLocalDataSource.getAccounts();
 
+  // Transaction
   @override
   Future<void> addTransaction({
     required AccountEntity accountEntity,
@@ -45,6 +49,12 @@ class HiveRepository implements BaseHiveRepository {
           transactionEntity: transactionEntity,
           isIncome: isIncome,
           amount: amount);
+  @override
+  Future<void> deleteTransaction(
+          {required TransactionEntity transactionEntity,
+          required AccountEntity accountEntity}) async =>
+      hiveLocalDataSource.deleteTransaction(
+         transactionEntity:transactionEntity, accountEntity: accountEntity);
 
   // MainTransaction
   @override
@@ -53,8 +63,8 @@ class HiveRepository implements BaseHiveRepository {
       hiveLocalDataSource.createMainTransaction(mainTransactionEntity);
 
   @override
-  Future<void> deleteMainTransaction(String id) async =>
-      hiveLocalDataSource.deleteMainTransaction(id);
+  Future<void> deleteMainTransaction(TransactionEntity transactionEntity) async =>
+      hiveLocalDataSource.deleteMainTransaction( transactionEntity);
   @override
   Future<List<MainTransactionEntity>> getMainTransactions() async =>
       hiveLocalDataSource.getMainTransactions();

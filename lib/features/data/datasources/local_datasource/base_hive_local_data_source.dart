@@ -13,14 +13,20 @@ abstract class BaseHiveLocalDataSource {
   Future<void> updateAccount(AccountEntity accountEntity);
   Future<void> selectAccount(
       AccountEntity accountEntity, List<AccountEntity> accounts);
+  Future<void> deleteAccount(String id);
+  Future<void> setPrimaryAccount(String accountId);
+
+  // Transaction
   Future<void> addTransaction({
     required AccountEntity accountEntity,
     required TransactionEntity transactionEntity,
     required bool isIncome,
     required double amount,
   });
-  Future<void> deleteAccount(String id);
-  Future<void> setPrimaryAccount(String accountId);
+  Future<void> deleteTransaction({
+    required TransactionEntity transactionEntity,
+    required AccountEntity accountEntity,
+  });
 
   // MainTransaction
   Future<List<MainTransactionEntity>> getMainTransactions();
@@ -28,7 +34,7 @@ abstract class BaseHiveLocalDataSource {
       MainTransactionEntity mainTransactionEntity);
   Future<void> updateMainTransaction(
       String oldKey, MainTransactionEntity mainTransactionEntity);
-  Future<void> deleteMainTransaction(String id);
+  Future<void> deleteMainTransaction(TransactionEntity transactionEntity);
 
   // Category
   Future<List<CategoryEntity>> getCategories();

@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:coin_saver/constants/period_enum.dart';
 import 'package:coin_saver/features/data/models/account/account_model.dart';
 import 'package:coin_saver/features/domain/entities/main_transaction/main_transaction_entity.dart';
@@ -10,6 +11,7 @@ import 'package:coin_saver/features/presentation/widgets/day_navigation_widget.d
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -89,9 +91,12 @@ class _HomePageState extends State<HomePage>
                           // MainTransactions Sort
                           List<MainTransactionEntity> mainTransactions =
                               mainTimePeriodState.transactions
-                                  .where((mainTransaction) =>
-                                      mainTransaction.accountId == account.id &&
-                                      mainTransaction.isIncome == _isIncome)
+                                  .where((mainTransaction) => account.id ==
+                                          "total"
+                                      ? mainTransaction.isIncome == _isIncome
+                                      : mainTransaction.accountId ==
+                                              account.id &&
+                                          mainTransaction.isIncome == _isIncome)
                                   .toList()
                                 ..sort(
                                   (a, b) =>
@@ -178,10 +183,27 @@ class _HomePageState extends State<HomePage>
                                                               ),
                                                             ],
                                                           ),
-                                                    Text(
-                                                      "$totalExpense",
-                                                      style: TextStyle(
-                                                          fontSize: 22),
+                                                    SizedBox(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              .35,
+                                                      child: AutoSizeText(
+                                                        NumberFormat.currency(
+                                                                symbol: account
+                                                                    .currency
+                                                                    .symbol)
+                                                            .format(
+                                                                totalExpense),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        minFontSize: 18,
+                                                        maxFontSize: 25,
+                                                        style: TextStyle(
+                                                            fontSize: 24),
+                                                        maxLines: 1,
+                                                      ),
                                                     )
                                                   ],
                                                 ),
@@ -213,6 +235,7 @@ class _HomePageState extends State<HomePage>
                                                   totalExpense: totalExpense,
                                                   mainTransaction:
                                                       mainTransactions[index],
+                                                  account: account,
                                                 )),
                                           ),
                                         ),
@@ -334,7 +357,7 @@ class _HomePageState extends State<HomePage>
       centerTitle: true,
       leading: IconButton(
         onPressed: () {},
-        icon: Icon(Icons.menu),
+        icon: const Icon(Icons.menu),
       ),
       title: PullDownButton(
         itemBuilder: (context) {
@@ -349,7 +372,9 @@ class _HomePageState extends State<HomePage>
                 },
                 selected: accounts[index].isPrimary,
                 title: accounts[index].name,
-                subtitle: "\$${accounts[index].balance}",
+                subtitle: NumberFormat.currency(
+                        symbol: accounts[index].currency.symbol)
+                    .format(accounts[index].balance),
                 icon: accounts[index].iconData,
               ),
             ),
@@ -366,7 +391,7 @@ class _HomePageState extends State<HomePage>
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                       Icon(account.iconData),
+                      Icon(account.iconData),
                       sizeHor(5),
                       Text(
                         account.name,
@@ -382,7 +407,8 @@ class _HomePageState extends State<HomePage>
                   ),
                 ),
                 Text(
-                  "\$${account.balance.round()}",
+                  NumberFormat.currency(symbol: account.currency.symbol)
+                      .format(account.balance),
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: account.balance.round() > 0

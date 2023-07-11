@@ -52,7 +52,12 @@ class AppRoute {
           mainTransaction: args.mainTransaction,
         ));
       case PageConst.transactionDetailPage:
-        return _routeBuilder(TransactionDetailPage());
+        args = args as TransactionDetailPage;
+
+        return _routeBuilder(TransactionDetailPage(
+          transaction: args.transaction,
+          account: args.account,
+        ));
       case PageConst.addCategoryPage:
         args = args as AddCategoryPage;
         return _routeBuilder(AddCategoryPage(

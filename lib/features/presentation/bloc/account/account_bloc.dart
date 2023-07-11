@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:coin_saver/features/domain/usecases/account/transaction/add_transaction_usecase.dart';
+import 'package:coin_saver/features/domain/usecases/account/transaction/delete_transaction_usecase.dart';
 import 'package:equatable/equatable.dart';
 
 import 'package:coin_saver/features/domain/usecases/account/create_account_usecase.dart';
@@ -25,6 +26,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   final DeleteAccountUsecase deleteAccountUsecase;
   final SetPrimaryAccountUsecase setPrimaryAccountUsecase;
   final AddTransactionUsecase addTransactionUsecase;
+  final DeleteTransactionUsecase deleteTransactionUsecase;
   AccountBloc({
     required this.createAccountUsecase,
     required this.getAccountsUsecase,
@@ -32,13 +34,17 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     required this.deleteAccountUsecase,
     required this.setPrimaryAccountUsecase,
     required this.addTransactionUsecase,
+    required this.deleteTransactionUsecase,
   }) : super(AccountInitial()) {
     on<CreateAccount>(_onCreateAccount);
     on<DeleteAccount>(_onDeleteAccount);
     on<UpdateAccount>(_onUpdateAccount);
-    on<AddTransaction>(_onAddTransaction);
     on<SetPrimaryAccount>(_onSetPrimaryAccount);
     on<GetAccounts>(_onGetAccounts);
+
+    // Transaction
+    on<AddTransaction>(_onAddTransaction);
+    on<DeleteTransaction>(_onDeleteTransaction);
   }
 
   FutureOr<void> _onCreateAccount(
@@ -62,6 +68,21 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     emit(AccountLoaded(accounts: accounts));
   }
 
+  FutureOr<void> _onGetAccounts(
+      GetAccounts event, Emitter<AccountState> emit) async {
+    final accounts = await getAccountsUsecase.call();
+    emit(AccountLoaded(accounts: accounts));
+  }
+
+  FutureOr<void> _onSetPrimaryAccount(
+      SetPrimaryAccount event, Emitter<AccountState> emit) async {
+    await setPrimaryAccountUsecase.call(event.accountId);
+    List<AccountEntity> accounts = await getAccountsUsecase.call();
+
+    emit(AccountLoaded(accounts: accounts));
+  }
+
+  // Transaction
   FutureOr<void> _onAddTransaction(
       AddTransaction event, Emitter<AccountState> emit) async {
     await setPrimaryAccountUsecase.call(event.accountEntity.id);
@@ -73,17 +94,38 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     emit(AccountLoaded(accounts: accounts));
   }
 
-  FutureOr<void> _onGetAccounts(
-      GetAccounts event, Emitter<AccountState> emit) async {
+  FutureOr<void> _onDeleteTransaction(
+      DeleteTransaction event, Emitter<AccountState> emit) async {
+    await deleteTransactionUsecase.call(
+        event.accountEntity, event.transactionEntity);
+
     final accounts = await getAccountsUsecase.call();
+
     emit(AccountLoaded(accounts: accounts));
   }
 
-  FutureOr<void> _onSetPrimaryAccount(
-      SetPrimaryAccount event, Emitter<AccountState> emit) async {
-    await setPrimaryAccountUsecase.call(event.accountId);
-    final accounts = await getAccountsUsecase.call();
+  Future<List<AccountEntity>> getAccountsWithTotal(
+    String accountId,
+  ) async {
+    List<AccountEntity> accounts = await getAccountsUsecase.call();
 
-    emit(AccountLoaded(accounts: accounts));
+    if (accountId == "total") {
+      double totalBalance = 0;
+      List<TransactionEntity> totalTransactions = [];
+      for (var account in accounts) {
+        totalBalance += account.balance;
+        totalTransactions.addAll(account.transactionHistory);
+      }
+      AccountEntity updatedTotalAccount = accounts
+          .firstWhere((account) => account.id == accountId)
+          .copyWith(
+              balance: totalBalance, transactionHistory: totalTransactions);
+
+      int index = accounts.indexWhere((account) => account.id == accountId);
+      if (index != -1) {
+        accounts[index] = updatedTotalAccount;
+      }
+    }
+    return accounts;
   }
 }

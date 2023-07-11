@@ -48,12 +48,15 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
   final bool? isVoid;
   @HiveField(20)
   final Color color;
+  @HiveField(21)
+  final IconData iconData;
 
   TransactionModel({
     required this.id,
     required this.date,
     required this.amount,
     required this.category,
+    required this.iconData,
     required this.accountId,
     required this.isIncome,
     required this.color,
@@ -76,6 +79,7 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
           date: date,
           amount: amount,
           category: category,
+          iconData: iconData,
           description: description,
           accountId: accountId,
           isIncome: isIncome,
@@ -100,6 +104,7 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
     DateTime? date,
     double? amount,
     String? category,
+    IconData? iconData,
     String? description,
     String? accountId,
     bool? isIncome,
@@ -123,6 +128,7 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
       date: date ?? this.date,
       amount: amount ?? this.amount,
       category: category ?? this.category,
+      iconData: iconData ?? this.iconData,
       description: description ?? this.description,
       accountId: accountId ?? this.accountId,
       isIncome: isIncome ?? this.isIncome,
@@ -149,6 +155,7 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
       date: date,
       amount: amount,
       category: category,
+      iconData: iconData,
       accountId: accountId,
       isIncome: isIncome,
       color: color,
@@ -175,6 +182,7 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
       date: entity.date,
       amount: entity.amount,
       category: entity.category,
+      iconData: entity.iconData,
       accountId: entity.accountId,
       isIncome: entity.isIncome,
       color: entity.color,

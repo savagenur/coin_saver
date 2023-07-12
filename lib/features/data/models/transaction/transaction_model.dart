@@ -1,3 +1,5 @@
+import 'package:coin_saver/features/data/models/category/category_model.dart';
+import 'package:coin_saver/features/domain/entities/category/category_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import '../../../domain/entities/transaction/transaction_entity.dart';
@@ -13,7 +15,7 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
   @HiveField(2)
   final double amount;
   @HiveField(3)
-  final String category;
+  final CategoryModel category;
   @HiveField(4)
   final String? description;
   @HiveField(5)
@@ -99,11 +101,12 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
           isVoid: isVoid,
         );
 
+  @override
   TransactionModel copyWith({
     String? id,
     DateTime? date,
     double? amount,
-    String? category,
+    CategoryEntity? category,
     IconData? iconData,
     String? description,
     String? accountId,
@@ -127,7 +130,7 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
       id: id ?? this.id,
       date: date ?? this.date,
       amount: amount ?? this.amount,
-      category: category ?? this.category,
+      category:category != null ? CategoryModel.fromEntity(category) : this.category,
       iconData: iconData ?? this.iconData,
       description: description ?? this.description,
       accountId: accountId ?? this.accountId,
@@ -181,7 +184,7 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
       id: entity.id,
       date: entity.date,
       amount: entity.amount,
-      category: entity.category,
+      category: CategoryModel.fromEntity(entity.category),
       iconData: entity.iconData,
       accountId: entity.accountId,
       isIncome: entity.isIncome,

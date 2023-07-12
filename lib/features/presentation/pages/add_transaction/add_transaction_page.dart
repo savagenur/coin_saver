@@ -358,7 +358,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
         id: getIt<Uuid>().v1(),
         date: _selectedDate,
         amount: _amount,
-        category: _category!.name,
+        category: _category!,
         iconData: _category!.iconData,
         accountId: _account!.name,
         isIncome: _isIncome,

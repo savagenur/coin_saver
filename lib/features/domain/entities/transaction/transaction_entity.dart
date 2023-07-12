@@ -1,3 +1,4 @@
+import 'package:coin_saver/features/domain/entities/category/category_entity.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +20,7 @@ class TransactionEntity extends Equatable {
   final String id;
   final DateTime date;
   final double amount;
-  final String category;
+  final CategoryEntity category;
   final IconData iconData;
   final String accountId;
   final bool isIncome;
@@ -93,7 +94,7 @@ class TransactionEntity extends Equatable {
     String? id,
     DateTime? date,
     double? amount,
-    String? category,
+    CategoryEntity? category,
     IconData? iconData,
     String? description,
     String? accountId,

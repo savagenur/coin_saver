@@ -1,3 +1,4 @@
+import 'package:coin_saver/features/data/models/currency/currency_model.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
@@ -20,7 +21,7 @@ class AccountModel extends AccountEntity {
   @HiveField(3)
   final double balance;
   @HiveField(4)
-  final CurrencyEntity currency;
+  final CurrencyModel currency;
   @HiveField(5)
   final bool isPrimary;
   @HiveField(6)
@@ -143,7 +144,7 @@ class AccountModel extends AccountEntity {
       color: color ?? this.color,
       paymentType: paymentType ?? this.paymentType,
       balance: balance ?? this.balance,
-      currency: currency ?? this.currency,
+      currency: currency!=null?CurrencyModel.fromEntity(currency) : this.currency,
       isPrimary: isPrimary ?? this.isPrimary,
       isActive: isActive ?? this.isActive,
       accountNumber: accountNumber ?? this.accountNumber,

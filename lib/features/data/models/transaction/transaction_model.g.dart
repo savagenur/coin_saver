@@ -20,7 +20,7 @@ class TransactionModelAdapter extends TypeAdapter<TransactionModel> {
       id: fields[0] as String,
       date: fields[1] as DateTime,
       amount: fields[2] as double,
-      category: fields[3] as String,
+      category: fields[3] as CategoryModel,
       iconData: fields[21] as IconData,
       accountId: fields[5] as String,
       isIncome: fields[6] as bool,

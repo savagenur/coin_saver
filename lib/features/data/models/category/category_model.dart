@@ -31,13 +31,13 @@ class CategoryModel extends CategoryEntity {
     required this.isIncome,
     required this.dateTime,
   }) : super(
-            id: id,
-            name: name,
-            iconData: iconData,
-            color: color,
-            isIncome: isIncome,
-            dateTime: dateTime,
-          );
+          id: id,
+          name: name,
+          iconData: iconData,
+          color: color,
+          isIncome: isIncome,
+          dateTime: dateTime,
+        );
 
   CategoryModel copyWith({
     String? id,
@@ -55,5 +55,25 @@ class CategoryModel extends CategoryEntity {
       isIncome: isIncome ?? this.isIncome,
       dateTime: dateTime ?? this.dateTime,
     );
+  }
+
+  CategoryEntity toEntity() {
+    return CategoryEntity(
+        id: id,
+        name: name,
+        iconData: iconData,
+        color: color,
+        isIncome: isIncome,
+        dateTime: dateTime);
+  }
+
+  static CategoryModel fromEntity(CategoryEntity entity) {
+    return CategoryModel(
+        id: entity.id,
+        name: entity.name,
+        iconData: entity.iconData,
+        color: entity.color,
+        isIncome: entity.isIncome,
+        dateTime: entity.dateTime);
   }
 }

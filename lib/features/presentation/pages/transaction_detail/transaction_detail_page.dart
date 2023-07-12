@@ -98,7 +98,7 @@ class TransactionDetailPage extends StatelessWidget {
                 ),
                 sizeHor(10),
                 Text(
-                  transaction.category,
+                  transaction.category.name,
                   style: Theme.of(context)
                       .textTheme
                       .titleMedium!

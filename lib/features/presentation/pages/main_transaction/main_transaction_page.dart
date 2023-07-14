@@ -4,8 +4,7 @@ import 'package:coin_saver/features/domain/entities/transaction/transaction_enti
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_date/selected_date_cubit.dart';
-import 'package:coin_saver/features/presentation/bloc/cubit/time_period/time_period_cubit.dart';
-import 'package:coin_saver/features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
+import 'package:coin_saver/features/presentation/bloc/cubit/transaction_period/transaction_period_cubit.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:coin_saver/features/presentation/pages/transaction_detail/transaction_detail_page.dart';
 import 'package:flutter/material.dart';
@@ -16,10 +15,10 @@ import 'package:pull_down_button/pull_down_button.dart';
 
 import '../../../../constants/constants.dart';
 import '../../../../constants/period_enum.dart';
-import '../../bloc/main_time_period/main_time_period_bloc.dart';
+import '../../bloc/time_period/time_period_bloc.dart';
 
 class MainTransactionPage extends StatefulWidget {
-  final MainTransactionEntity mainTransaction;
+  final TransactionEntity mainTransaction;
   const MainTransactionPage({super.key, required this.mainTransaction});
 
   @override
@@ -28,8 +27,8 @@ class MainTransactionPage extends StatefulWidget {
 
 class _MainTransactionPageState extends State<MainTransactionPage> {
   AccountEntity? _account;
-  late  MainTransactionEntity _mainTransaction;
-  List<MainTransactionEntity> _mainTransactions = [];
+  late TransactionEntity _mainTransaction;
+  List<TransactionEntity> _mainTransactions = [];
   double _totalAmount = 0;
   List<TransactionEntity> _transactions = [];
   Map<DateTime, List<TransactionEntity>> _filteredMap = {};
@@ -62,22 +61,22 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
         if (accountState is AccountLoaded) {
           return BlocBuilder<SelectedDateCubit, DateTime>(
             builder: (context, selectedDate) {
-              return BlocBuilder<TimePeriodCubit, List<TransactionEntity>>(
+              return BlocBuilder<TransactionPeriodCubit,
+                  List<TransactionEntity>>(
                 builder: (context, transactions) {
                   return BlocBuilder<PeriodCubit, Period>(
                     builder: (context, selectedPeriod) {
-                      return BlocBuilder<MainTimePeriodBloc, MainTimePeriodState>(
+                      return BlocBuilder<TimePeriodBloc, TimePeriodState>(
                         builder: (context, mainTimePeriodState) {
-                          if (mainTimePeriodState is MainTimePeriodLoaded) {
-                             _account = accountState.accounts.firstWhere(
+                          if (mainTimePeriodState is TimePeriodLoaded) {
+                            _account = accountState.accounts.firstWhere(
                               (account) => account.isPrimary,
                             );
                             _mainTransactions = mainTimePeriodState.transactions
                                 .where((mainTransaction) =>
-                                    mainTransaction.accountId ==
-                                        _account!.id &&
-                                    mainTransaction.name ==
-                                        _mainTransaction.name &&
+                                    mainTransaction.accountId == _account!.id &&
+                                    mainTransaction.category ==
+                                        _mainTransaction.category &&
                                     mainTransaction.isIncome ==
                                         _mainTransaction.isIncome)
                                 .toList();
@@ -86,22 +85,23 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                             _totalAmount = _mainTransactions.fold(
                                 0,
                                 (previousValue, element) =>
-                                    previousValue + element.totalAmount);
-                           
+                                    previousValue + element.amount);
+
                             var allTransactions = _account!.transactionHistory
                                 .where((transaction) =>
                                     transaction.category ==
-                                    widget.mainTransaction.name)
+                                    widget.mainTransaction.category)
                                 .toList()
                               ..sort(
                                 (a, b) => selectedFilter == Filter.byDate
                                     ? b.date.compareTo(a.date)
                                     : b.amount.compareTo(a.amount),
                               );
-                            BlocProvider.of<TimePeriodCubit>(context).setPeriod(
-                                period: selectedPeriod,
-                                selectedDate: selectedDate,
-                                totalTransactions: allTransactions);
+                            BlocProvider.of<TransactionPeriodCubit>(context)
+                                .setPeriod(
+                                    period: selectedPeriod,
+                                    selectedDate: selectedDate,
+                                    totalTransactions: allTransactions);
                             _transactions = transactions;
                             _filteredMap = _filterTransactions(_transactions);
 
@@ -218,7 +218,7 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                                                         ),
                                                         title: Text(
                                                             _mainTransaction
-                                                                .name),
+                                                                .category.name),
                                                         trailing: Text(
                                                           NumberFormat.currency(
                                                                   symbol: _account!
@@ -333,7 +333,7 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            _mainTransaction.name,
+            _mainTransaction.category.name,
             style: Theme.of(context)
                 .textTheme
                 .titleLarge!
@@ -342,16 +342,15 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
           Padding(
             padding: EdgeInsets.only(bottom: 5),
             child: Text(
-              NumberFormat.currency(symbol: _account!.currency.symbol).format(_totalAmount),
+              NumberFormat.currency(symbol: _account!.currency.symbol)
+                  .format(_totalAmount),
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
         ],
       ),
       actions: [
-        IconButton(onPressed: () {
-           
-        }, icon: const Icon(Icons.search)),
+        IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
       ],
     );
   }

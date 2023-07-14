@@ -15,6 +15,9 @@ class HiveRepository implements BaseHiveRepository {
 
   // Initialization Hive
   @override
+  Future<void> initHiveAdaptersBoxes() async =>
+      hiveLocalDataSource.initHiveAdaptersBoxes();
+  @override
   Future<void> initHive() async => hiveLocalDataSource.initHive();
 
   // Account
@@ -24,9 +27,6 @@ class HiveRepository implements BaseHiveRepository {
   @override
   Future<void> setPrimaryAccount(String accountId) async =>
       hiveLocalDataSource.setPrimaryAccount(accountId);
- @override
-  Future<void> setAllUnPrimaryAccount(String accountId) async =>
-      hiveLocalDataSource.setPrimaryAccount(accountId);
 
   @override
   Future<void> deleteAccount(String id) async =>
@@ -35,56 +35,41 @@ class HiveRepository implements BaseHiveRepository {
   @override
   Future<List<AccountEntity>> getAccounts() async =>
       hiveLocalDataSource.getAccounts();
+  @override
+  Future<void> updateAccount(AccountEntity accountEntity) async =>
+      hiveLocalDataSource.updateAccount(accountEntity);
+
+  @override
+  Future<void> putAccounts(List<AccountEntity> accounts) async =>
+      hiveLocalDataSource.putAccounts(accounts);
 
   // Transaction
   @override
   Future<void> addTransaction({
     required AccountEntity accountEntity,
     required TransactionEntity transactionEntity,
-    required bool isIncome,
-    required double amount,
   }) async =>
       hiveLocalDataSource.addTransaction(
-          accountEntity: accountEntity,
-          transactionEntity: transactionEntity,
-          isIncome: isIncome,
-          amount: amount);
+        accountEntity: accountEntity,
+        transactionEntity: transactionEntity,
+      );
   @override
   Future<void> deleteTransaction(
           {required TransactionEntity transactionEntity,
           required AccountEntity accountEntity}) async =>
       hiveLocalDataSource.deleteTransaction(
-         transactionEntity:transactionEntity, accountEntity: accountEntity);
-
-  // MainTransaction
-  @override
-  Future<void> createMainTransaction(
-          MainTransactionEntity mainTransactionEntity) async =>
-      hiveLocalDataSource.createMainTransaction(mainTransactionEntity);
+          transactionEntity: transactionEntity, accountEntity: accountEntity);
 
   @override
-  Future<void> deleteMainTransaction(TransactionEntity transactionEntity) async =>
-      hiveLocalDataSource.deleteMainTransaction( transactionEntity);
-  @override
-  Future<List<MainTransactionEntity>> getMainTransactions() async =>
-      hiveLocalDataSource.getMainTransactions();
-  @override
-  Future<void> updateMainTransaction(
-          String oldKey, MainTransactionEntity mainTransactionEntity) async =>
-      hiveLocalDataSource.updateMainTransaction(oldKey, mainTransactionEntity);
+  Future<void> updateTransaction(
+          {required TransactionEntity transactionEntity,
+          required AccountEntity accountEntity}) async =>
+      hiveLocalDataSource.updateTransaction(
+          transactionEntity: transactionEntity, accountEntity: accountEntity);
 
   @override
-  Future<void> updateAccount(AccountEntity accountEntity) async =>
-      hiveLocalDataSource.updateAccount(accountEntity);
-
-  @override
-  Future<void> selectAccount(
-          AccountEntity accountEntity, List<AccountEntity> accounts) async =>
-      hiveLocalDataSource.selectAccount(accountEntity, accounts);
-
-  @override
-  Future<void> putAccounts(List<AccountEntity> accounts) async =>
-      hiveLocalDataSource.putAccounts(accounts);
+  List<TransactionEntity> getTransactions() =>
+      hiveLocalDataSource.getTransactions();
 
   // Currency
   @override
@@ -139,36 +124,5 @@ class HiveRepository implements BaseHiveRepository {
   List<TransactionEntity> fetchTransactionsForYear(
           DateTime selectedDate, List<TransactionEntity> totalTransactions) =>
       hiveLocalDataSource.fetchTransactionsForYear(
-          selectedDate, totalTransactions);
-
-  // Selected Date MainTransactions
-  @override
-  List<MainTransactionEntity> getMainTransactionsForToday() =>
-      hiveLocalDataSource.getMainTransactionsForToday();
-
-  @override
-  List<MainTransactionEntity> fetchMainTransactionsForDay(DateTime selectedDate,
-          List<MainTransactionEntity> totalTransactions) =>
-      hiveLocalDataSource.fetchMainTransactionsForDay(
-          selectedDate, totalTransactions);
-
-  @override
-  List<MainTransactionEntity> fetchMainTransactionsForMonth(
-          DateTime selectedDate,
-          List<MainTransactionEntity> totalTransactions) =>
-      hiveLocalDataSource.fetchMainTransactionsForMonth(
-          selectedDate, totalTransactions);
-  @override
-  List<MainTransactionEntity> fetchMainTransactionsForWeek(
-          DateTime selectedDate,
-          List<MainTransactionEntity> totalTransactions) =>
-      hiveLocalDataSource.fetchMainTransactionsForWeek(
-          selectedDate, totalTransactions);
-
-  @override
-  List<MainTransactionEntity> fetchMainTransactionsForYear(
-          DateTime selectedDate,
-          List<MainTransactionEntity> totalTransactions) =>
-      hiveLocalDataSource.fetchMainTransactionsForYear(
           selectedDate, totalTransactions);
 }

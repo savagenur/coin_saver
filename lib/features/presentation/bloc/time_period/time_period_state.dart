@@ -1,8 +1,8 @@
-part of 'main_time_period_bloc.dart';
+part of 'time_period_bloc.dart';
 
-// For MainTransactionEntity
-abstract class MainTimePeriodState extends Equatable {
-  const MainTimePeriodState();
+// For TransactionEntity
+abstract class TimePeriodState extends Equatable {
+  const TimePeriodState();
 
   @override
   List<Object> get props => [
@@ -11,10 +11,10 @@ abstract class MainTimePeriodState extends Equatable {
       ];
 }
 
-class MainTimePeriodLoaded extends MainTimePeriodState {
+class TimePeriodLoaded extends TimePeriodState {
   final DateTime selectedDate;
-  final List<MainTransactionEntity> transactions;
-  const MainTimePeriodLoaded({
+  final List<TransactionEntity> transactions;
+  const TimePeriodLoaded({
     required this.selectedDate,
     required this.transactions,
   });
@@ -25,7 +25,7 @@ class MainTimePeriodLoaded extends MainTimePeriodState {
       ];
 }
 
-class MainTimePeriodLoading extends MainTimePeriodState {
+class TimePeriodLoading extends TimePeriodState {
   @override
   List<Object> get props => [];
 }

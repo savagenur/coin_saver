@@ -2,7 +2,7 @@ import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
-import 'package:coin_saver/features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
+import 'package:coin_saver/features/presentation/bloc/transaction/transaction_bloc.dart';
 import 'package:coin_saver/features/presentation/widgets/my_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -44,7 +44,8 @@ class TransactionDetailPage extends StatelessWidget {
             ),
             sizeVer(5),
             Text(
-              NumberFormat.currency(symbol: account.currency.symbol).format(transaction.amount),
+              NumberFormat.currency(symbol: account.currency.symbol)
+                  .format(transaction.amount),
               style: Theme.of(context)
                   .textTheme
                   .titleMedium!
@@ -126,12 +127,11 @@ class TransactionDetailPage extends StatelessWidget {
               title: "Delete",
               backgroundColor: Colors.red,
               onTap: () {
-                context
-                    .read<MainTransactionBloc>()
-                    .add(DeleteMainTransaction(transactionEntity: transaction));
-                context.read<AccountBloc>().add(DeleteTransaction(
-                    accountEntity: account, transactionEntity: transaction));
-                
+                context.read<TransactionBloc>().add(
+                      DeleteTransaction(
+                          transaction: transaction, account: account),
+                    );
+                context.read<AccountBloc>().add(GetAccounts());
                 Navigator.pop(context);
               },
             )

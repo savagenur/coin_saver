@@ -24,6 +24,7 @@ class CurrencyModel extends CurrencyEntity  {
   @override
   List<Object?> get props => [code, name, symbol];
 
+  @override
   CurrencyModel copyWith({
     String? code,
     String? name,

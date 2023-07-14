@@ -7,7 +7,7 @@ import '../../../domain/entities/transaction/transaction_entity.dart';
 part 'transaction_model.g.dart';
 
 @HiveType(typeId: 5)
-class TransactionModel extends TransactionEntity with HiveObjectMixin {
+class TransactionModel extends TransactionEntity {
   @HiveField(0)
   final String id;
   @HiveField(1)
@@ -15,7 +15,7 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
   @HiveField(2)
   final double amount;
   @HiveField(3)
-  final CategoryModel category;
+  final CategoryEntity category;
   @HiveField(4)
   final String? description;
   @HiveField(5)
@@ -130,7 +130,7 @@ class TransactionModel extends TransactionEntity with HiveObjectMixin {
       id: id ?? this.id,
       date: date ?? this.date,
       amount: amount ?? this.amount,
-      category:category != null ? CategoryModel.fromEntity(category) : this.category,
+      category:category??this.category,
       iconData: iconData ?? this.iconData,
       description: description ?? this.description,
       accountId: accountId ?? this.accountId,

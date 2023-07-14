@@ -2,9 +2,9 @@ import 'package:coin_saver/features/domain/entities/account/account_entity.dart'
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 import 'package:coin_saver/features/domain/repositories/base_hive_repository.dart';
 
-class AddTransactionUsecase {
+class UpdateTransactionUsecase {
   final BaseHiveRepository repository;
-  AddTransactionUsecase({
+  UpdateTransactionUsecase({
     required this.repository,
   });
 
@@ -12,9 +12,9 @@ class AddTransactionUsecase {
     AccountEntity accountEntity,
     TransactionEntity transactionEntity,
   ) {
-    return repository.addTransaction(
-      accountEntity: accountEntity,
+    return repository.updateTransaction(
       transactionEntity: transactionEntity,
+      accountEntity: accountEntity,
     );
   }
 }

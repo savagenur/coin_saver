@@ -8,13 +8,11 @@ import 'package:equatable/equatable.dart';
 import 'package:coin_saver/features/domain/usecases/account/create_account_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/account/delete_account_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/account/get_accounts_usecase.dart';
-import 'package:coin_saver/features/domain/usecases/account/select_account_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/account/update_account_usecase.dart';
 
 import '../../../domain/entities/account/account_entity.dart';
 import '../../../domain/entities/transaction/transaction_entity.dart';
 import '../../../domain/usecases/account/set_primary_account_usecase.dart';
-import 'package:coin_saver/injection_container.dart' as di;
 
 part 'account_event.dart';
 part 'account_state.dart';
@@ -43,8 +41,8 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     on<GetAccounts>(_onGetAccounts);
 
     // Transaction
-    on<AddTransaction>(_onAddTransaction);
-    on<DeleteTransaction>(_onDeleteTransaction);
+    // on<AddTransaction>(_onAddTransaction);
+    // on<DeleteTransaction>(_onDeleteTransaction);
   }
 
   FutureOr<void> _onCreateAccount(
@@ -83,26 +81,26 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   }
 
   // Transaction
-  FutureOr<void> _onAddTransaction(
-      AddTransaction event, Emitter<AccountState> emit) async {
-    await setPrimaryAccountUsecase.call(event.accountEntity.id);
-    await addTransactionUsecase.call(event.accountEntity,
-        event.transactionEntity, event.isIncome, event.amount);
+  // FutureOr<void> _onAddTransaction(
+  //     AddTransaction event, Emitter<AccountState> emit) async {
+  //   await setPrimaryAccountUsecase.call(event.accountEntity.id);
+  //   await addTransactionUsecase.call(event.accountEntity,
+  //       event.transactionEntity, );
 
-    final accounts = await getAccountsUsecase.call();
+  //   final accounts = await getAccountsUsecase.call();
 
-    emit(AccountLoaded(accounts: accounts));
-  }
+  //   emit(AccountLoaded(accounts: accounts));
+  // }
 
-  FutureOr<void> _onDeleteTransaction(
-      DeleteTransaction event, Emitter<AccountState> emit) async {
-    await deleteTransactionUsecase.call(
-        event.accountEntity, event.transactionEntity);
+  // FutureOr<void> _onDeleteTransaction(
+  //     DeleteTransaction event, Emitter<AccountState> emit) async {
+  //   await deleteTransactionUsecase.call(
+  //       event.accountEntity, event.transactionEntity);
 
-    final accounts = await getAccountsUsecase.call();
+  //   final accounts = await getAccountsUsecase.call();
 
-    emit(AccountLoaded(accounts: accounts));
-  }
+  //   emit(AccountLoaded(accounts: accounts));
+  // }
 
   Future<List<AccountEntity>> getAccountsWithTotal(
     String accountId,

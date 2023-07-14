@@ -3,7 +3,6 @@ import 'package:coin_saver/constants/period_enum.dart';
 import 'package:coin_saver/features/data/models/account/account_model.dart';
 import 'package:coin_saver/features/domain/entities/main_transaction/main_transaction_entity.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
-import 'package:coin_saver/features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:coin_saver/features/presentation/pages/main_transaction/main_transaction_page.dart';
 import 'package:coin_saver/features/presentation/transactions/transactions_page.dart';
@@ -19,9 +18,11 @@ import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/presentation/widgets/shadowed_container_widget.dart';
 
+import '../../../domain/entities/transaction/transaction_entity.dart';
 import '../../bloc/account/account_bloc.dart';
 import '../../bloc/cubit/selected_date/selected_date_cubit.dart';
-import '../../bloc/main_time_period/main_time_period_bloc.dart';
+import '../../bloc/time_period/time_period_bloc.dart';
+import '../../bloc/transaction/transaction_bloc.dart';
 import '../../widgets/category_tile.dart';
 
 class HomePage extends StatefulWidget {
@@ -73,13 +74,14 @@ class _HomePageState extends State<HomePage>
         return BlocBuilder<AccountBloc, AccountState>(
           builder: (context, accountState) {
             if (accountState is AccountLoaded) {
-              return BlocBuilder<MainTimePeriodBloc, MainTimePeriodState>(
+              return BlocBuilder<TimePeriodBloc, TimePeriodState>(
                 builder: (context, mainTimePeriodState) {
-                  if (mainTimePeriodState is MainTimePeriodLoaded) {
-                    return BlocBuilder<MainTransactionBloc,
-                        MainTransactionState>(
+                  if (mainTimePeriodState is TimePeriodLoaded) {
+                   
+
+                    return BlocBuilder<TransactionBloc, TransactionState>(
                       builder: (context, mainTransactionState) {
-                        if (mainTransactionState is MainTransactionLoaded) {
+                        if (mainTransactionState is TransactionLoaded) {
                           // Selected DateTime
                           _dateTime = selectedDate;
                           // Primary Account
@@ -89,7 +91,7 @@ class _HomePageState extends State<HomePage>
                           );
 
                           // MainTransactions Sort
-                          List<MainTransactionEntity> mainTransactions =
+                          List<TransactionEntity> mainTransactions =
                               mainTimePeriodState.transactions
                                   .where((mainTransaction) => account.id ==
                                           "total"
@@ -99,14 +101,13 @@ class _HomePageState extends State<HomePage>
                                           mainTransaction.isIncome == _isIncome)
                                   .toList()
                                 ..sort(
-                                  (a, b) =>
-                                      b.totalAmount.compareTo(a.totalAmount),
+                                  (a, b) => b.amount.compareTo(a.amount),
                                 );
                           // Total amountMoney of MainTransactions
                           double totalExpense = mainTransactions.fold(
                               0,
                               (previousValue, element) =>
-                                  previousValue + element.totalAmount);
+                                  previousValue + element.amount);
                           return BlocBuilder<PeriodCubit, Period>(
                             builder: (context, selectedPeriod) {
                               _selectedPeriod = selectedPeriod;
@@ -133,7 +134,7 @@ class _HomePageState extends State<HomePage>
                                                   account: account,
                                                   transactions:
                                                       mainTransactionState
-                                                          .mainTransactions,
+                                                          .transactions,
                                                   dateTime: _dateTime,
                                                   isIncome: _isIncome,
                                                 ),
@@ -147,7 +148,7 @@ class _HomePageState extends State<HomePage>
                                                                 _tooltipBehavior,
                                                             series: [
                                                               DoughnutSeries<
-                                                                  MainTransactionEntity,
+                                                                  TransactionEntity,
                                                                   String>(
                                                                 animationDelay:
                                                                     1,
@@ -164,10 +165,11 @@ class _HomePageState extends State<HomePage>
                                                                 dataSource:
                                                                     mainTransactions,
                                                                 xValueMapper:
-                                                                    (MainTransactionEntity
+                                                                    (TransactionEntity
                                                                             data,
                                                                         index) {
                                                                   return data
+                                                                      .category
                                                                       .name;
                                                                 },
                                                                 pointColorMapper:
@@ -176,10 +178,10 @@ class _HomePageState extends State<HomePage>
                                                                   return datum
                                                                       .color;
                                                                 },
-                                                                yValueMapper: (MainTransactionEntity
+                                                                yValueMapper: (TransactionEntity
                                                                             data,
                                                                         index) =>
-                                                                    data.totalAmount,
+                                                                    data.amount,
                                                               ),
                                                             ],
                                                           ),
@@ -302,34 +304,34 @@ class _HomePageState extends State<HomePage>
         switch (_selectedPeriod) {
           case Period.day:
             context
-                .read<MainTimePeriodBloc>()
+                .read<TimePeriodBloc>()
                 .add(SetDayPeriod(selectedDate: _dateTime));
             context.read<PeriodCubit>().changePeriod(_selectedPeriod);
             break;
           case Period.week:
             context
-                .read<MainTimePeriodBloc>()
+                .read<TimePeriodBloc>()
                 .add(SetWeekPeriod(selectedDate: _dateTime));
             context.read<PeriodCubit>().changePeriod(_selectedPeriod);
 
             break;
           case Period.month:
             context
-                .read<MainTimePeriodBloc>()
+                .read<TimePeriodBloc>()
                 .add(SetMonthPeriod(selectedDate: _dateTime));
             context.read<PeriodCubit>().changePeriod(_selectedPeriod);
 
             break;
           case Period.year:
             context
-                .read<MainTimePeriodBloc>()
+                .read<TimePeriodBloc>()
                 .add(SetYearPeriod(selectedDate: _dateTime));
             context.read<PeriodCubit>().changePeriod(_selectedPeriod);
 
             break;
           case Period.period:
             context
-                .read<MainTimePeriodBloc>()
+                .read<TimePeriodBloc>()
                 .add(SetYearPeriod(selectedDate: _dateTime));
             context.read<PeriodCubit>().changePeriod(_selectedPeriod);
 

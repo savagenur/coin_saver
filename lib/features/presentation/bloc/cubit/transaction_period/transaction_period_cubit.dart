@@ -8,12 +8,12 @@ import '../../../../domain/usecases/time_period/fetch_transactions_for_month_use
 import '../../../../domain/usecases/time_period/fetch_transactions_for_week_usecase.dart';
 import '../../../../domain/usecases/time_period/fetch_transactions_for_year_usecase.dart';
 
-class TimePeriodCubit extends Cubit<List<TransactionEntity>> {
+class TransactionPeriodCubit extends Cubit<List<TransactionEntity>> {
   final FetchTransactionsForDayUsecase fetchTransactionsForDayUsecase;
   final FetchTransactionsForWeekUsecase fetchTransactionsForWeekUsecase;
   final FetchTransactionsForMonthUsecase fetchTransactionsForMonthUsecase;
   final FetchTransactionsForYearUsecase fetchTransactionsForYearUsecase;
-  TimePeriodCubit({
+  TransactionPeriodCubit({
     required this.fetchTransactionsForDayUsecase,
     required this.fetchTransactionsForWeekUsecase,
     required this.fetchTransactionsForMonthUsecase,

@@ -11,8 +11,6 @@ import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart'
 import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_category/selected_category_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
-import 'package:coin_saver/features/presentation/bloc/main_time_period/main_time_period_bloc.dart';
-import 'package:coin_saver/features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
 import 'package:coin_saver/features/presentation/pages/add_category/add_category_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +21,8 @@ import 'package:pull_down_button/pull_down_button.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../injection_container.dart';
 import '../../bloc/cubit/selected_date/selected_date_cubit.dart';
+import '../../bloc/time_period/time_period_bloc.dart';
+import '../../bloc/transaction/transaction_bloc.dart';
 import '../../widgets/my_button_widget.dart';
 import 'package:coin_saver/injection_container.dart' as di;
 
@@ -77,8 +77,8 @@ class AddTransactionPageState extends State<AddTransactionPage>
   // Blocs
   late SelectedCategoryCubit selectedCategoryCubit;
   late AccountBloc accountBloc;
-  late MainTimePeriodBloc mainTimePeriodBloc;
-  late MainTransactionBloc mainTransactionBloc;
+  late TimePeriodBloc timePeriodBloc;
+  late TransactionBloc transactionBloc;
   late PeriodCubit periodCubit;
   late SelectedDateCubit selectedDateCubit;
 
@@ -90,7 +90,6 @@ class AddTransactionPageState extends State<AddTransactionPage>
   @override
   void initState() {
     super.initState();
-    print(widget.account.id);
     // SelectedDate
     _selectedDate = widget.selectedDate;
     // Controls isIncome tab or not
@@ -106,8 +105,8 @@ class AddTransactionPageState extends State<AddTransactionPage>
     // Blocs
     selectedCategoryCubit = context.read<SelectedCategoryCubit>();
     accountBloc = context.read<AccountBloc>();
-    mainTimePeriodBloc = context.read<MainTimePeriodBloc>();
-    mainTransactionBloc = context.read<MainTransactionBloc>();
+    timePeriodBloc = context.read<TimePeriodBloc>();
+    transactionBloc = context.read<TransactionBloc>();
     periodCubit = context.read<PeriodCubit>();
     selectedDateCubit = context.read<SelectedDateCubit>();
   }
@@ -296,7 +295,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
             child: TextFormField(
               controller: _amountController,
               validator: (value) {
-                if (value == null || value.isEmpty ) {
+                if (value == null || value.isEmpty) {
                   return "Please enter\nvalid amount.";
                 }
                 return null;
@@ -316,7 +315,6 @@ class AddTransactionPageState extends State<AddTransactionPage>
               decoration: InputDecoration(
                 counterText: "",
                 hintText: "0",
-                
               ),
               style: Theme.of(context)
                   .textTheme
@@ -355,7 +353,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
         _account != null) {
       _formKey.currentState!.save();
       final TransactionEntity transaction = TransactionEntity(
-        id: getIt<Uuid>().v1(),
+        id: sl<Uuid>().v1(),
         date: _selectedDate,
         amount: _amount,
         category: _category!,
@@ -365,25 +363,14 @@ class AddTransactionPageState extends State<AddTransactionPage>
         color: _category!.color,
       );
 
-      mainTransactionBloc.add(CreateMainTransaction(
-          mainTransaction: MainTransactionEntity(
-              id: getIt<Uuid>().v1(),
-              accountId: _account!.id,
-              name: _category!.name,
-              iconData: _category!.iconData,
-              color: _category!.color,
-              totalAmount: _amount,
-              isIncome: _isIncome,
-              dateTime: _selectedDate)));
+      transactionBloc
+          .add(AddTransaction(transaction: transaction, account: _account!));
 
-      mainTimePeriodBloc.add(SetDayPeriod(
+      timePeriodBloc.add(SetDayPeriod(
         selectedDate: _selectedDate,
       ));
-      accountBloc.add(AddTransaction(
-          accountEntity: _account!,
-          transactionEntity: transaction,
-          isIncome: _isIncome,
-          amount: _amount));
+      accountBloc.add(GetAccounts());
+
       periodCubit.changePeriod(Period.day);
       selectedCategoryCubit.changeCategory(null);
       Navigator.pushNamed(context, PageConst.homePage,

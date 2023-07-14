@@ -6,37 +6,32 @@ import 'package:coin_saver/features/domain/entities/main_transaction/main_transa
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 
 abstract class BaseHiveRepository {
+  // Hive
+  Future<void> initHiveAdaptersBoxes();
   Future<void> initHive();
   // Account
   Future<List<AccountEntity>> getAccounts();
   Future<void> putAccounts(List<AccountEntity> accounts);
   Future<void> createAccount(AccountEntity accountEntity);
-  Future<void> selectAccount(
-      AccountEntity accountEntity, List<AccountEntity> accounts);
   Future<void> updateAccount(AccountEntity accountEntity);
+
   Future<void> deleteAccount(String id);
   Future<void> setPrimaryAccount(String accountId);
-  Future<void> setAllUnPrimaryAccount(String accountId);
 
   // Transaction
   Future<void> addTransaction({
     required AccountEntity accountEntity,
     required TransactionEntity transactionEntity,
-    required bool isIncome,
-    required double amount,
   });
   Future<void> deleteTransaction({
     required TransactionEntity transactionEntity,
     required AccountEntity accountEntity,
   });
-
-  // MainTransaction
-  Future<List<MainTransactionEntity>> getMainTransactions();
-  Future<void> createMainTransaction(
-      MainTransactionEntity mainTransactionEntity);
-  Future<void> updateMainTransaction(
-      String oldKey, MainTransactionEntity mainTransactionEntity);
-  Future<void> deleteMainTransaction(TransactionEntity transactionEntity);
+  Future<void> updateTransaction({
+    required TransactionEntity transactionEntity,
+    required AccountEntity accountEntity,
+  });
+  List<TransactionEntity> getTransactions();
 
   // Category
   Future<List<CategoryEntity>> getCategories();
@@ -59,15 +54,4 @@ abstract class BaseHiveRepository {
       DateTime selectedDate, List<TransactionEntity> totalTransactions);
   List<TransactionEntity> fetchTransactionsForYear(
       DateTime selectedDate, List<TransactionEntity> totalTransactions);
-
-  // Date MainTransactions
-  List<MainTransactionEntity> getMainTransactionsForToday();
-  List<MainTransactionEntity> fetchMainTransactionsForDay(
-      DateTime selectedDate, List<MainTransactionEntity> totalMainTransactions);
-  List<MainTransactionEntity> fetchMainTransactionsForWeek(
-      DateTime selectedDate, List<MainTransactionEntity> totalTransactions);
-  List<MainTransactionEntity> fetchMainTransactionsForMonth(
-      DateTime selectedDate, List<MainTransactionEntity> totalMainTransactions);
-  List<MainTransactionEntity> fetchMainTransactionsForYear(
-      DateTime selectedDate, List<MainTransactionEntity> totalMainTransactions);
 }

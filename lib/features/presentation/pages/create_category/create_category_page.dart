@@ -179,9 +179,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                 child: Container(
                   padding: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
-                      color: _color == selectedColor
-                          ? _color
-                          : null,
+                      color: _color == selectedColor ? _color : null,
                       shape: BoxShape.circle),
                   child: CircleAvatar(
                     backgroundColor: mainColors[index],
@@ -238,16 +236,13 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
             child: Container(
               padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
-                color: _iconData == selectedIconData
-                    ? _color
-                    : null,
+                color: _iconData == selectedIconData ? _color : null,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: CircleAvatar(
                 radius: 30,
-                backgroundColor: _iconData == selectedIconData
-                    ? _color
-                    : secondaryColor,
+                backgroundColor:
+                    _iconData == selectedIconData ? _color : secondaryColor,
                 child: Icon(
                   mainIcons[index],
                   color: Colors.white,
@@ -344,7 +339,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
 
   void _buildCreateCategory() {
     _category = CategoryEntity(
-      id: getIt<Uuid>().v1(),
+      id: sl<Uuid>().v1(),
       name: _titleController.text,
       iconData: _iconData!,
       color: _color!,

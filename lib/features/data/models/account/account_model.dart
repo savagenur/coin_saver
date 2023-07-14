@@ -21,7 +21,7 @@ class AccountModel extends AccountEntity {
   @HiveField(3)
   final double balance;
   @HiveField(4)
-  final CurrencyModel currency;
+  final CurrencyEntity currency;
   @HiveField(5)
   final bool isPrimary;
   @HiveField(6)
@@ -49,7 +49,7 @@ class AccountModel extends AccountEntity {
   @HiveField(17)
   final String? notes;
   @HiveField(18)
-  final List<TransactionModel> transactionHistory;
+  final List<TransactionEntity> transactionHistory;
   @HiveField(19)
   final String? monthlyStatement;
   @HiveField(20)
@@ -59,7 +59,7 @@ class AccountModel extends AccountEntity {
   @HiveField(22)
   final Color color;
 
-  AccountModel({
+  const AccountModel({
     required this.id,
     required this.name,
     required this.iconData,
@@ -106,7 +106,7 @@ class AccountModel extends AccountEntity {
             linkedAccounts: linkedAccounts,
             notes: notes,
             transactionHistory:
-                transactionHistory.map((model) => model.toEntity()).toList(),
+                transactionHistory,
             monthlyStatement: monthlyStatement,
           );
 
@@ -158,10 +158,7 @@ class AccountModel extends AccountEntity {
       minimumBalance: minimumBalance ?? this.minimumBalance,
       linkedAccounts: linkedAccounts ?? this.linkedAccounts,
       notes: notes ?? this.notes,
-      transactionHistory: transactionHistory
-              ?.map((entity) => TransactionModel.fromEntity(entity))
-              .toList() ??
-          this.transactionHistory,
+      transactionHistory: transactionHistory??this.transactionHistory,
       monthlyStatement: monthlyStatement ?? this.monthlyStatement,
     );
   }

@@ -52,36 +52,36 @@ class DeleteAccount extends AccountEvent {
       ];
 }
 
-class AddTransaction extends AccountEvent {
-  final AccountEntity accountEntity;
-  final TransactionEntity transactionEntity;
-  final bool isIncome;
-  final double amount;
-  const AddTransaction({
-    required this.accountEntity,
-    required this.transactionEntity,
-    required this.isIncome,
-    required this.amount,
-  });
-  @override
-  List<Object> get props => [
-        accountEntity,
-        transactionEntity,
-        isIncome,
-        amount,
-      ];
-}
+// class AddTransaction extends AccountEvent {
+//   final AccountEntity accountEntity;
+//   final TransactionEntity transactionEntity;
+//   final bool isIncome;
+//   final double amount;
+//   const AddTransaction({
+//     required this.accountEntity,
+//     required this.transactionEntity,
+//     required this.isIncome,
+//     required this.amount,
+//   });
+//   @override
+//   List<Object> get props => [
+//         accountEntity,
+//         transactionEntity,
+//         isIncome,
+//         amount,
+//       ];
+// }
 
-class DeleteTransaction extends AccountEvent {
-  final AccountEntity accountEntity;
-  final TransactionEntity transactionEntity;
-  const DeleteTransaction({
-    required this.accountEntity,
-    required this.transactionEntity,
-  });
-  @override
-  List<Object> get props => [
-        accountEntity,
-        transactionEntity,
-      ];
-}
+// class DeleteTransaction extends AccountEvent {
+//   final AccountEntity accountEntity;
+//   final TransactionEntity transactionEntity;
+//   const DeleteTransaction({
+//     required this.accountEntity,
+//     required this.transactionEntity,
+//   });
+//   @override
+//   List<Object> get props => [
+//         accountEntity,
+//         transactionEntity,
+//       ];
+// }

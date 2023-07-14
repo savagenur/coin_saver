@@ -1,13 +1,13 @@
-part of 'main_time_period_bloc.dart';
+part of 'time_period_bloc.dart';
 
-abstract class MainTimePeriodEvent extends Equatable {
-  const MainTimePeriodEvent();
+abstract class TimePeriodEvent extends Equatable {
+  const TimePeriodEvent();
 
   @override
   List<Object> get props => [];
 }
 
-class SetDayPeriod extends MainTimePeriodEvent {
+class SetDayPeriod extends TimePeriodEvent {
   final DateTime selectedDate;
 
   const SetDayPeriod({
@@ -19,12 +19,12 @@ class SetDayPeriod extends MainTimePeriodEvent {
       ];
 }
 
-class GetTodayPeriod extends MainTimePeriodEvent {
+class GetTodayPeriod extends TimePeriodEvent {
   @override
   List<Object> get props => [];
 }
 
-class SetWeekPeriod extends MainTimePeriodEvent {
+class SetWeekPeriod extends TimePeriodEvent {
   final DateTime selectedDate;
 
   const SetWeekPeriod({
@@ -36,7 +36,7 @@ class SetWeekPeriod extends MainTimePeriodEvent {
       ];
 }
 
-class SetMonthPeriod extends MainTimePeriodEvent {
+class SetMonthPeriod extends TimePeriodEvent {
   final DateTime selectedDate;
 
   const SetMonthPeriod({
@@ -48,7 +48,7 @@ class SetMonthPeriod extends MainTimePeriodEvent {
       ];
 }
 
-class SetYearPeriod extends MainTimePeriodEvent {
+class SetYearPeriod extends TimePeriodEvent {
   final DateTime selectedDate;
 
   const SetYearPeriod({

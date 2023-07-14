@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
-import 'package:coin_saver/features/domain/entities/main_transaction/main_transaction_entity.dart';
+
+import '../../domain/entities/transaction/transaction_entity.dart';
 
 class CategoryTile extends StatelessWidget {
-  final MainTransactionEntity mainTransaction;
+  final TransactionEntity mainTransaction;
   final AccountEntity account;
   final double totalExpense;
   const CategoryTile({
@@ -39,18 +40,18 @@ class CategoryTile extends StatelessWidget {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(flex: 3, child: Text(mainTransaction.name)),
+            Expanded(flex: 3, child: Text(mainTransaction.category.name)),
             Flexible(
               flex: 1,
               child: Text(
                 NumberFormat.percentPattern()
-                    .format(mainTransaction.totalAmount / totalExpense),
+                    .format(mainTransaction.amount / totalExpense),
               ),
             ),
             Expanded(
               flex: 1,
               child: Text(
-                "${account.currency.symbol}${NumberFormat.compact().format(mainTransaction.totalAmount)}",
+                "${account.currency.symbol}${NumberFormat.compact().format(mainTransaction.amount)}",
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context)
                     .textTheme

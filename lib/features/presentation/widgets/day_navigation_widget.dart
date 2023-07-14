@@ -1,20 +1,20 @@
 import 'package:coin_saver/constants/period_enum.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
-import 'package:coin_saver/features/domain/entities/main_transaction/main_transaction_entity.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
-import 'package:coin_saver/features/presentation/bloc/main_time_period/main_time_period_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../../domain/entities/transaction/transaction_entity.dart';
 import '../bloc/cubit/selected_date/selected_date_cubit.dart';
+import '../bloc/time_period/time_period_bloc.dart';
 
 
 class DayNavigationWidget extends StatefulWidget {
   final AccountEntity account;
   final DateTime dateTime;
   final bool isIncome;
-  final List<MainTransactionEntity> transactions;
+  final List<TransactionEntity> transactions;
   final Period selectedPeriod;
   const DayNavigationWidget({
     super.key,
@@ -51,7 +51,7 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
     switch (selectedPeriod) {
       case Period.day:
         context
-            .read<MainTimePeriodBloc>()
+            .read<TimePeriodBloc>()
             .add(SetDayPeriod(selectedDate: selectedDate));
         return formatDateyMMMMd(selectedDate) ==
                 formatDateyMMMMd(DateTime.now())
@@ -63,13 +63,13 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
                 : formatDateyMMMMd(selectedDate);
       case Period.week:
         context
-            .read<MainTimePeriodBloc>()
+            .read<TimePeriodBloc>()
             .add(SetWeekPeriod(selectedDate: selectedDate));
         return "${formatDateM(selectedDate.subtract(Duration(days: selectedDate.weekday - 1)))} - ${formatDateyMMMMd(selectedDate.subtract(Duration(days: selectedDate.weekday - 7)))}";
 
       case Period.month:
         context
-            .read<MainTimePeriodBloc>()
+            .read<TimePeriodBloc>()
             .add(SetMonthPeriod(selectedDate: selectedDate));
         final startOfMonth = DateTime(selectedDate.year, selectedDate.month);
         final endOfMonth = DateTime(selectedDate.year, selectedDate.month + 1)
@@ -77,7 +77,7 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
         return "${formatDateM(startOfMonth)} - ${formatDateM(endOfMonth)}";
       case Period.year:
         context
-            .read<MainTimePeriodBloc>()
+            .read<TimePeriodBloc>()
             .add(SetYearPeriod(selectedDate: selectedDate));
         return DateFormat("yyyy").format(selectedDate);
       case Period.period:
@@ -111,7 +111,7 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
                                 .moveBackward(selectedPeriod);
 
                             // MainTransactions Sort
-                            context.read<MainTimePeriodBloc>().add(SetDayPeriod(
+                            context.read<TimePeriodBloc>().add(SetDayPeriod(
                                   selectedDate: selectedDate,
                                 ));
                             updateSelectedPeriodText(

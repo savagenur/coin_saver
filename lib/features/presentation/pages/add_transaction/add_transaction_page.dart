@@ -16,15 +16,15 @@ import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../injection_container.dart';
 import '../../bloc/cubit/selected_date/selected_date_cubit.dart';
+import '../../bloc/main_transaction/main_transaction_bloc.dart';
 import '../../bloc/time_period/time_period_bloc.dart';
-import '../../bloc/transaction/transaction_bloc.dart';
 import '../../widgets/my_button_widget.dart';
-import 'package:coin_saver/injection_container.dart' as di;
 
 class AddTransactionPage extends StatefulWidget {
   final bool isIncome;
@@ -78,7 +78,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
   late SelectedCategoryCubit selectedCategoryCubit;
   late AccountBloc accountBloc;
   late TimePeriodBloc timePeriodBloc;
-  late TransactionBloc transactionBloc;
+  late MainTransactionBloc mainTransactionBloc;
   late PeriodCubit periodCubit;
   late SelectedDateCubit selectedDateCubit;
 
@@ -86,6 +86,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool isErrorCategory = false;
+  bool isErrorAccount = false;
 
   @override
   void initState() {
@@ -95,7 +96,11 @@ class AddTransactionPageState extends State<AddTransactionPage>
     // Controls isIncome tab or not
     _tabController = TabController(
         length: 2, vsync: this, initialIndex: widget.isIncome ? 1 : 0);
-    _account = widget.account;
+    if (widget.account.id == "total") {
+      _account = null;
+    } else {
+      _account = widget.account;
+    }
     _selectedAccountId = widget.account.id;
     _isIncome = widget.isIncome;
     _transactionHistory = widget.account.transactionHistory;
@@ -106,9 +111,17 @@ class AddTransactionPageState extends State<AddTransactionPage>
     selectedCategoryCubit = context.read<SelectedCategoryCubit>();
     accountBloc = context.read<AccountBloc>();
     timePeriodBloc = context.read<TimePeriodBloc>();
-    transactionBloc = context.read<TransactionBloc>();
+    mainTransactionBloc = context.read<MainTransactionBloc>();
     periodCubit = context.read<PeriodCubit>();
     selectedDateCubit = context.read<SelectedDateCubit>();
+  }
+
+  @override
+  void didUpdateWidget(covariant AddTransactionPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Check if _category and _account are not null
+    if (_category == null && _account == null) {}
   }
 
   @override
@@ -159,53 +172,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                         style: TextStyle(color: Colors.grey),
                                       ),
                                       sizeVer(5),
-                                      PullDownButton(
-                                        itemBuilder: (context) {
-                                          return [
-                                            ...List.generate(
-                                              _accounts.length,
-                                              (index) =>
-                                                  PullDownMenuItem.selectable(
-                                                onTap: () {
-                                                  _account = _accounts[index];
-                                                },
-                                                selected: _accounts[index] ==
-                                                    _account,
-                                                title: _accounts[index].name,
-                                                subtitle:
-                                                    "\$${_accounts[index].balance}",
-                                                icon: _accounts[index].iconData,
-                                              ),
-                                            ),
-                                          ];
-                                        },
-                                        buttonBuilder: (context, showMenu) {
-                                          return GestureDetector(
-                                            onTap: showMenu,
-                                            child: Row(
-                                              children: [
-                                                Icon(
-                                                  _account!.iconData,
-                                                  color: Theme.of(context)
-                                                      .primaryColor,
-                                                ),
-                                                sizeHor(5),
-                                                Text(
-                                                  _account!.name,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .titleMedium!
-                                                      .copyWith(
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                ),
-                                                const Icon(Icons
-                                                    .arrow_drop_down_outlined)
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                      ),
+                                      _buildPullDownButton(),
                                       const Divider(),
                                       sizeVer(10),
                                       Row(
@@ -281,6 +248,53 @@ class AddTransactionPageState extends State<AddTransactionPage>
     );
   }
 
+  PullDownButton _buildPullDownButton() {
+    return PullDownButton(
+      itemBuilder: (context) {
+        List<AccountEntity> accounts =
+            _accounts.where((element) => element.id != "total").toList();
+        return List.generate(
+          _accounts.length - 1,
+          (index) => PullDownMenuItem.selectable(
+            onTap: () {
+              _account = accounts[index];
+              isErrorAccount = false;
+              // accountBloc.add(SetPrimaryAccount(accountId: _account!.id));
+            },
+            selected: accounts[index] == _account,
+            title: accounts[index].name,
+            subtitle: "\$${accounts[index].balance}",
+            icon: accounts[index].iconData,
+          ),
+        );
+      },
+      buttonBuilder: (context, showMenu) {
+        return GestureDetector(
+          onTap: showMenu,
+          child: Row(
+            children: [
+              Icon(
+                _account?.iconData ?? FontAwesomeIcons.circleExclamation,
+                color: isErrorAccount
+                    ? Colors.red.shade800
+                    : Theme.of(context).primaryColor,
+              ),
+              sizeHor(5),
+              Text(
+                _account?.name ?? "Not selected!",
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium!
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+              const Icon(Icons.arrow_drop_down_outlined)
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Row _buildInputAmount(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -348,6 +362,11 @@ class AddTransactionPageState extends State<AddTransactionPage>
         isErrorCategory = true;
       });
     }
+    if (_account == null) {
+      setState(() {
+        isErrorAccount = true;
+      });
+    }
     if (_formKey.currentState!.validate() &&
         _category != null &&
         _account != null) {
@@ -363,13 +382,14 @@ class AddTransactionPageState extends State<AddTransactionPage>
         color: _category!.color,
       );
 
-      transactionBloc
+      mainTransactionBloc
           .add(AddTransaction(transaction: transaction, account: _account!));
-
+      accountBloc.add(
+        SetPrimaryAccount(accountId: _account!.id),
+      );
       timePeriodBloc.add(SetDayPeriod(
         selectedDate: _selectedDate,
       ));
-      accountBloc.add(GetAccounts());
 
       periodCubit.changePeriod(Period.day);
       selectedCategoryCubit.changeCategory(null);

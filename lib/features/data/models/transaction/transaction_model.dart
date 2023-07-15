@@ -15,7 +15,7 @@ class TransactionModel extends TransactionEntity {
   @HiveField(2)
   final double amount;
   @HiveField(3)
-  final CategoryEntity category;
+  final CategoryModel category;
   @HiveField(4)
   final String? description;
   @HiveField(5)
@@ -130,7 +130,8 @@ class TransactionModel extends TransactionEntity {
       id: id ?? this.id,
       date: date ?? this.date,
       amount: amount ?? this.amount,
-      category:category??this.category,
+      category:
+          category != null ? CategoryModel.fromEntity(category) : this.category,
       iconData: iconData ?? this.iconData,
       description: description ?? this.description,
       accountId: accountId ?? this.accountId,

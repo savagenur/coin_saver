@@ -67,18 +67,24 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                   return BlocBuilder<PeriodCubit, Period>(
                     builder: (context, selectedPeriod) {
                       return BlocBuilder<TimePeriodBloc, TimePeriodState>(
-                        builder: (context, mainTimePeriodState) {
-                          if (mainTimePeriodState is TimePeriodLoaded) {
+                        builder: (context, timePeriodState) {
+                          if (timePeriodState is TimePeriodLoaded) {
                             _account = accountState.accounts.firstWhere(
                               (account) => account.isPrimary,
                             );
-                            _mainTransactions = mainTimePeriodState.transactions
+                            _mainTransactions = timePeriodState.transactions
                                 .where((mainTransaction) =>
-                                    mainTransaction.accountId == _account!.id &&
-                                    mainTransaction.category ==
-                                        _mainTransaction.category &&
-                                    mainTransaction.isIncome ==
-                                        _mainTransaction.isIncome)
+                                    _account!.id == "total"
+                                        ? mainTransaction.category ==
+                                                _mainTransaction.category &&
+                                            mainTransaction.isIncome ==
+                                                _mainTransaction.isIncome
+                                        : mainTransaction.accountId ==
+                                                _account!.id &&
+                                            mainTransaction.category ==
+                                                _mainTransaction.category &&
+                                            mainTransaction.isIncome ==
+                                                _mainTransaction.isIncome)
                                 .toList();
 
                             // Total amountMoney of MainTransactions
@@ -159,89 +165,8 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                                     child: SingleChildScrollView(
                                       child: Padding(
                                         padding: const EdgeInsets.all(10),
-                                        child: Column(
-                                          children: [
-                                            ...List.generate(
-                                              _filteredMap.keys.length,
-                                              (keyIndex) {
-                                                DateTime dateTime = _filteredMap
-                                                    .keys
-                                                    .elementAt(keyIndex);
-                                                return Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      DateFormat.yMMMEd()
-                                                          .format(dateTime),
-                                                      style: const TextStyle(
-                                                        color: secondaryColor,
-                                                      ),
-                                                    ),
-                                                    ...List.generate(
-                                                        _filteredMap.values
-                                                            .elementAt(keyIndex)
-                                                            .length,
-                                                        (valueIndex) {
-                                                      var transaction =
-                                                          _filteredMap[_filteredMap
-                                                                  .keys
-                                                                  .elementAt(
-                                                                      keyIndex)]![
-                                                              valueIndex];
-
-                                                      return ListTile(
-                                                        onTap: () {
-                                                          Navigator.pushNamed(
-                                                              context,
-                                                              PageConst
-                                                                  .transactionDetailPage,
-                                                              arguments:
-                                                                  TransactionDetailPage(
-                                                                transaction:
-                                                                    transaction,
-                                                                account:
-                                                                    _account!,
-                                                              ));
-                                                        },
-                                                        contentPadding:
-                                                            EdgeInsets.zero,
-                                                        leading: CircleAvatar(
-                                                          backgroundColor:
-                                                              _mainTransaction
-                                                                  .color,
-                                                          child: Icon(
-                                                            _mainTransaction
-                                                                .iconData,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                        title: Text(
-                                                            _mainTransaction
-                                                                .category.name),
-                                                        trailing: Text(
-                                                          NumberFormat.currency(
-                                                                  symbol: _account!
-                                                                      .currency
-                                                                      .symbol)
-                                                              .format(
-                                                                  transaction
-                                                                      .amount),
-                                                          style:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .titleMedium,
-                                                        ),
-                                                      );
-                                                    }),
-                                                    sizeVer(10)
-                                                  ],
-                                                );
-                                              },
-                                            ),
-                                            sizeVer(20),
-                                          ],
-                                        ),
+                                        child: _buildListTiles(
+                                            accountState, context),
                                       ),
                                     ),
                                   )
@@ -274,6 +199,68 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
         }
         return const Scaffold();
       },
+    );
+  }
+
+  Column _buildListTiles(AccountLoaded accountState, BuildContext context) {
+    return Column(
+      children: [
+        ...List.generate(
+          _filteredMap.keys.length,
+          (keyIndex) {
+            DateTime dateTime = _filteredMap.keys.elementAt(keyIndex);
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  DateFormat.yMMMEd().format(dateTime),
+                  style: const TextStyle(
+                    color: secondaryColor,
+                  ),
+                ),
+                ...List.generate(_filteredMap.values.elementAt(keyIndex).length,
+                    (valueIndex) {
+                  var transaction = _filteredMap[
+                      _filteredMap.keys.elementAt(keyIndex)]![valueIndex];
+                  String accountName = accountState.accounts
+                      .firstWhere(
+                          (element) => element.id == transaction.accountId)
+                      .name;
+
+                  return ListTile(
+                    onTap: () {
+                      Navigator.pushNamed(
+                          context, PageConst.transactionDetailPage,
+                          arguments: TransactionDetailPage(
+                            transaction: transaction,
+                            account: accountState.accounts.firstWhere((element) => element.id==transaction.accountId),
+                          ));
+                    },
+                    contentPadding: EdgeInsets.zero,
+                    leading: CircleAvatar(
+                      backgroundColor: _mainTransaction.color,
+                      child: Icon(
+                        _mainTransaction.iconData,
+                        color: Colors.white,
+                      ),
+                    ),
+                    title: Text(_mainTransaction.category.name),
+                    subtitle:
+                        _account!.id == "total" ? Text(accountName) : null,
+                    trailing: Text(
+                      NumberFormat.currency(symbol: _account!.currency.symbol)
+                          .format(transaction.amount),
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  );
+                }),
+                sizeVer(10)
+              ],
+            );
+          },
+        ),
+        sizeVer(20),
+      ],
     );
   }
 

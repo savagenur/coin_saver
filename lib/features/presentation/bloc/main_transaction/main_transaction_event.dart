@@ -1,13 +1,13 @@
-part of 'transaction_bloc.dart';
+part of 'main_transaction_bloc.dart';
 
-abstract class TransactionEvent extends Equatable {
-  const TransactionEvent();
+abstract class MainTransactionEvent extends Equatable {
+  const MainTransactionEvent();
 
   @override
   List<Object> get props => [];
 }
 
-class AddTransaction extends TransactionEvent {
+class AddTransaction extends MainTransactionEvent {
   final TransactionEntity transaction;
   final AccountEntity account;
   const AddTransaction({
@@ -22,9 +22,9 @@ class AddTransaction extends TransactionEvent {
       ];
 }
 
-class UpdateTransaction extends TransactionEvent {
+class UpdateTransaction extends MainTransactionEvent {
   final TransactionEntity transaction;
-    final AccountEntity account;
+  final AccountEntity account;
 
   const UpdateTransaction({
     required this.transaction,
@@ -38,12 +38,12 @@ class UpdateTransaction extends TransactionEvent {
       ];
 }
 
-class GetTransactions extends TransactionEvent {
+class GetTransactions extends MainTransactionEvent {
   @override
   List<Object> get props => [];
 }
 
-class DeleteTransaction extends TransactionEvent {
+class DeleteTransaction extends MainTransactionEvent {
   final AccountEntity account;
   final TransactionEntity transaction;
   const DeleteTransaction({

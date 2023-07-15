@@ -18,7 +18,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
   final FetchTransactionsForWeekUsecase fetchTransactionsForWeekUsecase;
   final FetchTransactionsForMonthUsecase fetchTransactionsForMonthUsecase;
   final FetchTransactionsForYearUsecase fetchTransactionsForYearUsecase;
-  final GetTransactionsUsecase getAllTransactionsUsecase;
+  final GetTransactionsUsecase getTransactionsUsecase;
 
   TimePeriodBloc({
     required this.fetchTransactionsForDayUsecase,
@@ -26,7 +26,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
     required this.fetchTransactionsForWeekUsecase,
     required this.fetchTransactionsForMonthUsecase,
     required this.fetchTransactionsForYearUsecase,
-    required this.getAllTransactionsUsecase,
+    required this.getTransactionsUsecase,
   }) : super(TimePeriodLoading()) {
     on<SetDayPeriod>(_onSetDayPeriod);
     on<GetTodayPeriod>(_onGetTodayPeriod);
@@ -37,7 +37,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
   void _onSetDayPeriod(
       SetDayPeriod event, Emitter<TimePeriodState> emit) async {
     final selectedDate = event.selectedDate;
-    final transactions = await getAllTransactionsUsecase.call();
+    final transactions = await getTransactionsUsecase.call();
     final totalTransactions = fetchTransactionsForDayUsecase.call(
       selectedDate,
       transactions,
@@ -46,9 +46,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
 
     for (var transaction in totalTransactions) {
       final existingTransaction = summedTransactions.firstWhere(
-          (t) =>
-              t.category == transaction.category &&
-              t.accountId == transaction.accountId,
+          (t) => t.category == transaction.category,
           orElse: () => transaction.copyWith(id: ""));
       if (existingTransaction.id != "") {
         double amount = existingTransaction.amount;
@@ -86,7 +84,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
     Emitter<TimePeriodState> emit,
   ) async {
     final selectedDate = event.selectedDate;
-    final transactions = await getAllTransactionsUsecase.call();
+    final transactions = await getTransactionsUsecase.call();
     final totalTransactions = fetchTransactionsForWeekUsecase.call(
       selectedDate,
       transactions,
@@ -95,9 +93,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
 
     for (var transaction in totalTransactions) {
       final existingTransaction = summedTransactions.firstWhere(
-          (t) =>
-              t.category == transaction.category &&
-              t.accountId == transaction.accountId,
+          (t) => t.category == transaction.category,
           orElse: () => transaction.copyWith(id: ""));
       if (existingTransaction.id != "") {
         double amount = existingTransaction.amount;
@@ -123,7 +119,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
   void _onSetMonthPeriod(
       SetMonthPeriod event, Emitter<TimePeriodState> emit) async {
     final selectedDate = event.selectedDate;
-    final transactions = await getAllTransactionsUsecase.call();
+    final transactions = await getTransactionsUsecase.call();
     final totalTransactions = fetchTransactionsForMonthUsecase.call(
       selectedDate,
       transactions,
@@ -132,9 +128,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
 
     for (var transaction in totalTransactions) {
       final existingTransaction = summedTransactions.firstWhere(
-          (t) =>
-              t.category == transaction.category &&
-              t.accountId == transaction.accountId,
+          (t) => t.category == transaction.category,
           orElse: () => transaction.copyWith(id: ""));
       if (existingTransaction.id != "") {
         double amount = existingTransaction.amount;
@@ -160,7 +154,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
   void _onSetYearPeriod(
       SetYearPeriod event, Emitter<TimePeriodState> emit) async {
     final selectedDate = event.selectedDate;
-    final transactions = await getAllTransactionsUsecase.call();
+    final transactions = await getTransactionsUsecase.call();
     final totalTransactions = fetchTransactionsForYearUsecase.call(
       selectedDate,
       transactions,
@@ -168,11 +162,8 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
     List<TransactionEntity> summedTransactions = [];
 
     for (var transaction in totalTransactions) {
-      final TransactionEntity existingTransaction =
-          summedTransactions.firstWhere(
-              (t) =>
-                  t.category == transaction.category &&
-                  t.accountId == transaction.accountId,
+      final TransactionEntity existingTransaction = summedTransactions
+          .firstWhere((t) => t.category == transaction.category,
               orElse: () => transaction.copyWith(id: ""));
       if (existingTransaction.id != "") {
         double amount = existingTransaction.amount;

@@ -24,11 +24,7 @@ import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_icon/selected_icon_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/transaction_period/transaction_period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/time_period/time_period_bloc.dart';
-import 'package:coin_saver/features/presentation/bloc/transaction/transaction_bloc.dart';
-import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:hive/hive.dart';
-import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 import 'features/domain/usecases/account/transaction/delete_transaction_usecase.dart';
@@ -43,6 +39,7 @@ import 'features/domain/usecases/time_period/fetch_transactions_for_year_usecase
 import 'features/presentation/bloc/cubit/main_colors/main_colors_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_color/selected_color_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_date/selected_date_cubit.dart';
+import 'features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -71,14 +68,15 @@ Future<void> initGetIt() async {
         fetchTransactionsForWeekUsecase: sl.call(),
         fetchTransactionsForMonthUsecase: sl.call(),
         fetchTransactionsForYearUsecase: sl.call(),
-        getAllTransactionsUsecase: sl.call()),
+        getTransactionsUsecase: sl.call()),
   );
   sl.registerFactory(
-    () => TransactionBloc(
+    () => MainTransactionBloc(
       getTransactionsUsecase: sl.call(),
       addTransactionUsecase: sl.call(),
       updateTransactionUsecase: sl.call(),
       deleteTransactionUsecase: sl.call(),
+      setPrimaryAccountUsecase: sl.call(),
     ),
   );
 
@@ -154,11 +152,6 @@ Future<void> initGetIt() async {
       () => HiveRepository(hiveLocalDataSource: sl.call()));
   sl.registerLazySingleton<BaseHiveLocalDataSource>(
       () => HiveLocalDataSource());
-
-  sl.registerLazySingleton<Box<Color>>(
-    () => Hive.box<Color>(BoxConst.colors),
-    instanceName: BoxConst.colors,
-  );
 
 // Externals
   sl.registerLazySingleton(() => const Uuid());

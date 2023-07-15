@@ -46,6 +46,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     Hive.registerAdapter<IconData>(IconDataAdapter());
     Hive.registerAdapter<Color>(ColorAdapter());
     Hive.registerAdapter<TransactionModel>(TransactionModelAdapter());
+
     accountsBox = await Hive.openBox<AccountModel>(BoxConst.accounts);
     currencyBox = await Hive.openBox<CurrencyModel>(BoxConst.currency);
     categoriesBox = await Hive.openBox<CategoryModel>(BoxConst.categories);
@@ -54,19 +55,6 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
 
   @override
   Future<void> initHive() async {
-    // Hive.registerAdapter<AccountType>(AccountTypeAdapter());
-    // Hive.registerAdapter<OwnershipType>(OwnershipTypeAdapter());
-    // Hive.registerAdapter<PaymentType>(PaymentTypeAdapter());
-    // Hive.registerAdapter<CategoryModel>(CategoryModelAdapter());
-    // Hive.registerAdapter<CurrencyModel>(CurrencyModelAdapter());
-    // Hive.registerAdapter<AccountModel>(AccountModelAdapter());
-    // Hive.registerAdapter<IconData>(IconDataAdapter());
-    // Hive.registerAdapter<Color>(ColorAdapter());
-    // Hive.registerAdapter<TransactionModel>(TransactionModelAdapter());
-    // await Hive.openBox<AccountModel>(BoxConst.accounts);
-    // currencyBox = await Hive.openBox<CurrencyModel>(BoxConst.currency);
-    // categoriesBox = await Hive.openBox<CategoryModel>(BoxConst.categories);
-    // colorsBox = await Hive.openBox<Color>(BoxConst.colors);
     if (currencyBox.isEmpty) {
       await colorsBox.addAll(mainColors);
 
@@ -173,7 +161,9 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
           isActive: true,
           ownershipType: accountEntity.ownershipType,
           openingDate: accountEntity.openingDate,
-          transactionHistory: accountEntity.transactionHistory),
+          transactionHistory: accountEntity.transactionHistory
+              .map((e) => TransactionModel.fromEntity(e))
+              .toList()),
     );
   }
 
@@ -204,7 +194,9 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
             isActive: accountEntity.isActive,
             ownershipType: accountEntity.ownershipType,
             openingDate: accountEntity.openingDate,
-            transactionHistory: accountEntity.transactionHistory));
+            transactionHistory: accountEntity.transactionHistory
+                .map((e) => TransactionModel.fromEntity(e))
+                .toList()));
   }
 
   // * Transaction
@@ -217,7 +209,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       id: transactionEntity.id,
       date: transactionEntity.date,
       amount: transactionEntity.amount,
-      category: transactionEntity.category,
+      category: CategoryModel.fromEntity(transactionEntity.category),
       iconData: transactionEntity.iconData,
       accountId: accountEntity.id,
       isIncome: transactionEntity.isIncome,
@@ -234,13 +226,30 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
           ? accountEntity.balance + transactionEntity.amount
           : accountEntity.balance - transactionEntity.amount,
       currency: accountEntity.currency,
-      isPrimary: true,
+      isPrimary: accountEntity.isPrimary,
       isActive: accountEntity.isActive,
       ownershipType: accountEntity.ownershipType,
       openingDate: accountEntity.openingDate,
-      transactionHistory: accountEntity.transactionHistory..add(transaction),
+      transactionHistory: List.from(accountEntity.transactionHistory
+          .map((e) => TransactionModel.fromEntity(e))
+          .toList())
+        ..add(transaction),
     );
-    await accountsBox.put(accountEntity.id, account);
+    AccountModel totalAccount =
+        accountsBox.values.firstWhere((account) => account.id == "total");
+    totalAccount = totalAccount.copyWith(
+      balance: transactionEntity.isIncome
+          ? totalAccount.balance + transactionEntity.amount
+          : totalAccount.balance - transactionEntity.amount,
+      transactionHistory: List.from(totalAccount.transactionHistory)
+        ..add(transaction),
+    );
+
+    Map<String, AccountModel> map = {};
+    map[account.id] = account;
+    map['total'] = totalAccount;
+
+    await accountsBox.putAll(map);
   }
 
   @override
@@ -258,14 +267,30 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
           ? accountEntity.balance - transactionEntity.amount
           : accountEntity.balance + transactionEntity.amount,
       currency: accountEntity.currency,
-      isPrimary: true,
+      isPrimary: accountEntity.isPrimary,
       isActive: accountEntity.isActive,
       ownershipType: accountEntity.ownershipType,
       openingDate: accountEntity.openingDate,
-      transactionHistory: accountEntity.transactionHistory
-        ..removeWhere((element) => element == transactionEntity),
+      transactionHistory: List.from(accountEntity.transactionHistory
+          .map((e) => TransactionModel.fromEntity(e))
+          .toList())
+        ..removeWhere((element) => element.id == transactionEntity.id),
     );
-    await accountsBox.put(accountEntity.id, account);
+    AccountModel totalAccount =
+        accountsBox.values.firstWhere((account) => account.id == "total");
+    totalAccount = totalAccount.copyWith(
+      balance: transactionEntity.isIncome
+          ? totalAccount.balance - transactionEntity.amount
+          : totalAccount.balance + transactionEntity.amount,
+      transactionHistory: List.from(totalAccount.transactionHistory)
+        ..removeWhere((element) => element.id == transactionEntity.id),
+    );
+
+    Map<String, AccountModel> map = {};
+    map[account.id] = account;
+    map['total'] = totalAccount;
+
+    await accountsBox.putAll(map);
   }
 
   @override
@@ -287,10 +312,27 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       isActive: accountEntity.isActive,
       ownershipType: accountEntity.ownershipType,
       openingDate: accountEntity.openingDate,
-      transactionHistory: accountEntity.transactionHistory
-        ..remove(transactionEntity),
+      transactionHistory: List.from(accountEntity.transactionHistory)
+        ..removeWhere((element) => element.id == transactionEntity.id)
+        ..add(TransactionModel.fromEntity(transactionEntity)),
     );
-    await accountsBox.put(accountEntity.id, account);
+
+    AccountModel totalAccount =
+        accountsBox.values.firstWhere((account) => account.id == "total");
+    totalAccount = totalAccount.copyWith(
+      balance: transactionEntity.isIncome
+          ? totalAccount.balance - transactionEntity.amount
+          : totalAccount.balance + transactionEntity.amount,
+      transactionHistory: List.from(totalAccount.transactionHistory)
+        ..removeWhere((element) => element.id == transactionEntity.id)
+        ..add(transactionEntity),
+    );
+
+    Map<String, AccountModel> map = {};
+    map[account.id] = account;
+    map['total'] = totalAccount;
+
+    await accountsBox.putAll(map);
   }
 
   // Todo

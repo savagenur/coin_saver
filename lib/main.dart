@@ -3,29 +3,18 @@ import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart'
 import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/transaction_period/transaction_period_cubit.dart';
-import 'package:coin_saver/features/presentation/bloc/transaction/transaction_bloc.dart';
 import 'package:coin_saver/routes.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
-import 'constants/constants.dart';
-import 'features/data/models/account/account_model.dart';
-import 'features/data/models/account_type.dart';
-import 'features/data/models/category/category_model.dart';
-import 'features/data/models/color.dart';
-import 'features/data/models/currency/currency_model.dart';
-import 'features/data/models/icon_data.dart';
-import 'features/data/models/ownership_type.dart';
-import 'features/data/models/payment_type.dart';
-import 'features/data/models/transaction/transaction_model.dart';
-import 'features/domain/entities/account/account_entity.dart';
 import 'features/domain/usecases/hive/init_hive_adapters_boxes_usecase.dart';
 import 'features/presentation/bloc/cubit/main_colors/main_colors_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_category/selected_category_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_color/selected_color_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_date/selected_date_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_icon/selected_icon_cubit.dart';
+import 'features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
 import 'features/presentation/bloc/time_period/time_period_bloc.dart';
 import 'features/presentation/pages/home/home_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -69,7 +58,7 @@ class MyApp extends StatelessWidget {
           create: (_) => sl<CategoryBloc>()..add(GetCategories()),
         ),
         BlocProvider(
-          create: (_) => sl<TransactionBloc>()..add(GetTransactions()),
+          create: (_) => sl<MainTransactionBloc>()..add(GetTransactions()),
         ),
         BlocProvider(
           create: (_) => sl<TimePeriodBloc>()..add(GetTodayPeriod()),

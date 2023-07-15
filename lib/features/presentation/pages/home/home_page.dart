@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:coin_saver/constants/period_enum.dart';
 import 'package:coin_saver/features/data/models/account/account_model.dart';
+import 'package:coin_saver/features/data/models/currency/currency_model.dart';
 import 'package:coin_saver/features/domain/entities/main_transaction/main_transaction_entity.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
@@ -10,6 +11,7 @@ import 'package:coin_saver/features/presentation/widgets/day_navigation_widget.d
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -21,8 +23,8 @@ import 'package:coin_saver/features/presentation/widgets/shadowed_container_widg
 import '../../../domain/entities/transaction/transaction_entity.dart';
 import '../../bloc/account/account_bloc.dart';
 import '../../bloc/cubit/selected_date/selected_date_cubit.dart';
+import '../../bloc/main_transaction/main_transaction_bloc.dart';
 import '../../bloc/time_period/time_period_bloc.dart';
-import '../../bloc/transaction/transaction_bloc.dart';
 import '../../widgets/category_tile.dart';
 
 class HomePage extends StatefulWidget {
@@ -45,6 +47,9 @@ class _HomePageState extends State<HomePage>
 
   // DateTime
   late DateTime _dateTime;
+  late AccountEntity _account;
+  late double _totalExpense;
+
   @override
   void initState() {
     _isIncome = widget.isIncome!;
@@ -52,13 +57,12 @@ class _HomePageState extends State<HomePage>
     // SetDayPeriod
 
     _tabController = TabController(length: 5, vsync: this);
-
     // SfCircularChart toolTip
     _tooltipBehavior = TooltipBehavior(
       animationDuration: 1,
       enable: true,
       textStyle: const TextStyle(fontSize: 16),
-      format: '\$point.y - point.x',
+      format: 'point.x - point.y',
     );
   }
 
@@ -75,36 +79,32 @@ class _HomePageState extends State<HomePage>
           builder: (context, accountState) {
             if (accountState is AccountLoaded) {
               return BlocBuilder<TimePeriodBloc, TimePeriodState>(
-                builder: (context, mainTimePeriodState) {
-                  if (mainTimePeriodState is TimePeriodLoaded) {
-                   
-
-                    return BlocBuilder<TransactionBloc, TransactionState>(
-                      builder: (context, mainTransactionState) {
-                        if (mainTransactionState is TransactionLoaded) {
+                builder: (context, timePeriodState) {
+                  if (timePeriodState is TimePeriodLoaded) {
+                    return BlocBuilder<MainTransactionBloc,
+                        MainTransactionState>(
+                      builder: (context, transactionState) {
+                        if (transactionState is MainTransactionLoaded) {
                           // Selected DateTime
                           _dateTime = selectedDate;
                           // Primary Account
-                          AccountEntity account =
-                              accountState.accounts.firstWhere(
+                          _account = accountState.accounts.firstWhere(
                             (account) => account.isPrimary == true,
                           );
 
                           // MainTransactions Sort
-                          List<TransactionEntity> mainTransactions =
-                              mainTimePeriodState.transactions
-                                  .where((mainTransaction) => account.id ==
-                                          "total"
-                                      ? mainTransaction.isIncome == _isIncome
-                                      : mainTransaction.accountId ==
-                                              account.id &&
-                                          mainTransaction.isIncome == _isIncome)
-                                  .toList()
-                                ..sort(
-                                  (a, b) => b.amount.compareTo(a.amount),
-                                );
+                          List<TransactionEntity> transactions = timePeriodState
+                              .transactions
+                              .where((transaction) => _account.id == "total"
+                                  ? transaction.isIncome == _isIncome
+                                  : transaction.accountId == _account.id &&
+                                      transaction.isIncome == _isIncome)
+                              .toList()
+                            ..sort(
+                              (a, b) => b.amount.compareTo(a.amount),
+                            );
                           // Total amountMoney of MainTransactions
-                          double totalExpense = mainTransactions.fold(
+                          _totalExpense = transactions.fold(
                               0,
                               (previousValue, element) =>
                                   previousValue + element.amount);
@@ -116,7 +116,7 @@ class _HomePageState extends State<HomePage>
                                 length: 2,
                                 child: Scaffold(
                                   appBar: _buildAppBar(
-                                      account, accountState.accounts),
+                                      _account, accountState.accounts),
                                   body: SingleChildScrollView(
                                     child: Column(
                                       children: [
@@ -131,17 +131,16 @@ class _HomePageState extends State<HomePage>
                                                 DayNavigationWidget(
                                                   selectedPeriod:
                                                       _selectedPeriod,
-                                                  account: account,
-                                                  transactions:
-                                                      mainTransactionState
-                                                          .transactions,
+                                                  account: _account,
+                                                  transactions: transactionState
+                                                      .transactions,
                                                   dateTime: _dateTime,
                                                   isIncome: _isIncome,
                                                 ),
                                                 Stack(
                                                   alignment: Alignment.center,
                                                   children: [
-                                                    mainTransactions.isEmpty
+                                                    transactions.isEmpty
                                                         ? _buildEmptySfCircularChart()
                                                         : SfCircularChart(
                                                             tooltipBehavior:
@@ -163,7 +162,7 @@ class _HomePageState extends State<HomePage>
                                                                     "70",
                                                                 opacity: 1,
                                                                 dataSource:
-                                                                    mainTransactions,
+                                                                    transactions,
                                                                 xValueMapper:
                                                                     (TransactionEntity
                                                                             data,
@@ -193,16 +192,16 @@ class _HomePageState extends State<HomePage>
                                                               .35,
                                                       child: AutoSizeText(
                                                         NumberFormat.currency(
-                                                                symbol: account
+                                                                symbol: _account
                                                                     .currency
                                                                     .symbol)
                                                             .format(
-                                                                totalExpense),
+                                                                _totalExpense),
                                                         textAlign:
                                                             TextAlign.center,
                                                         minFontSize: 18,
                                                         maxFontSize: 25,
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                             fontSize: 24),
                                                         maxLines: 1,
                                                       ),
@@ -214,7 +213,7 @@ class _HomePageState extends State<HomePage>
                                           ),
                                         ),
                                         ...List.generate(
-                                          mainTransactions.length,
+                                          transactions.length,
                                           (index) => Padding(
                                             padding: const EdgeInsets.only(
                                                 right: 10,
@@ -229,15 +228,14 @@ class _HomePageState extends State<HomePage>
                                                       arguments:
                                                           MainTransactionPage(
                                                         mainTransaction:
-                                                            mainTransactions[
-                                                                index],
+                                                            transactions[index],
                                                       ));
                                                 },
                                                 child: CategoryTile(
-                                                  totalExpense: totalExpense,
+                                                  totalExpense: _totalExpense,
                                                   mainTransaction:
-                                                      mainTransactions[index],
-                                                  account: account,
+                                                      transactions[index],
+                                                  account: _account,
                                                 )),
                                           ),
                                         ),
@@ -252,7 +250,7 @@ class _HomePageState extends State<HomePage>
                                           arguments: AddTransactionPage(
                                             selectedDate: selectedDate,
                                             isIncome: _isIncome,
-                                            account: account,
+                                            account: _account,
                                           ));
                                     },
                                     child: const Icon(Icons.add),

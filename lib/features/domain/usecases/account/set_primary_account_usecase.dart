@@ -6,6 +6,6 @@ class SetPrimaryAccountUsecase {
     required this.repository,
   });
   Future<void> call(String accountId) async {
-    return repository.setPrimaryAccount( accountId);
+    return repository.setPrimaryAccount(accountId);
   }
 }

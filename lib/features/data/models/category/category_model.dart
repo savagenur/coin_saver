@@ -39,6 +39,7 @@ class CategoryModel extends CategoryEntity {
           dateTime: dateTime,
         );
 
+  @override
   CategoryModel copyWith({
     String? id,
     String? name,

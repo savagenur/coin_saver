@@ -49,7 +49,7 @@ class AccountModel extends AccountEntity {
   @HiveField(17)
   final String? notes;
   @HiveField(18)
-  final List<TransactionEntity> transactionHistory;
+  final List<TransactionModel> transactionHistory;
   @HiveField(19)
   final String? monthlyStatement;
   @HiveField(20)
@@ -84,31 +84,30 @@ class AccountModel extends AccountEntity {
     this.monthlyStatement,
     this.paymentType = PaymentType.cash,
   }) : super(
-            id: id,
-            name: name,
-            iconData: iconData,
-            type: type,
-            color: color,
-            paymentType: paymentType,
-            balance: balance,
-            currency: currency,
-            isPrimary: isPrimary,
-            isActive: isActive,
-            accountNumber: accountNumber,
-            institution: institution,
-            ownershipType: ownershipType,
-            openingDate: openingDate,
-            closingDate: closingDate,
-            interestRate: interestRate,
-            creditLimit: creditLimit,
-            dueDate: dueDate,
-            minimumBalance: minimumBalance,
-            linkedAccounts: linkedAccounts,
-            notes: notes,
-            transactionHistory:
-                transactionHistory,
-            monthlyStatement: monthlyStatement,
-          );
+          id: id,
+          name: name,
+          iconData: iconData,
+          type: type,
+          color: color,
+          paymentType: paymentType,
+          balance: balance,
+          currency: currency,
+          isPrimary: isPrimary,
+          isActive: isActive,
+          accountNumber: accountNumber,
+          institution: institution,
+          ownershipType: ownershipType,
+          openingDate: openingDate,
+          closingDate: closingDate,
+          interestRate: interestRate,
+          creditLimit: creditLimit,
+          dueDate: dueDate,
+          minimumBalance: minimumBalance,
+          linkedAccounts: linkedAccounts,
+          notes: notes,
+          transactionHistory: transactionHistory,
+          monthlyStatement: monthlyStatement,
+        );
 
   @override
   AccountModel copyWith({
@@ -144,7 +143,8 @@ class AccountModel extends AccountEntity {
       color: color ?? this.color,
       paymentType: paymentType ?? this.paymentType,
       balance: balance ?? this.balance,
-      currency: currency!=null?CurrencyModel.fromEntity(currency) : this.currency,
+      currency:
+          currency != null ? CurrencyModel.fromEntity(currency) : this.currency,
       isPrimary: isPrimary ?? this.isPrimary,
       isActive: isActive ?? this.isActive,
       accountNumber: accountNumber ?? this.accountNumber,
@@ -158,10 +158,11 @@ class AccountModel extends AccountEntity {
       minimumBalance: minimumBalance ?? this.minimumBalance,
       linkedAccounts: linkedAccounts ?? this.linkedAccounts,
       notes: notes ?? this.notes,
-      transactionHistory: transactionHistory??this.transactionHistory,
+      transactionHistory: transactionHistory
+              ?.map((e) => TransactionModel.fromEntity(e))
+              .toList() ??
+          this.transactionHistory,
       monthlyStatement: monthlyStatement ?? this.monthlyStatement,
     );
   }
-
- 
 }

@@ -23,7 +23,7 @@ class AccountModelAdapter extends TypeAdapter<AccountModel> {
       type: fields[2] as AccountType,
       color: fields[22] as Color,
       balance: fields[3] as double,
-      currency: fields[4] as CurrencyModel,
+      currency: fields[4] as CurrencyEntity,
       isPrimary: fields[5] as bool,
       isActive: fields[6] as bool,
       accountNumber: fields[7] as String?,

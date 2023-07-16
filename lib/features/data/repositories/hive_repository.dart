@@ -125,4 +125,9 @@ class HiveRepository implements BaseHiveRepository {
           DateTime selectedDate, List<TransactionEntity> totalTransactions) =>
       hiveLocalDataSource.fetchTransactionsForYear(
           selectedDate, totalTransactions);
+  @override
+  List<TransactionEntity> fetchTransactionsForPeriod(DateTime selectedStart,
+          DateTime selectedEnd, List<TransactionEntity> totalTransactions) =>
+      hiveLocalDataSource.fetchTransactionsForPeriod(
+          selectedStart, selectedEnd, totalTransactions);
 }

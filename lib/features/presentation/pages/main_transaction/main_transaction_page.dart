@@ -59,8 +59,10 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
     return BlocBuilder<AccountBloc, AccountState>(
       builder: (context, accountState) {
         if (accountState is AccountLoaded) {
-          return BlocBuilder<SelectedDateCubit, DateTime>(
-            builder: (context, selectedDate) {
+          return BlocBuilder<SelectedDateCubit, DateRange>(
+            builder: (context, dateRange) {
+              var selectedDate = dateRange.startDate;
+              var selectedEnd = dateRange.endDate;
               return BlocBuilder<TransactionPeriodCubit,
                   List<TransactionEntity>>(
                 builder: (context, transactions) {
@@ -107,7 +109,8 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                                 .setPeriod(
                                     period: selectedPeriod,
                                     selectedDate: selectedDate,
-                                    totalTransactions: allTransactions);
+                                    totalTransactions: allTransactions,
+                                    selectedEnd:selectedEnd,);
                             _transactions = transactions;
                             _filteredMap = _filterTransactions(_transactions);
 
@@ -233,7 +236,9 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                           context, PageConst.transactionDetailPage,
                           arguments: TransactionDetailPage(
                             transaction: transaction,
-                            account: accountState.accounts.firstWhere((element) => element.id==transaction.accountId),
+                            account: accountState.accounts.firstWhere(
+                                (element) =>
+                                    element.id == transaction.accountId),
                           ));
                     },
                     contentPadding: EdgeInsets.zero,

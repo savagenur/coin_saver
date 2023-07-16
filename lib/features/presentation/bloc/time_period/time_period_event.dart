@@ -59,3 +59,17 @@ class SetYearPeriod extends TimePeriodEvent {
         selectedDate,
       ];
 }
+class SetPeriod extends TimePeriodEvent {
+  final DateTime selectedStart;
+  final DateTime selectedEnd;
+
+  const SetPeriod({
+    required this.selectedStart,
+    required this.selectedEnd,
+  });
+  @override
+  List<Object> get props => [
+        selectedStart,
+        selectedEnd,
+      ];
+}

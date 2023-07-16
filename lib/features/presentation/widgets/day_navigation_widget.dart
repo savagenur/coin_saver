@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import '../../domain/entities/transaction/transaction_entity.dart';
 import '../bloc/cubit/selected_date/selected_date_cubit.dart';
 import '../bloc/time_period/time_period_bloc.dart';
-
+import 'calendar_widget.dart';
 
 class DayNavigationWidget extends StatefulWidget {
   final AccountEntity account;
@@ -47,7 +47,11 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
     super.initState();
   }
 
-  String updateSelectedPeriodText(selectedPeriod, DateTime selectedDate) {
+  String updateSelectedPeriodText(
+    Period selectedPeriod,
+    DateTime selectedDate,
+    DateTime endDate,
+  ) {
     switch (selectedPeriod) {
       case Period.day:
         context
@@ -81,19 +85,24 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
             .add(SetYearPeriod(selectedDate: selectedDate));
         return DateFormat("yyyy").format(selectedDate);
       case Period.period:
-        return "";
+        context
+            .read<TimePeriodBloc>()
+            .add(SetPeriod(selectedStart: selectedDate, selectedEnd: endDate));
+
+        return "${formatDateM(selectedDate)} - ${formatDateM(endDate)}";
       default:
         return "";
     }
-    ;
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PeriodCubit, Period>(
       builder: (context, selectedPeriod) {
-        return BlocBuilder<SelectedDateCubit, DateTime>(
-          builder: (context, selectedDate) {
+        return BlocBuilder<SelectedDateCubit, DateRange>(
+          builder: (context, dateRange) {
+            var selectedDate = dateRange.startDate;
+            var endDate = dateRange.endDate;
             return Column(
               children: [
                 Row(
@@ -104,20 +113,24 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: IconButton(
-                          onPressed: () {
-                            // SelectedDate
-                            context
-                                .read<SelectedDateCubit>()
-                                .moveBackward(selectedPeriod);
+                          onPressed: selectedPeriod == Period.period
+                              ? null
+                              : () {
+                                  // SelectedDate
+                                  context
+                                      .read<SelectedDateCubit>()
+                                      .moveBackward(selectedPeriod);
 
-                            // MainTransactions Sort
-                            context.read<TimePeriodBloc>().add(SetDayPeriod(
-                                  selectedDate: selectedDate,
-                                ));
-                            updateSelectedPeriodText(
-                                selectedPeriod, selectedDate);
-                          },
-                          icon: Icon(
+                                  // MainTransactions Sort
+                                  context
+                                      .read<TimePeriodBloc>()
+                                      .add(SetDayPeriod(
+                                        selectedDate: selectedDate,
+                                      ));
+                                  updateSelectedPeriodText(
+                                      selectedPeriod, selectedDate, endDate);
+                                },
+                          icon: const Icon(
                             Icons.arrow_back_ios,
                           ),
                         ),
@@ -126,7 +139,8 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
                     Expanded(
                       flex: 3,
                       child: Text(
-                        updateSelectedPeriodText(selectedPeriod, selectedDate),
+                        updateSelectedPeriodText(
+                            selectedPeriod, selectedDate, endDate),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
@@ -139,17 +153,21 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          GestureDetector(
-                            onTap: () async {
-                              // await  Hive.box<MainTransactionModel>(BoxConst.mainTransactions).clear();
-                            },
-                            child: Icon(
-                              Icons.calendar_month_outlined,
-                            ),
-                          ),
+                          selectedPeriod == Period.period
+                              ? Container()
+                              : GestureDetector(
+                                  onTap: () {
+                                    _buildShowDialog(context, selectedDate,
+                                        widget.transactions);
+                                  },
+                                  child: const Icon(
+                                    Icons.calendar_month_outlined,
+                                  ),
+                                ),
                           IconButton(
                             onPressed: selectedDate.isBefore(DateTime.now()
-                                    .subtract(const Duration(days: 1)))
+                                        .subtract(const Duration(days: 1))) &&
+                                    selectedPeriod != Period.period
                                 ? () {
                                     // SelectedDate
                                     context
@@ -158,10 +176,10 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
                                           selectedPeriod,
                                         );
                                     updateSelectedPeriodText(
-                                        selectedPeriod, selectedDate);
+                                        selectedPeriod, selectedDate, endDate);
                                   }
                                 : null,
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.arrow_forward_ios,
                             ),
                           ),
@@ -174,6 +192,17 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
             );
           },
         );
+      },
+    );
+  }
+
+  void _buildShowDialog(BuildContext context, DateTime selectedDate,
+      List<TransactionEntity> transactions) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return CalendarWidget(
+            selectedDate: selectedDate, transactions: transactions);
       },
     );
   }

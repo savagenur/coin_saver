@@ -6,6 +6,7 @@ import '../../../domain/entities/transaction/transaction_entity.dart';
 import '../../../domain/usecases/account/transaction/get_transactions_usecase.dart';
 import '../../../domain/usecases/time_period/fetch_transactions_for_day_usecase.dart';
 import '../../../domain/usecases/time_period/fetch_transactions_for_month_usecase.dart';
+import '../../../domain/usecases/time_period/fetch_transactions_for_period_usecase.dart';
 import '../../../domain/usecases/time_period/fetch_transactions_for_week_usecase.dart';
 import '../../../domain/usecases/time_period/fetch_transactions_for_year_usecase.dart';
 
@@ -18,6 +19,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
   final FetchTransactionsForWeekUsecase fetchTransactionsForWeekUsecase;
   final FetchTransactionsForMonthUsecase fetchTransactionsForMonthUsecase;
   final FetchTransactionsForYearUsecase fetchTransactionsForYearUsecase;
+  final FetchTransactionsForPeriodUsecase fetchTransactionsForPeriodUsecase;
   final GetTransactionsUsecase getTransactionsUsecase;
 
   TimePeriodBloc({
@@ -26,6 +28,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
     required this.fetchTransactionsForWeekUsecase,
     required this.fetchTransactionsForMonthUsecase,
     required this.fetchTransactionsForYearUsecase,
+    required this.fetchTransactionsForPeriodUsecase,
     required this.getTransactionsUsecase,
   }) : super(TimePeriodLoading()) {
     on<SetDayPeriod>(_onSetDayPeriod);
@@ -33,6 +36,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
     on<SetMonthPeriod>(_onSetMonthPeriod);
     on<SetWeekPeriod>(_onSetWeekPeriod);
     on<SetYearPeriod>(_onSetYearPeriod);
+    on<SetPeriod>(_onSetPeriod);
   }
   void _onSetDayPeriod(
       SetDayPeriod event, Emitter<TimePeriodState> emit) async {
@@ -181,6 +185,43 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
     emit(
       TimePeriodLoaded(
         selectedDate: event.selectedDate,
+        transactions: summedTransactions,
+      ),
+    );
+  }
+
+  void _onSetPeriod(SetPeriod event, Emitter<TimePeriodState> emit) async {
+    final selectedStart = event.selectedStart;
+    final selectedEnd = event.selectedEnd;
+    final transactions = await getTransactionsUsecase.call();
+    final totalTransactions = fetchTransactionsForPeriodUsecase.call(
+      selectedStart,
+      selectedEnd,
+      transactions,
+    );
+    print(totalTransactions.length);
+    List<TransactionEntity> summedTransactions = [];
+
+    for (var transaction in totalTransactions) {
+      final existingTransaction = summedTransactions.firstWhere(
+          (t) => t.category == transaction.category,
+          orElse: () => transaction.copyWith(id: ""));
+      if (existingTransaction.id != "") {
+        double amount = existingTransaction.amount;
+        final double totalAmount = amount + transaction.amount;
+        summedTransactions.remove(existingTransaction);
+        summedTransactions
+            .add(existingTransaction.copyWith(amount: totalAmount));
+      } else {
+        summedTransactions.add(
+          transaction,
+        );
+      }
+    }
+
+    emit(
+      TimePeriodLoaded(
+        selectedDate: event.selectedStart,
         transactions: summedTransactions,
       ),
     );

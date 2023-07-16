@@ -480,4 +480,17 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
 
     return yearTransactions;
   }
+
+  @override
+  List<TransactionEntity> fetchTransactionsForPeriod(DateTime selectedStart,
+      DateTime selectedEnd, List<TransactionEntity> transactions) {
+    List<TransactionEntity> periodTransactions =
+        transactions.where((transaction) {
+      DateTime transactionDate = transaction.date;
+      return transactionDate
+              .isAfter(selectedStart.subtract(const Duration(days: 1))) &&
+          transactionDate.isBefore(selectedEnd.add(const Duration(days: 1)));
+    }).toList();
+    return periodTransactions;
+  }
 }

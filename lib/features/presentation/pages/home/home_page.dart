@@ -8,6 +8,7 @@ import 'package:coin_saver/features/presentation/pages/add_transaction/add_trans
 import 'package:coin_saver/features/presentation/pages/main_transaction/main_transaction_page.dart';
 import 'package:coin_saver/features/presentation/transactions/transactions_page.dart';
 import 'package:coin_saver/features/presentation/widgets/day_navigation_widget.dart';
+import 'package:coin_saver/features/presentation/widgets/period_calendar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -47,6 +48,7 @@ class _HomePageState extends State<HomePage>
 
   // DateTime
   late DateTime _dateTime;
+  late DateTime _dateTimeEnd;
   late AccountEntity _account;
   late double _totalExpense;
 
@@ -73,8 +75,8 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SelectedDateCubit, DateTime>(
-      builder: (context, selectedDate) {
+    return BlocBuilder<SelectedDateCubit, DateRange>(
+      builder: (context, dateRange) {
         return BlocBuilder<AccountBloc, AccountState>(
           builder: (context, accountState) {
             if (accountState is AccountLoaded) {
@@ -86,7 +88,8 @@ class _HomePageState extends State<HomePage>
                       builder: (context, transactionState) {
                         if (transactionState is MainTransactionLoaded) {
                           // Selected DateTime
-                          _dateTime = selectedDate;
+                          _dateTime = dateRange.startDate;
+                          _dateTimeEnd = dateRange.endDate;
                           // Primary Account
                           _account = accountState.accounts.firstWhere(
                             (account) => account.isPrimary == true,
@@ -127,7 +130,8 @@ class _HomePageState extends State<HomePage>
                                                 BorderRadius.circular(30),
                                             child: Column(
                                               children: [
-                                                _buildTabBar(context),
+                                                _buildTabBar(
+                                                    context, transactions),
                                                 DayNavigationWidget(
                                                   selectedPeriod:
                                                       _selectedPeriod,
@@ -248,7 +252,7 @@ class _HomePageState extends State<HomePage>
                                       Navigator.pushNamed(
                                           context, PageConst.addTransactionPage,
                                           arguments: AddTransactionPage(
-                                            selectedDate: selectedDate,
+                                            selectedDate: _dateTime,
                                             isIncome: _isIncome,
                                             account: _account,
                                           ));
@@ -285,7 +289,8 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  TabBar _buildTabBar(BuildContext context) {
+  TabBar _buildTabBar(
+      BuildContext context, List<TransactionEntity> transactions) {
     return TabBar(
       controller: _tabController,
       padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -330,8 +335,15 @@ class _HomePageState extends State<HomePage>
           case Period.period:
             context
                 .read<TimePeriodBloc>()
-                .add(SetYearPeriod(selectedDate: _dateTime));
+                .add(SetPeriod(selectedStart:_dateTime ,selectedEnd: _dateTimeEnd));
             context.read<PeriodCubit>().changePeriod(_selectedPeriod);
+            showDialog(
+              context: context,
+              builder: (context) {
+                return PeriodCalendarWidget(
+                    selectedDate: _dateTime, transactions: transactions);
+              },
+            );
 
             break;
           default:

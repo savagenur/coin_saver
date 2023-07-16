@@ -54,4 +54,6 @@ abstract class BaseHiveRepository {
       DateTime selectedDate, List<TransactionEntity> totalTransactions);
   List<TransactionEntity> fetchTransactionsForYear(
       DateTime selectedDate, List<TransactionEntity> totalTransactions);
+  List<TransactionEntity> fetchTransactionsForPeriod(
+      DateTime selectedStart,DateTime selectedEnd, List<TransactionEntity> totalTransactions);
 }

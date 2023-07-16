@@ -34,6 +34,7 @@ import 'features/domain/usecases/category/get_categories_usecase.dart';
 import 'features/domain/usecases/category/update_category_usecase.dart';
 import 'features/domain/usecases/hive/init_hive_adapters_boxes_usecase.dart';
 import 'features/domain/usecases/time_period/fetch_transactions_for_month_usecase.dart';
+import 'features/domain/usecases/time_period/fetch_transactions_for_period_usecase.dart';
 import 'features/domain/usecases/time_period/fetch_transactions_for_week_usecase.dart';
 import 'features/domain/usecases/time_period/fetch_transactions_for_year_usecase.dart';
 import 'features/presentation/bloc/cubit/main_colors/main_colors_cubit.dart';
@@ -68,6 +69,7 @@ Future<void> initGetIt() async {
         fetchTransactionsForWeekUsecase: sl.call(),
         fetchTransactionsForMonthUsecase: sl.call(),
         fetchTransactionsForYearUsecase: sl.call(),
+        fetchTransactionsForPeriodUsecase: sl.call(),
         getTransactionsUsecase: sl.call()),
   );
   sl.registerFactory(
@@ -86,6 +88,7 @@ Future<void> initGetIt() async {
       fetchTransactionsForWeekUsecase: sl.call(),
       fetchTransactionsForMonthUsecase: sl.call(),
       fetchTransactionsForYearUsecase: sl.call(),
+      fetchTransactionsForPeriodUsecase: sl.call(),
     ),
   );
   sl.registerFactory(
@@ -146,6 +149,8 @@ Future<void> initGetIt() async {
       () => FetchTransactionsForMonthUsecase(repository: sl.call()));
   sl.registerLazySingleton(
       () => FetchTransactionsForYearUsecase(repository: sl.call()));
+  sl.registerLazySingleton(
+      () => FetchTransactionsForPeriodUsecase(repository: sl.call()));
 
 // * Hive
   sl.registerLazySingleton<BaseHiveRepository>(

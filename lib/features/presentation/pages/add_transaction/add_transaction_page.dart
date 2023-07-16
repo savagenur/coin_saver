@@ -19,6 +19,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_down_button/pull_down_button.dart';
+import 'package:table_calendar/table_calendar.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../injection_container.dart';
 import '../../bloc/cubit/selected_date/selected_date_cubit.dart';
@@ -146,9 +147,9 @@ class AddTransactionPageState extends State<AddTransactionPage>
                   (a, b) => b.dateTime.compareTo(a.dateTime),
                 );
 
-                return BlocBuilder<SelectedDateCubit, DateTime>(
-                  builder: (context, selectedDate) {
-                    _selectedDate = selectedDate;
+                return BlocBuilder<SelectedDateCubit, DateRange>(
+                  builder: (context, dateRange) {
+                    _selectedDate = dateRange.startDate;
                     return BlocBuilder<SelectedCategoryCubit, CategoryEntity?>(
                       builder: (context, selectedCategory) {
                         _category = selectedCategory;
@@ -244,6 +245,52 @@ class AddTransactionPageState extends State<AddTransactionPage>
         } else {
           return const Scaffold();
         }
+      },
+    );
+  }
+
+  void _buildShowDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: SizedBox(
+            width:
+                MediaQuery.of(context).size.width * .9, // Set the desired width
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                BlocBuilder<PeriodCubit, Period>(
+                  builder: (context, period) {
+                    return BlocBuilder<SelectedDateCubit, DateRange>(
+                      builder: (context, dateRange) {
+                        var selectedDate = dateRange.startDate;
+                        return TableCalendar(
+                          focusedDay: selectedDate,
+                          firstDay: DateTime(2000),
+                          lastDay: DateTime(DateTime.now().year,
+                              DateTime.now().month, DateTime.now().day),
+                          currentDay: selectedDate,
+                          onDaySelected: (selectedDay, focusedDay) {
+                            DateTime selectedDayConverted = DateTime(
+                                selectedDay.year,
+                                selectedDay.month,
+                                selectedDay.day);
+                            Navigator.pop(context);
+
+                            context
+                                .read<SelectedDateCubit>()
+                                .changeStartDate(selectedDayConverted);
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
       },
     );
   }
@@ -423,22 +470,24 @@ class AddTransactionPageState extends State<AddTransactionPage>
         children: [
           Row(
             children: [
-              ...List.generate(
-                  days.length,
-                  (index) => GestureDetector(
+              ...days
+                  .map((day) => GestureDetector(
                         onTap: () {
                           setState(() {
-                            _selectedDay = index;
-                            _selectedDate = days[index].dateTime!;
                             context
                                 .read<SelectedDateCubit>()
-                                .changeDate(_selectedDate);
+                                .changeStartDate(day.dateTime!);
                           });
                         },
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5),
-                            color: selectedDay == index
+                            color: DateTime(
+                                        _selectedDate.year,
+                                        _selectedDate.month,
+                                        _selectedDate.day) ==
+                                    DateTime(day.dateTime!.year,
+                                        day.dateTime!.month, day.dateTime!.day)
                                 ? Theme.of(context).primaryColor
                                 : Colors.white,
                           ),
@@ -448,33 +497,98 @@ class AddTransactionPageState extends State<AddTransactionPage>
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                DateFormat("dd/MM")
-                                    .format(days[index].dateTime!),
+                                DateFormat("dd/MM").format(day.dateTime!),
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleMedium!
                                     .copyWith(
-                                        color: selectedDay == index
+                                        color: DateTime(
+                                                    _selectedDate.year,
+                                                    _selectedDate.month,
+                                                    _selectedDate.day) ==
+                                                DateTime(
+                                                    day.dateTime!.year,
+                                                    day.dateTime!.month,
+                                                    day.dateTime!.day)
                                             ? Colors.white
                                             : null),
                               ),
                               Text(
-                                days[index].name!,
+                                day.name!,
                                 style: Theme.of(context)
                                     .textTheme
                                     .titleMedium!
                                     .copyWith(
-                                        color: selectedDay == index
+                                        color: DateTime(
+                                                    _selectedDate.year,
+                                                    _selectedDate.month,
+                                                    _selectedDate.day) ==
+                                                DateTime(
+                                                    day.dateTime!.year,
+                                                    day.dateTime!.month,
+                                                    day.dateTime!.day)
                                             ? Colors.white
                                             : Colors.grey),
                               ),
                             ],
                           ),
                         ),
-                      )),
+                      ))
+                  .toList(),
+              // ...List.generate(
+              //     days.length,
+              //     (index) => GestureDetector(
+              //           onTap: () {
+              //             setState(() {
+              //               _selectedDay = index;
+              //               _selectedDate = days[index].dateTime!;
+              //               context
+              //                   .read<SelectedDateCubit>()
+              //                   .changeDate(_selectedDate);
+              //             });
+              //           },
+              //           child: Container(
+              //             decoration: BoxDecoration(
+              //               borderRadius: BorderRadius.circular(5),
+              //               color: selectedDay == index
+              //                   ? Theme.of(context).primaryColor
+              //                   : Colors.white,
+              //             ),
+              //             padding: const EdgeInsets.all(5),
+              //             margin: const EdgeInsets.only(right: 10),
+              //             child: Column(
+              //               crossAxisAlignment: CrossAxisAlignment.center,
+              //               children: [
+              //                 Text(
+              //                   DateFormat("dd/MM")
+              //                       .format(days[index].dateTime!),
+              //                   style: Theme.of(context)
+              //                       .textTheme
+              //                       .titleMedium!
+              //                       .copyWith(
+              //                           color: selectedDay == index
+              //                               ? Colors.white
+              //                               : null),
+              //                 ),
+              //                 Text(
+              //                   days[index].name!,
+              //                   style: Theme.of(context)
+              //                       .textTheme
+              //                       .titleMedium!
+              //                       .copyWith(
+              //                           color: selectedDay == index
+              //                               ? Colors.white
+              //                               : Colors.grey),
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+              //         )),
             ],
           ),
-          IconButton(onPressed: () {}, icon: const Icon(Icons.calendar_month))
+          IconButton(
+              onPressed: () => _buildShowDialog(context),
+              icon: const Icon(Icons.calendar_month))
         ],
       ),
     );

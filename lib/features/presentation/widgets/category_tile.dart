@@ -40,16 +40,16 @@ class CategoryTile extends StatelessWidget {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(flex: 3, child: Text(mainTransaction.category.name)),
+            Expanded(flex: 7, child: Text(mainTransaction.category.name)),
             Flexible(
-              flex: 1,
+              flex: 3,
               child: Text(
                 NumberFormat.percentPattern()
                     .format(mainTransaction.amount / totalExpense),
               ),
             ),
             Expanded(
-              flex: 1,
+              flex: 3,
               child: Text(
                 "${account.currency.symbol}${NumberFormat.compact().format(mainTransaction.amount)}",
                 overflow: TextOverflow.ellipsis,

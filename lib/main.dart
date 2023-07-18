@@ -14,8 +14,8 @@ import 'features/presentation/bloc/cubit/selected_category/selected_category_cub
 import 'features/presentation/bloc/cubit/selected_color/selected_color_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_date/selected_date_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_icon/selected_icon_cubit.dart';
+import 'features/presentation/bloc/home_time_period/home_time_period_bloc.dart';
 import 'features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
-import 'features/presentation/bloc/time_period/time_period_bloc.dart';
 import 'features/presentation/pages/home/home_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'injection_container.dart';
@@ -61,8 +61,9 @@ class MyApp extends StatelessWidget {
           create: (_) => sl<MainTransactionBloc>()..add(GetTransactions()),
         ),
         BlocProvider(
-          create: (_) => sl<TimePeriodBloc>()..add(GetTodayPeriod()),
+          create: (_) => sl<HomeTimePeriodBloc>()..add(GetTodayPeriod()),
         ),
+        
         BlocProvider(
           create: (_) => sl<TransactionPeriodCubit>(),
         ),

@@ -1,12 +1,10 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/constants/period_enum.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/category/category_entity.dart';
 import 'package:coin_saver/features/domain/entities/date/date_entity.dart';
-import 'package:coin_saver/features/domain/entities/main_transaction/main_transaction_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
-import 'package:coin_saver/features/domain/usecases/account/set_primary_account_usecase.dart';
+import 'package:coin_saver/features/domain/usecases/account/transaction/delete_transaction_usecase.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_category/selected_category_cubit.dart';
@@ -23,19 +21,23 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../injection_container.dart';
 import '../../bloc/cubit/selected_date/selected_date_cubit.dart';
+import '../../bloc/home_time_period/home_time_period_bloc.dart';
 import '../../bloc/main_transaction/main_transaction_bloc.dart';
-import '../../bloc/time_period/time_period_bloc.dart';
 import '../../widgets/my_button_widget.dart';
 
 class AddTransactionPage extends StatefulWidget {
   final bool isIncome;
   final AccountEntity account;
   final DateTime selectedDate;
+  final TransactionEntity? transaction;
+  final CategoryEntity? category;
   const AddTransactionPage({
     super.key,
     required this.isIncome,
     required this.account,
     required this.selectedDate,
+    this.transaction,
+    this.category,
   });
 
   @override
@@ -45,17 +47,15 @@ class AddTransactionPage extends StatefulWidget {
 class AddTransactionPageState extends State<AddTransactionPage>
     with SingleTickerProviderStateMixin {
   AccountEntity? _account;
-  late String _selectedAccountId;
   late List<AccountEntity> _accounts;
   late DateTime _selectedDate;
   late bool _isIncome;
-  late List<TransactionEntity> _transactionHistory;
+  late Period _selectedPeriod;
   late TabController _tabController;
   late List<CategoryEntity> _categories;
   int _selectedDay = 0;
-  double _amount = 0;
-  final TextEditingController _amountController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+  late double _amount;
+  late final TextEditingController _descriptionController;
 
   // DateTime vars
   DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
@@ -78,7 +78,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
   // Blocs
   late SelectedCategoryCubit selectedCategoryCubit;
   late AccountBloc accountBloc;
-  late TimePeriodBloc timePeriodBloc;
+  late HomeTimePeriodBloc timePeriodBloc;
   late MainTransactionBloc mainTransactionBloc;
   late PeriodCubit periodCubit;
   late SelectedDateCubit selectedDateCubit;
@@ -92,6 +92,20 @@ class AddTransactionPageState extends State<AddTransactionPage>
   @override
   void initState() {
     super.initState();
+    // Blocs
+    selectedCategoryCubit = context.read<SelectedCategoryCubit>();
+    accountBloc = context.read<AccountBloc>();
+    timePeriodBloc = context.read<HomeTimePeriodBloc>();
+    mainTransactionBloc = context.read<MainTransactionBloc>();
+    periodCubit = context.read<PeriodCubit>();
+    selectedDateCubit = context.read<SelectedDateCubit>();
+    // First init
+    _amount = widget.transaction?.amount ?? 0;
+
+    _descriptionController =
+        TextEditingController(text: widget.transaction?.description);
+    selectedCategoryCubit.changeCategory(widget.category);
+
     // SelectedDate
     _selectedDate = widget.selectedDate;
     // Controls isIncome tab or not
@@ -102,27 +116,9 @@ class AddTransactionPageState extends State<AddTransactionPage>
     } else {
       _account = widget.account;
     }
-    _selectedAccountId = widget.account.id;
     _isIncome = widget.isIncome;
-    _transactionHistory = widget.account.transactionHistory;
     // DateTime select init
     selectDay();
-
-    // Blocs
-    selectedCategoryCubit = context.read<SelectedCategoryCubit>();
-    accountBloc = context.read<AccountBloc>();
-    timePeriodBloc = context.read<TimePeriodBloc>();
-    mainTransactionBloc = context.read<MainTransactionBloc>();
-    periodCubit = context.read<PeriodCubit>();
-    selectedDateCubit = context.read<SelectedDateCubit>();
-  }
-
-  @override
-  void didUpdateWidget(covariant AddTransactionPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    // Check if _category and _account are not null
-    if (_category == null && _account == null) {}
   }
 
   @override
@@ -133,118 +129,169 @@ class AddTransactionPageState extends State<AddTransactionPage>
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AccountBloc, AccountState>(
-      builder: (context, accountState) {
-        if (accountState is AccountLoaded) {
-          _accounts = accountState.accounts;
-          return BlocBuilder<CategoryBloc, CategoryState>(
-            builder: (context, categoryState) {
-              if (categoryState is CategoryLoaded) {
-                _categories = categoryState.categories
-                    .where((category) => category.isIncome == _isIncome)
-                    .toList();
-                _categories.sort(
-                  (a, b) => b.dateTime.compareTo(a.dateTime),
-                );
+    return BlocBuilder<PeriodCubit, Period>(
+      builder: (context, selectedPeriod) {
+        _selectedPeriod = selectedPeriod;
+        return BlocBuilder<AccountBloc, AccountState>(
+          builder: (context, accountState) {
+            if (accountState is AccountLoaded) {
+              _accounts = accountState.accounts;
+              return BlocBuilder<CategoryBloc, CategoryState>(
+                builder: (context, categoryState) {
+                  if (categoryState is CategoryLoaded) {
+                    _categories = categoryState.categories
+                        .where((category) => category.isIncome == _isIncome)
+                        .toList();
+                    _categories.sort(
+                      (a, b) => b.dateTime.compareTo(a.dateTime),
+                    );
 
-                return BlocBuilder<SelectedDateCubit, DateRange>(
-                  builder: (context, dateRange) {
-                    _selectedDate = dateRange.startDate;
-                    return BlocBuilder<SelectedCategoryCubit, CategoryEntity?>(
-                      builder: (context, selectedCategory) {
-                        _category = selectedCategory;
-                        return Form(
-                          key: _formKey,
-                          child: DefaultTabController(
-                            length: 2,
-                            child: Scaffold(
-                              appBar: _buildAppBar(),
-                              body: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      _buildInputAmount(context),
-                                      sizeVer(10),
-                                      const Text(
-                                        "Account:",
-                                        style: TextStyle(color: Colors.grey),
+                    return BlocBuilder<SelectedDateCubit, DateRange>(
+                      builder: (context, dateRange) {
+                        _selectedDate = dateRange.startDate;
+
+                        return BlocBuilder<SelectedCategoryCubit,
+                            CategoryEntity?>(
+                          builder: (context, selectedCategory) {
+                            _category = selectedCategory;
+                            return Form(
+                              key: _formKey,
+                              child: WillPopScope(
+                                onWillPop: () async {
+                                  await Navigator.pushNamedAndRemoveUntil(
+                                      context,
+                                      PageConst.homePage,
+                                      arguments: HomePage(
+                                        period: _selectedPeriod,
+                                        isIncome: _isIncome,
                                       ),
-                                      sizeVer(5),
-                                      _buildPullDownButton(),
-                                      const Divider(),
-                                      sizeVer(10),
-                                      Row(
-                                        children: [
-                                          const Text(
-                                            "Categories:",
-                                            style:
-                                                TextStyle(color: Colors.grey),
-                                          ),
-                                          Text(
-                                            isErrorCategory
-                                                ? " Please Select Category"
-                                                : "",
-                                            style: TextStyle(
-                                                color: Colors.red.shade900),
-                                          ),
-                                        ],
-                                      ),
-                                      sizeVer(10),
-                                      _buildGridView(_categories),
-                                      const Divider(),
-                                      sizeVer(10),
-                                      _buildSelectDay(context, _selectedDay),
-                                      sizeVer(20),
-                                      const Text(
-                                        "Comment:",
-                                        style: TextStyle(color: Colors.grey),
-                                      ),
-                                      sizeVer(10),
-                                      TextFormField(
-                                        controller: _descriptionController,
-                                        maxLength: 4000,
-                                        decoration: const InputDecoration(
-                                          hintText: "Comment...",
+                                      (route) =>
+                                          route.settings.name ==
+                                          PageConst.homePage);
+                                  selectedCategoryCubit.changeCategory(null);
+                                  return false;
+                                },
+                                child: DefaultTabController(
+                                  length: 2,
+                                  child: Scaffold(
+                                    appBar: _buildAppBar(),
+                                    body: Listener(
+                                      onPointerDown: (event) {
+                                        FocusScope.of(context).unfocus();
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            _buildInputAmount(context),
+                                            const Divider(),
+                                            Expanded(
+                                              child: SingleChildScrollView(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    sizeVer(10),
+                                                    const Text(
+                                                      "Account:",
+                                                      style: TextStyle(
+                                                          color: Colors.grey),
+                                                    ),
+                                                    sizeVer(5),
+                                                    _buildPullDownButton(),
+                                                    const Divider(),
+                                                    sizeVer(10),
+                                                    Row(
+                                                      children: [
+                                                        const Text(
+                                                          "Categories:",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.grey),
+                                                        ),
+                                                        Text(
+                                                          isErrorCategory
+                                                              ? " Please Select Category"
+                                                              : "",
+                                                          style: TextStyle(
+                                                              color: Colors.red
+                                                                  .shade900),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    sizeVer(10),
+                                                    _buildGridView(_categories),
+                                                    const Divider(),
+                                                    sizeVer(10),
+                                                    _buildSelectDay(
+                                                        context, _selectedDay),
+                                                    sizeVer(20),
+                                                    const Text(
+                                                      "Comment:",
+                                                      style: TextStyle(
+                                                          color: Colors.grey),
+                                                    ),
+                                                    sizeVer(10),
+                                                    TextFormField(
+                                                      controller:
+                                                          _descriptionController,
+                                                      maxLength: 4000,
+                                                      minLines: 1,
+                                                      maxLines: 6,
+                                                      decoration:
+                                                          const InputDecoration(
+                                                        hintText: "Comment...",
+                                                      ),
+                                                    ),
+                                                    sizeVer(30),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    ],
+                                    ),
+                                    floatingActionButtonLocation:
+                                        FloatingActionButtonLocation
+                                            .centerDocked,
+                                    floatingActionButton: MediaQuery.of(context)
+                                                .viewInsets
+                                                .bottom !=
+                                            0
+                                        ? null
+                                        : MyButtonWidget(
+                                            title: 'Add',
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                .5,
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                            paddingVertical: 15,
+                                            onTap: _buildAddTransaction),
                                   ),
                                 ),
                               ),
-                              floatingActionButtonLocation:
-                                  FloatingActionButtonLocation.centerDocked,
-                              floatingActionButton: MediaQuery.of(context)
-                                          .viewInsets
-                                          .bottom !=
-                                      0
-                                  ? null
-                                  : MyButtonWidget(
-                                      title: 'Add',
-                                      width: MediaQuery.of(context).size.width *
-                                          .5,
-                                      borderRadius: BorderRadius.circular(30),
-                                      paddingVertical: 15,
-                                      onTap: _buildAddTransaction),
-                            ),
-                          ),
+                            );
+                          },
                         );
                       },
                     );
-                  },
-                );
-              } else {
-                return Scaffold(
-                  appBar: AppBar(),
-                );
-              }
-            },
-          );
-        } else {
-          return const Scaffold();
-        }
+                  } else {
+                    return Scaffold(
+                      appBar: AppBar(),
+                    );
+                  }
+                },
+              );
+            } else {
+              return const Scaffold();
+            }
+          },
+        );
       },
     );
   }
@@ -260,29 +307,29 @@ class AddTransactionPageState extends State<AddTransactionPage>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                BlocBuilder<PeriodCubit, Period>(
-                  builder: (context, period) {
-                    return BlocBuilder<SelectedDateCubit, DateRange>(
-                      builder: (context, dateRange) {
-                        var selectedDate = dateRange.startDate;
-                        return TableCalendar(
-                          focusedDay: selectedDate,
-                          firstDay: DateTime(2000),
-                          lastDay: DateTime(DateTime.now().year,
-                              DateTime.now().month, DateTime.now().day),
-                          currentDay: selectedDate,
-                          onDaySelected: (selectedDay, focusedDay) {
-                            DateTime selectedDayConverted = DateTime(
-                                selectedDay.year,
-                                selectedDay.month,
-                                selectedDay.day);
-                            Navigator.pop(context);
+                BlocBuilder<SelectedDateCubit, DateRange>(
+                  builder: (context, dateRange) {
+                    var selectedDate = dateRange.startDate;
+                    return TableCalendar(
+                      weekNumbersVisible: true,
+                      headerStyle: const HeaderStyle(
+                        formatButtonVisible: false
+                      ),
+                      focusedDay: selectedDate,
+                      firstDay: DateTime(2000),
+                      lastDay: DateTime(DateTime.now().year,
+                          DateTime.now().month, DateTime.now().day),
+                      currentDay: selectedDate,
+                      onDaySelected: (selectedDay, focusedDay) {
+                        DateTime selectedDayConverted = DateTime(
+                            selectedDay.year,
+                            selectedDay.month,
+                            selectedDay.day);
+                        Navigator.pop(context);
 
-                            context
-                                .read<SelectedDateCubit>()
-                                .changeStartDate(selectedDayConverted);
-                          },
-                        );
+                        context
+                            .read<SelectedDateCubit>()
+                            .changeStartDate(selectedDayConverted);
                       },
                     );
                   },
@@ -306,7 +353,6 @@ class AddTransactionPageState extends State<AddTransactionPage>
             onTap: () {
               _account = accounts[index];
               isErrorAccount = false;
-              // accountBloc.add(SetPrimaryAccount(accountId: _account!.id));
             },
             selected: accounts[index] == _account,
             title: accounts[index].name,
@@ -354,7 +400,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
           child: SizedBox(
             width: MediaQuery.of(context).size.width * .3,
             child: TextFormField(
-              controller: _amountController,
+              initialValue: _amount == 0 ? null : _amount.round().toString(),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return "Please enter\nvalid amount.";
@@ -366,14 +412,15 @@ class AddTransactionPageState extends State<AddTransactionPage>
               },
               maxLength: 12,
               autofocus: true,
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               maxLines: 1,
               textAlign: TextAlign.center,
               showCursor: false,
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))
               ],
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 counterText: "",
                 hintText: "0",
               ),
@@ -387,8 +434,12 @@ class AddTransactionPageState extends State<AddTransactionPage>
         Expanded(
           child: Row(
             children: [
+              sizeHor(3),
               Text(
-                "USD",
+                _accounts
+                    .firstWhere((element) => element.id == "main")
+                    .currency
+                    .code,
                 style: Theme.of(context)
                     .textTheme
                     .titleLarge!
@@ -418,19 +469,35 @@ class AddTransactionPageState extends State<AddTransactionPage>
         _category != null &&
         _account != null) {
       _formKey.currentState!.save();
-      final TransactionEntity transaction = TransactionEntity(
-        id: sl<Uuid>().v1(),
-        date: _selectedDate,
-        amount: _amount,
-        category: _category!,
-        iconData: _category!.iconData,
-        accountId: _account!.name,
-        isIncome: _isIncome,
-        color: _category!.color,
-      );
 
-      mainTransactionBloc
-          .add(AddTransaction(transaction: transaction, account: _account!));
+      final TransactionEntity transaction = TransactionEntity(
+          id: widget.transaction != null
+              ? widget.transaction!.id
+              : sl<Uuid>().v1(),
+          date: _selectedDate,
+          amount: _amount,
+          category: _category!,
+          iconData: _category!.iconData,
+          accountId: _account!.name,
+          isIncome: _isIncome,
+          color: _category!.color,
+          description: _descriptionController.text);
+      if (widget.transaction != null) {
+        if (_account!.id != widget.account.id) {
+          await sl<DeleteTransactionUsecase>()
+              .call(widget.account, widget.transaction!);
+
+          mainTransactionBloc.add(
+              AddTransaction(transaction: transaction, account: _account!));
+        } else {
+          mainTransactionBloc.add(
+              UpdateTransaction(transaction: transaction, account: _account!));
+        }
+      } else {
+        mainTransactionBloc
+            .add(AddTransaction(transaction: transaction, account: _account!));
+      }
+
       accountBloc.add(
         SetPrimaryAccount(accountId: _account!.id),
       );
@@ -440,11 +507,15 @@ class AddTransactionPageState extends State<AddTransactionPage>
 
       periodCubit.changePeriod(Period.day);
       selectedCategoryCubit.changeCategory(null);
-      Navigator.pushNamed(context, PageConst.homePage,
-          arguments: HomePage(
-            dateTime: _selectedDate,
-            isIncome: _isIncome,
-          ));
+      widget.transaction != null
+          ? {
+              Navigator.pop(context),
+              Navigator.pop(context),
+            }
+          : Navigator.pushNamed(context, PageConst.homePage,
+              arguments: HomePage(
+                isIncome: _isIncome,
+              ));
     }
   }
 
@@ -482,12 +553,8 @@ class AddTransactionPageState extends State<AddTransactionPage>
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5),
-                            color: DateTime(
-                                        _selectedDate.year,
-                                        _selectedDate.month,
-                                        _selectedDate.day) ==
-                                    DateTime(day.dateTime!.year,
-                                        day.dateTime!.month, day.dateTime!.day)
+                            color: DateFormat.yMd().format(_selectedDate) ==
+                                    DateFormat.yMd().format(day.dateTime!)
                                 ? Theme.of(context).primaryColor
                                 : Colors.white,
                           ),
@@ -502,14 +569,10 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                     .textTheme
                                     .titleMedium!
                                     .copyWith(
-                                        color: DateTime(
-                                                    _selectedDate.year,
-                                                    _selectedDate.month,
-                                                    _selectedDate.day) ==
-                                                DateTime(
-                                                    day.dateTime!.year,
-                                                    day.dateTime!.month,
-                                                    day.dateTime!.day)
+                                        color: DateFormat.yMd()
+                                                    .format(_selectedDate) ==
+                                                DateFormat.yMd()
+                                                    .format(day.dateTime!)
                                             ? Colors.white
                                             : null),
                               ),
@@ -519,14 +582,10 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                     .textTheme
                                     .titleMedium!
                                     .copyWith(
-                                        color: DateTime(
-                                                    _selectedDate.year,
-                                                    _selectedDate.month,
-                                                    _selectedDate.day) ==
-                                                DateTime(
-                                                    day.dateTime!.year,
-                                                    day.dateTime!.month,
-                                                    day.dateTime!.day)
+                                        color: DateFormat.yMd()
+                                                    .format(_selectedDate) ==
+                                                DateFormat.yMd()
+                                                    .format(day.dateTime!)
                                             ? Colors.white
                                             : Colors.grey),
                               ),
@@ -535,55 +594,6 @@ class AddTransactionPageState extends State<AddTransactionPage>
                         ),
                       ))
                   .toList(),
-              // ...List.generate(
-              //     days.length,
-              //     (index) => GestureDetector(
-              //           onTap: () {
-              //             setState(() {
-              //               _selectedDay = index;
-              //               _selectedDate = days[index].dateTime!;
-              //               context
-              //                   .read<SelectedDateCubit>()
-              //                   .changeDate(_selectedDate);
-              //             });
-              //           },
-              //           child: Container(
-              //             decoration: BoxDecoration(
-              //               borderRadius: BorderRadius.circular(5),
-              //               color: selectedDay == index
-              //                   ? Theme.of(context).primaryColor
-              //                   : Colors.white,
-              //             ),
-              //             padding: const EdgeInsets.all(5),
-              //             margin: const EdgeInsets.only(right: 10),
-              //             child: Column(
-              //               crossAxisAlignment: CrossAxisAlignment.center,
-              //               children: [
-              //                 Text(
-              //                   DateFormat("dd/MM")
-              //                       .format(days[index].dateTime!),
-              //                   style: Theme.of(context)
-              //                       .textTheme
-              //                       .titleMedium!
-              //                       .copyWith(
-              //                           color: selectedDay == index
-              //                               ? Colors.white
-              //                               : null),
-              //                 ),
-              //                 Text(
-              //                   days[index].name!,
-              //                   style: Theme.of(context)
-              //                       .textTheme
-              //                       .titleMedium!
-              //                       .copyWith(
-              //                           color: selectedDay == index
-              //                               ? Colors.white
-              //                               : Colors.grey),
-              //                 ),
-              //               ],
-              //             ),
-              //           ),
-              //         )),
             ],
           ),
           IconButton(
@@ -692,8 +702,15 @@ class AddTransactionPageState extends State<AddTransactionPage>
     return AppBar(
       centerTitle: true,
       leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
+          onPressed: () async {
+            await Navigator.pushNamedAndRemoveUntil(
+                context,
+                PageConst.homePage,
+                arguments: HomePage(
+                  period: _selectedPeriod,
+                  isIncome: _isIncome,
+                ),
+                (route) => route.settings.name == PageConst.homePage);
             selectedCategoryCubit.changeCategory(null);
           },
           icon: const Icon(Icons.arrow_back)),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hive/hive.dart';
-import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:coin_saver/constants/colors.dart';
@@ -16,7 +15,6 @@ import 'package:coin_saver/features/data/models/transaction/transaction_model.da
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/category/category_entity.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
-import 'package:coin_saver/features/domain/entities/main_transaction/main_transaction_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 import 'package:coin_saver/injection_container.dart';
 
@@ -214,6 +212,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       accountId: accountEntity.id,
       isIncome: transactionEntity.isIncome,
       color: transactionEntity.color,
+      description: transactionEntity.description,
     );
 
     AccountModel account = AccountModel(
@@ -298,6 +297,20 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     required TransactionEntity transactionEntity,
     required AccountEntity accountEntity,
   }) async {
+    TransactionEntity oldTransaction = accountEntity.transactionHistory
+        .firstWhere((element) => element.id == transactionEntity.id);
+    TransactionModel transaction = TransactionModel(
+      id: transactionEntity.id,
+      date: transactionEntity.date,
+      amount: transactionEntity.amount,
+      category: CategoryModel.fromEntity(transactionEntity.category),
+      iconData: transactionEntity.iconData,
+      accountId: accountEntity.id,
+      isIncome: transactionEntity.isIncome,
+      color: transactionEntity.color,
+      description: transactionEntity.description,
+    );
+
     AccountModel account = AccountModel(
       id: accountEntity.id,
       name: accountEntity.name,
@@ -305,27 +318,36 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       type: accountEntity.type,
       color: accountEntity.color,
       balance: transactionEntity.isIncome
-          ? accountEntity.balance - transactionEntity.amount
-          : accountEntity.balance + transactionEntity.amount,
+          ? accountEntity.balance -
+              oldTransaction.amount +
+              transactionEntity.amount
+          : accountEntity.balance +
+              oldTransaction.amount -
+              transactionEntity.amount,
       currency: accountEntity.currency,
-      isPrimary: true,
+      isPrimary: accountEntity.isPrimary,
       isActive: accountEntity.isActive,
       ownershipType: accountEntity.ownershipType,
       openingDate: accountEntity.openingDate,
-      transactionHistory: List.from(accountEntity.transactionHistory)
+      transactionHistory: List.from(accountEntity.transactionHistory
+          .map((e) => TransactionModel.fromEntity(e))
+          .toList())
         ..removeWhere((element) => element.id == transactionEntity.id)
-        ..add(TransactionModel.fromEntity(transactionEntity)),
+        ..add(transaction),
     );
-
     AccountModel totalAccount =
         accountsBox.values.firstWhere((account) => account.id == "total");
     totalAccount = totalAccount.copyWith(
       balance: transactionEntity.isIncome
-          ? totalAccount.balance - transactionEntity.amount
-          : totalAccount.balance + transactionEntity.amount,
+          ? totalAccount.balance -
+              oldTransaction.amount +
+              transactionEntity.amount
+          : totalAccount.balance +
+              oldTransaction.amount -
+              transactionEntity.amount,
       transactionHistory: List.from(totalAccount.transactionHistory)
         ..removeWhere((element) => element.id == transactionEntity.id)
-        ..add(transactionEntity),
+        ..add(transaction),
     );
 
     Map<String, AccountModel> map = {};
@@ -461,9 +483,10 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     List<TransactionEntity> weekTransactions =
         totalTransactions.where((mainTransaction) {
       DateTime mainTransactionDate = mainTransaction.date;
+
       return mainTransactionDate
               .isAfter(startOfWeek.subtract(const Duration(days: 1))) &&
-          mainTransactionDate.isBefore(endOfWeek.add(const Duration(days: 1)));
+          mainTransactionDate.isBefore(endOfWeek.add(const Duration(days: 0)));
     }).toList();
 
     return weekTransactions;

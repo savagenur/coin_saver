@@ -1,8 +1,6 @@
-import 'package:coin_saver/features/data/models/account/account_model.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/category/category_entity.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
-import 'package:coin_saver/features/domain/entities/main_transaction/main_transaction_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 
 abstract class BaseHiveRepository {

@@ -1,7 +1,41 @@
+import 'package:coin_saver/features/data/models/category/category_model.dart';
+import 'package:coin_saver/features/data/models/transaction/transaction_model.dart';
+import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
+import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:flutter/material.dart';
+
+import '../features/data/models/account/account_model.dart';
 
 // print('Primary Color Hex Code: ${Theme.of(context).primaryColor.value.toRadixString(16).toUpperCase()}');
 
+AccountModel accountError = AccountModel(
+    id: "id",
+    name: "nameError",
+    iconData: Icons.abc,
+    color: Colors.green,
+    type: AccountType.cash,
+    balance: 0,
+    currency: const CurrencyEntity(code: "code", name: "name", symbol: "symbol"),
+    isPrimary: false,
+    isActive: true,
+    ownershipType: OwnershipType.business,
+    openingDate: DateTime(2023),
+    transactionHistory: []);
+ TransactionModel transactionError = TransactionModel(
+    id: 'id',
+    date: DateTime.now(),
+    amount: 0,
+    category: CategoryModel(
+        id: "id",
+        name: "Error",
+        iconData: Icons.data_array,
+        color: Colors.black,
+        isIncome: false,
+        dateTime: DateTime.now()),
+    iconData: Icons.abc,
+    accountId: "accountId",
+    isIncome: false,
+    color: Colors.black);
 const List<String> kChartPeriodTitles = [
   "Day",
   "Week",

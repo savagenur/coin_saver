@@ -42,6 +42,7 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   intl: ^0.18.1
+  page_transition: ^2.0.9
   path_provider: ^2.0.15
   pull_down_button: ^0.9.1
   syncfusion_flutter_charts: ^22.1.34

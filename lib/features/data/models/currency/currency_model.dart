@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:equatable/equatable.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 
 part 'currency_model.g.dart';

@@ -2,7 +2,6 @@ import 'package:coin_saver/features/data/datasources/local_datasource/base_hive_
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/category/category_entity.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
-import 'package:coin_saver/features/domain/entities/main_transaction/main_transaction_entity.dart';
 import 'package:coin_saver/features/domain/repositories/base_hive_repository.dart';
 
 import '../../domain/entities/transaction/transaction_entity.dart';

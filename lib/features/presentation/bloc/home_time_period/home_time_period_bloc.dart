@@ -10,10 +10,11 @@ import '../../../domain/usecases/time_period/fetch_transactions_for_period_useca
 import '../../../domain/usecases/time_period/fetch_transactions_for_week_usecase.dart';
 import '../../../domain/usecases/time_period/fetch_transactions_for_year_usecase.dart';
 
-part 'time_period_event.dart';
-part 'time_period_state.dart';
+part 'home_time_period_event.dart';
+part 'home_time_period_state.dart';
 
-class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
+class HomeTimePeriodBloc
+    extends Bloc<HomeTimePeriodEvent, HomeTimePeriodState> {
   final GetTransactionsForTodayUsecase getTransactionsForTodayUsecase;
   final FetchTransactionsForDayUsecase fetchTransactionsForDayUsecase;
   final FetchTransactionsForWeekUsecase fetchTransactionsForWeekUsecase;
@@ -22,7 +23,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
   final FetchTransactionsForPeriodUsecase fetchTransactionsForPeriodUsecase;
   final GetTransactionsUsecase getTransactionsUsecase;
 
-  TimePeriodBloc({
+  HomeTimePeriodBloc({
     required this.fetchTransactionsForDayUsecase,
     required this.getTransactionsForTodayUsecase,
     required this.fetchTransactionsForWeekUsecase,
@@ -30,7 +31,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
     required this.fetchTransactionsForYearUsecase,
     required this.fetchTransactionsForPeriodUsecase,
     required this.getTransactionsUsecase,
-  }) : super(TimePeriodLoading()) {
+  }) : super(HomeTimePeriodLoading()) {
     on<SetDayPeriod>(_onSetDayPeriod);
     on<GetTodayPeriod>(_onGetTodayPeriod);
     on<SetMonthPeriod>(_onSetMonthPeriod);
@@ -39,7 +40,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
     on<SetPeriod>(_onSetPeriod);
   }
   void _onSetDayPeriod(
-      SetDayPeriod event, Emitter<TimePeriodState> emit) async {
+      SetDayPeriod event, Emitter<HomeTimePeriodState> emit) async {
     final selectedDate = event.selectedDate;
     final transactions = await getTransactionsUsecase.call();
     final totalTransactions = fetchTransactionsForDayUsecase.call(
@@ -66,7 +67,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
     }
 
     emit(
-      TimePeriodLoaded(
+      HomeTimePeriodLoaded(
         selectedDate: event.selectedDate,
         transactions: summedTransactions,
       ),
@@ -74,9 +75,9 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
   }
 
   void _onGetTodayPeriod(
-      GetTodayPeriod event, Emitter<TimePeriodState> emit) async {
+      GetTodayPeriod event, Emitter<HomeTimePeriodState> emit) async {
     emit(
-      TimePeriodLoaded(
+      HomeTimePeriodLoaded(
         selectedDate: DateTime.now(),
         transactions: getTransactionsForTodayUsecase.call(),
       ),
@@ -85,7 +86,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
 
   void _onSetWeekPeriod(
     SetWeekPeriod event,
-    Emitter<TimePeriodState> emit,
+    Emitter<HomeTimePeriodState> emit,
   ) async {
     final selectedDate = event.selectedDate;
     final transactions = await getTransactionsUsecase.call();
@@ -113,7 +114,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
     }
 
     emit(
-      TimePeriodLoaded(
+      HomeTimePeriodLoaded(
         selectedDate: event.selectedDate,
         transactions: summedTransactions,
       ),
@@ -121,7 +122,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
   }
 
   void _onSetMonthPeriod(
-      SetMonthPeriod event, Emitter<TimePeriodState> emit) async {
+      SetMonthPeriod event, Emitter<HomeTimePeriodState> emit) async {
     final selectedDate = event.selectedDate;
     final transactions = await getTransactionsUsecase.call();
     final totalTransactions = fetchTransactionsForMonthUsecase.call(
@@ -148,7 +149,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
     }
 
     emit(
-      TimePeriodLoaded(
+      HomeTimePeriodLoaded(
         selectedDate: event.selectedDate,
         transactions: summedTransactions,
       ),
@@ -156,7 +157,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
   }
 
   void _onSetYearPeriod(
-      SetYearPeriod event, Emitter<TimePeriodState> emit) async {
+      SetYearPeriod event, Emitter<HomeTimePeriodState> emit) async {
     final selectedDate = event.selectedDate;
     final transactions = await getTransactionsUsecase.call();
     final totalTransactions = fetchTransactionsForYearUsecase.call(
@@ -183,14 +184,14 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
     }
 
     emit(
-      TimePeriodLoaded(
+      HomeTimePeriodLoaded(
         selectedDate: event.selectedDate,
         transactions: summedTransactions,
       ),
     );
   }
 
-  void _onSetPeriod(SetPeriod event, Emitter<TimePeriodState> emit) async {
+  void _onSetPeriod(SetPeriod event, Emitter<HomeTimePeriodState> emit) async {
     final selectedStart = event.selectedStart;
     final selectedEnd = event.selectedEnd;
     final transactions = await getTransactionsUsecase.call();
@@ -199,7 +200,6 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
       selectedEnd,
       transactions,
     );
-    print(totalTransactions.length);
     List<TransactionEntity> summedTransactions = [];
 
     for (var transaction in totalTransactions) {
@@ -220,7 +220,7 @@ class TimePeriodBloc extends Bloc<TimePeriodEvent, TimePeriodState> {
     }
 
     emit(
-      TimePeriodLoaded(
+      HomeTimePeriodLoaded(
         selectedDate: event.selectedStart,
         transactions: summedTransactions,
       ),

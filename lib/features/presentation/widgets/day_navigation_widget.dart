@@ -7,20 +7,18 @@ import 'package:intl/intl.dart';
 
 import '../../domain/entities/transaction/transaction_entity.dart';
 import '../bloc/cubit/selected_date/selected_date_cubit.dart';
-import '../bloc/time_period/time_period_bloc.dart';
+import '../bloc/home_time_period/home_time_period_bloc.dart';
 import 'calendar_widget.dart';
 
 class DayNavigationWidget extends StatefulWidget {
   final AccountEntity account;
   final DateTime dateTime;
   final bool isIncome;
-  final List<TransactionEntity> transactions;
   final Period selectedPeriod;
   const DayNavigationWidget({
     super.key,
     required this.account,
     required this.dateTime,
-    required this.transactions,
     required this.isIncome,
     this.selectedPeriod = Period.day,
   });
@@ -42,11 +40,6 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
     return formattedDate;
   }
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   String updateSelectedPeriodText(
     Period selectedPeriod,
     DateTime selectedDate,
@@ -55,7 +48,7 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
     switch (selectedPeriod) {
       case Period.day:
         context
-            .read<TimePeriodBloc>()
+            .read<HomeTimePeriodBloc>()
             .add(SetDayPeriod(selectedDate: selectedDate));
         return formatDateyMMMMd(selectedDate) ==
                 formatDateyMMMMd(DateTime.now())
@@ -67,13 +60,13 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
                 : formatDateyMMMMd(selectedDate);
       case Period.week:
         context
-            .read<TimePeriodBloc>()
+            .read<HomeTimePeriodBloc>()
             .add(SetWeekPeriod(selectedDate: selectedDate));
         return "${formatDateM(selectedDate.subtract(Duration(days: selectedDate.weekday - 1)))} - ${formatDateyMMMMd(selectedDate.subtract(Duration(days: selectedDate.weekday - 7)))}";
 
       case Period.month:
         context
-            .read<TimePeriodBloc>()
+            .read<HomeTimePeriodBloc>()
             .add(SetMonthPeriod(selectedDate: selectedDate));
         final startOfMonth = DateTime(selectedDate.year, selectedDate.month);
         final endOfMonth = DateTime(selectedDate.year, selectedDate.month + 1)
@@ -81,12 +74,12 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
         return "${formatDateM(startOfMonth)} - ${formatDateM(endOfMonth)}";
       case Period.year:
         context
-            .read<TimePeriodBloc>()
+            .read<HomeTimePeriodBloc>()
             .add(SetYearPeriod(selectedDate: selectedDate));
         return DateFormat("yyyy").format(selectedDate);
       case Period.period:
         context
-            .read<TimePeriodBloc>()
+            .read<HomeTimePeriodBloc>()
             .add(SetPeriod(selectedStart: selectedDate, selectedEnd: endDate));
 
         return "${formatDateM(selectedDate)} - ${formatDateM(endDate)}";
@@ -123,7 +116,7 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
 
                                   // MainTransactions Sort
                                   context
-                                      .read<TimePeriodBloc>()
+                                      .read<HomeTimePeriodBloc>()
                                       .add(SetDayPeriod(
                                         selectedDate: selectedDate,
                                       ));
@@ -138,14 +131,25 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
                     ),
                     Expanded(
                       flex: 3,
-                      child: Text(
-                        updateSelectedPeriodText(
-                            selectedPeriod, selectedDate, endDate),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                            decoration: TextDecoration.underline),
+                      child: GestureDetector(
+                        onTap: selectedPeriod == Period.year ||
+                                selectedPeriod == Period.period
+                            ? null
+                            : () {
+                                _buildShowDialog(
+                                  context,
+                                  selectedDate,
+                                );
+                              },
+                        child: Text(
+                          updateSelectedPeriodText(
+                              selectedPeriod, selectedDate, endDate),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              decoration: TextDecoration.underline),
+                        ),
                       ),
                     ),
                     Expanded(
@@ -157,8 +161,9 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
                               ? Container()
                               : GestureDetector(
                                   onTap: () {
-                                    _buildShowDialog(context, selectedDate,
-                                        widget.transactions);
+                                    context
+                                        .read<SelectedDateCubit>()
+                                        .changeStartDate(DateTime.now());
                                   },
                                   child: const Icon(
                                     Icons.calendar_month_outlined,
@@ -196,13 +201,16 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
     );
   }
 
-  void _buildShowDialog(BuildContext context, DateTime selectedDate,
-      List<TransactionEntity> transactions) {
+  void _buildShowDialog(
+    BuildContext context,
+    DateTime selectedDate,
+  ) {
     showDialog(
       context: context,
       builder: (context) {
         return CalendarWidget(
-            selectedDate: selectedDate, transactions: transactions);
+          selectedDate: selectedDate,
+        );
       },
     );
   }

@@ -1,19 +1,21 @@
 import 'package:coin_saver/constants/category_icons.dart';
-import 'package:coin_saver/constants/colors.dart';
 import 'package:coin_saver/constants/constants.dart';
+import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/category/category_entity.dart';
 import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/main_colors/main_colors_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_category/selected_category_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_color/selected_color_cubit.dart';
+import 'package:coin_saver/features/presentation/bloc/cubit/selected_date/selected_date_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_icon/selected_icon_cubit.dart';
+import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:coin_saver/injection_container.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../bloc/account/account_bloc.dart';
 import '../../widgets/my_button_widget.dart';
 
 class CreateCategoryPage extends StatefulWidget {
@@ -27,9 +29,12 @@ class CreateCategoryPage extends StatefulWidget {
 class CreateCategoryPageState extends State<CreateCategoryPage> {
   late TransactionType _selectedTransactionType;
   late bool _isIncome;
+  late AccountEntity _account;
+  late DateTime _selectedDate;
   IconData? _iconData;
   Color? _color;
-  final TextEditingController _titleController = TextEditingController();
+  String _title = "";
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   late ScrollController _colorController;
   late SelectedIconCubit selectedIconCubit;
@@ -37,23 +42,21 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
   CategoryEntity? _category;
   @override
   void initState() {
+    super.initState();
+
     selectedIconCubit = context.read<SelectedIconCubit>();
     selectedColorCubit = context.read<SelectedColorCubit>();
     _isIncome = widget.isIncome;
     _selectedTransactionType = setTransactionType(widget.isIncome);
     _colorController = ScrollController();
-    _titleController.addListener(() {
-      setState(() {});
-    });
-    super.initState();
   }
 
   TransactionType setTransactionType(bool isIncome) {
     return isIncome ? TransactionType.income : TransactionType.expense;
   }
 
-  int popPageCount = 0;
-
+  bool isErrorIcon = false;
+  bool isErrorColor = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,98 +70,187 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
             icon: const Icon(Icons.arrow_back)),
         title: const Text("Create Category"),
       ),
-      body: BlocBuilder<SelectedIconCubit, IconData?>(
-        builder: (context, selectedIcon) {
-          _iconData = selectedIcon;
-          return BlocBuilder<SelectedColorCubit, Color?>(
-            builder: (context, selectedColor) {
-              _color = selectedColor;
-              return BlocBuilder<MainColorsCubit, MainColorsState>(
-                builder: (context, mainColorsState) {
-                  if (mainColorsState is MainColorsLoaded) {
-                    return SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Flexible(
-                                  child: CircleAvatar(
-                                    backgroundColor: _color ?? secondaryColor,
-                                    child: Icon(
-                                      _iconData ?? Icons.question_mark_sharp,
-                                      color: Colors.white,
-                                      size: 20,
+      body: Form(
+        key: _formKey,
+        child: BlocBuilder<AccountBloc, AccountState>(
+          builder: (context, accountState) {
+            if (accountState is AccountLoaded) {
+              return BlocBuilder<SelectedDateCubit, DateRange>(
+                builder: (context, dateRange) {
+                  _account = accountState.accounts.firstWhere(
+                    (element) => element.isPrimary,
+                    orElse: () => accountError,
+                  );
+                  _selectedDate = dateRange.startDate;
+                  return BlocBuilder<SelectedIconCubit, IconData?>(
+                    builder: (context, selectedIcon) {
+                      _iconData = selectedIcon;
+                      return BlocBuilder<SelectedColorCubit, Color?>(
+                        builder: (context, selectedColor) {
+                          _color = selectedColor;
+                          return BlocBuilder<MainColorsCubit, MainColorsState>(
+                            builder: (context, mainColorsState) {
+                              if (mainColorsState is MainColorsLoaded) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: Row(
+                                        children: [
+                                          Flexible(
+                                            child: CircleAvatar(
+                                              backgroundColor:
+                                                  _color ?? secondaryColor,
+                                              child: Icon(
+                                                _iconData ??
+                                                    Icons.question_mark_sharp,
+                                                color: Colors.white,
+                                                size: 20,
+                                              ),
+                                            ),
+                                          ),
+                                          sizeHor(10),
+                                          Expanded(
+                                            child: TextFormField(
+                                              validator: (value) {
+                                                if (value == null ||
+                                                    value.isEmpty) {
+                                                  return "Please enter category";
+                                                }
+                                                return null;
+                                              },
+                                              onSaved: (newValue) {
+                                                _title = newValue!;
+                                              },
+                                              decoration: const InputDecoration(
+                                                hintText: "Category Name",
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                ),
-                                sizeHor(10),
-                                Expanded(
-                                  child: TextFormField(
-                                    controller: _titleController,
-                                    decoration: const InputDecoration(
-                                        hintText: "Category Name"),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            sizeVer(10),
-                            _buildIsIncomeRadio(context),
-                            sizeVer(10),
-                            Text(
-                              "Planned outlay",
-                              style: TextStyle(color: Colors.grey.shade600),
-                            ),
-                            sizeVer(10),
-                            _buildPlannedOutlay(context),
-                            sizeVer(20),
-                            Text(
-                              "Icons",
-                              style: TextStyle(color: Colors.grey.shade600),
-                            ),
-                            sizeVer(10),
-                            _buildGridView(context),
-                            sizeVer(10),
-                            Text(
-                              "Color",
-                              style: TextStyle(color: Colors.grey.shade600),
-                            ),
-                            sizeVer(10),
-                            SingleChildScrollView(
-                                controller: _colorController,
-                                scrollDirection: Axis.horizontal,
-                                child: _buildColor(mainColorsState.mainColors)),
-                            sizeVer(20),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                MyButtonWidget(
-                                  title: 'Add',
-                                  width: MediaQuery.of(context).size.width * .5,
-                                  borderRadius: BorderRadius.circular(30),
-                                  paddingVertical: 15,
-                                  onTap: _titleController.text.isNotEmpty &&
-                                          _iconData != null &&
-                                          _color != null
-                                      ? _buildCreateCategory
-                                      : null,
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                  } else {
-                    return Container();
-                  }
+                                    Expanded(
+                                      child: Listener(
+                                        onPointerDown: (_) {
+                                          FocusScope.of(context).unfocus();
+                                        },
+                                        child: SingleChildScrollView(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Divider(),
+                                                _buildIsIncomeRadio(context),
+                                                const Divider(),
+                                                Text(
+                                                  "Planned outlay",
+                                                  style: TextStyle(
+                                                      color:
+                                                          Colors.grey.shade600),
+                                                ),
+                                                sizeVer(10),
+                                                _buildPlannedOutlay(context),
+                                                sizeVer(20),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      "Icons",
+                                                      style: TextStyle(
+                                                          color: Colors
+                                                              .grey.shade600),
+                                                    ),
+                                                    sizeHor(10),
+                                                    isErrorIcon
+                                                        ? Text(
+                                                            "Please select icon.",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .red
+                                                                    .shade800),
+                                                          )
+                                                        : Container(),
+                                                  ],
+                                                ),
+                                                sizeVer(10),
+                                                _buildGridView(context),
+                                                sizeVer(10),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      "Colors",
+                                                      style: TextStyle(
+                                                          color: Colors
+                                                              .grey.shade600),
+                                                    ),
+                                                    sizeHor(10),
+                                                    isErrorColor
+                                                        ? Text(
+                                                            "Please select icon.",
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .red
+                                                                    .shade800),
+                                                          )
+                                                        : Container(),
+                                                  ],
+                                                ),
+                                                sizeVer(10),
+                                                SingleChildScrollView(
+                                                    controller:
+                                                        _colorController,
+                                                    scrollDirection:
+                                                        Axis.horizontal,
+                                                    child: _buildColor(
+                                                        mainColorsState
+                                                            .mainColors)),
+                                                sizeVer(20),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    MyButtonWidget(
+                                                        title: 'Add',
+                                                        width: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width *
+                                                            .5,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(30),
+                                                        paddingVertical: 15,
+                                                        onTap:
+                                                            _buildCreateCategory),
+                                                  ],
+                                                ),
+                                                sizeVer(30),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                );
+                              } else {
+                                return Container();
+                              }
+                            },
+                          );
+                        },
+                      );
+                    },
+                  );
                 },
               );
-            },
-          );
-        },
+            }
+            return const Scaffold();
+          },
+        ),
       ),
     );
   }
@@ -174,6 +266,9 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
               padding: const EdgeInsets.only(right: 5),
               child: GestureDetector(
                 onTap: () {
+                  setState(() {
+                    isErrorColor = false;
+                  });
                   selectedColorCubit.changeColor(selectedColor);
                 },
                 child: Container(
@@ -231,6 +326,9 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
           var selectedIconData = mainIcons[index];
           return GestureDetector(
             onTap: () {
+              setState(() {
+                isErrorIcon = false;
+              });
               selectedIconCubit.changeIcon(selectedIconData);
             },
             child: Container(
@@ -338,31 +436,46 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
   }
 
   void _buildCreateCategory() {
-    _category = CategoryEntity(
-      id: sl<Uuid>().v1(),
-      name: _titleController.text,
-      iconData: _iconData!,
-      color: _color!,
-      isIncome: _isIncome,
-      dateTime: DateTime.now(),
-    );
-    context.read<CategoryBloc>().add(
-          CreateCategory(category: _category!),
-        );
-    context.read<SelectedCategoryCubit>().changeCategory(_category);
+    if (_iconData == null) {
+      setState(() {
+        isErrorIcon = true;
+      });
+    }
+    if (_color == null) {
+      setState(() {
+        isErrorColor = true;
+      });
+    }
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      _category = CategoryEntity(
+        id: sl<Uuid>().v1(),
+        name: _title,
+        iconData: _iconData!,
+        color: _color!,
+        isIncome: _isIncome,
+        dateTime: DateTime.now(),
+      );
+      context.read<CategoryBloc>().add(
+            CreateCategory(category: _category!),
+          );
+      context.read<SelectedCategoryCubit>().changeCategory(_category);
 
-    Navigator.popUntil(context, (route) {
-      if (popPageCount < 2) {
-        popPageCount++;
-        return false;
-      } else {
-        return true;
-      }
-    });
+      Navigator.pushNamedAndRemoveUntil(
+          context,
+          PageConst.addTransactionPage,
+          arguments: AddTransactionPage(
+            isIncome: _isIncome,
+            account: _account,
+            selectedDate: _selectedDate,
+            category: _category,
+          ),
+          (route) => route.settings.name == PageConst.addTransactionPage);
 
-    selectedIconCubit.changeIcon(null);
-    selectedColorCubit.changeColor(null);
-    context.read<SelectedCategoryCubit>().changeCategory(_category);
+      selectedIconCubit.changeIcon(null);
+      selectedColorCubit.changeColor(null);
+      context.read<SelectedCategoryCubit>().changeCategory(_category);
+    }
   }
 }
 

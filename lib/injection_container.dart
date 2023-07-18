@@ -1,9 +1,5 @@
-import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/features/data/datasources/local_datasource/base_hive_local_data_source.dart';
 import 'package:coin_saver/features/data/datasources/local_datasource/hive_local_data_source.dart';
-import 'package:coin_saver/features/data/models/account/account_model.dart';
-import 'package:coin_saver/features/data/models/category/category_model.dart';
-import 'package:coin_saver/features/data/models/currency/currency_model.dart';
 import 'package:coin_saver/features/data/repositories/hive_repository.dart';
 import 'package:coin_saver/features/domain/repositories/base_hive_repository.dart';
 import 'package:coin_saver/features/domain/usecases/account/create_account_usecase.dart';
@@ -23,7 +19,6 @@ import 'package:coin_saver/features/presentation/bloc/cubit/selected_category/se
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_icon/selected_icon_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/transaction_period/transaction_period_cubit.dart';
-import 'package:coin_saver/features/presentation/bloc/time_period/time_period_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:uuid/uuid.dart';
 
@@ -40,6 +35,7 @@ import 'features/domain/usecases/time_period/fetch_transactions_for_year_usecase
 import 'features/presentation/bloc/cubit/main_colors/main_colors_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_color/selected_color_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_date/selected_date_cubit.dart';
+import 'features/presentation/bloc/home_time_period/home_time_period_bloc.dart';
 import 'features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
 
 final GetIt sl = GetIt.instance;
@@ -63,7 +59,7 @@ Future<void> initGetIt() async {
         deleteCategoryUsecase: sl.call()),
   );
   sl.registerFactory(
-    () => TimePeriodBloc(
+    () => HomeTimePeriodBloc(
         fetchTransactionsForDayUsecase: sl.call(),
         getTransactionsForTodayUsecase: sl.call(),
         fetchTransactionsForWeekUsecase: sl.call(),
@@ -72,6 +68,7 @@ Future<void> initGetIt() async {
         fetchTransactionsForPeriodUsecase: sl.call(),
         getTransactionsUsecase: sl.call()),
   );
+  
   sl.registerFactory(
     () => MainTransactionBloc(
       getTransactionsUsecase: sl.call(),

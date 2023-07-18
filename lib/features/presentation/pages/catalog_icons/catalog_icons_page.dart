@@ -3,7 +3,6 @@ import 'package:coin_saver/features/presentation/bloc/cubit/selected_icon/select
 import 'package:coin_saver/features/presentation/widgets/my_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../constants/category_icons.dart';
 

@@ -1,7 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
-import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
-import 'package:coin_saver/injection_container.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../../domain/entities/transaction/transaction_entity.dart';
@@ -44,6 +42,8 @@ class MainTransactionBloc
 
   Future<void> _onAddTransaction(
       AddTransaction event, Emitter<MainTransactionState> emit) async {
+    
+
     await addTransactionUsecase.call(event.account, event.transaction);
     final List<TransactionEntity> transactions =
         await getTransactionsUsecase.call();
@@ -61,7 +61,7 @@ class MainTransactionBloc
 
   Future<void> _onUpdateTransaction(
       UpdateTransaction event, Emitter<MainTransactionState> emit) async {
-    updateTransactionUsecase.call(event.account, event.transaction);
+    await updateTransactionUsecase.call(event.account, event.transaction);
     final List<TransactionEntity> transactions =
         await getTransactionsUsecase.call();
     emit(MainTransactionLoaded(transactions: transactions));

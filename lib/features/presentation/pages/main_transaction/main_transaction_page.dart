@@ -1,5 +1,4 @@
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
-import 'package:coin_saver/features/domain/entities/main_transaction/main_transaction_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
@@ -9,13 +8,12 @@ import 'package:coin_saver/features/presentation/pages/add_transaction/add_trans
 import 'package:coin_saver/features/presentation/pages/transaction_detail/transaction_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
 import '../../../../constants/constants.dart';
 import '../../../../constants/period_enum.dart';
-import '../../bloc/time_period/time_period_bloc.dart';
+import '../../bloc/home_time_period/home_time_period_bloc.dart';
 
 class MainTransactionPage extends StatefulWidget {
   final TransactionEntity mainTransaction;
@@ -28,6 +26,7 @@ class MainTransactionPage extends StatefulWidget {
 class _MainTransactionPageState extends State<MainTransactionPage> {
   AccountEntity? _account;
   late TransactionEntity _mainTransaction;
+  late Period _selectedPeriod;
   List<TransactionEntity> _mainTransactions = [];
   double _totalAmount = 0;
   List<TransactionEntity> _transactions = [];
@@ -68,13 +67,15 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                 builder: (context, transactions) {
                   return BlocBuilder<PeriodCubit, Period>(
                     builder: (context, selectedPeriod) {
-                      return BlocBuilder<TimePeriodBloc, TimePeriodState>(
+                      return BlocBuilder<HomeTimePeriodBloc,
+                          HomeTimePeriodState>(
                         builder: (context, timePeriodState) {
-                          if (timePeriodState is TimePeriodLoaded) {
+                          if (timePeriodState is HomeTimePeriodLoaded) {
+                            _selectedPeriod = selectedPeriod;
                             _account = accountState.accounts.firstWhere(
-                              (account) => account.isPrimary,
-                            );
-                            _mainTransactions = timePeriodState.transactions
+                                (account) => account.isPrimary,
+                                orElse: () => accountError);
+                            _mainTransactions = transactions
                                 .where((mainTransaction) =>
                                     _account!.id == "total"
                                         ? mainTransaction.category ==
@@ -107,10 +108,11 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                               );
                             BlocProvider.of<TransactionPeriodCubit>(context)
                                 .setPeriod(
-                                    period: selectedPeriod,
-                                    selectedDate: selectedDate,
-                                    totalTransactions: allTransactions,
-                                    selectedEnd:selectedEnd,);
+                              period: _selectedPeriod,
+                              selectedDate: selectedDate,
+                              totalTransactions: allTransactions,
+                              selectedEnd: selectedEnd,
+                            );
                             _transactions = transactions;
                             _filteredMap = _filterTransactions(_transactions);
 
@@ -182,9 +184,12 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                                   Navigator.pushNamed(
                                       context, PageConst.addTransactionPage,
                                       arguments: AddTransactionPage(
-                                          isIncome: _mainTransaction.isIncome,
-                                          account: _account!,
-                                          selectedDate: DateTime.now()));
+                                        isIncome: _mainTransaction.isIncome,
+                                        account: _account!,
+                                        selectedDate: DateTime.now(),
+                                        category:
+                                            widget.mainTransaction.category,
+                                      ));
                                 },
                                 child: const Icon(Icons.add),
                               ),
@@ -227,7 +232,8 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                       _filteredMap.keys.elementAt(keyIndex)]![valueIndex];
                   String accountName = accountState.accounts
                       .firstWhere(
-                          (element) => element.id == transaction.accountId)
+                          (element) => element.id == transaction.accountId,
+                          orElse: () => accountError)
                       .name;
 
                   return ListTile(
@@ -238,7 +244,8 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                             transaction: transaction,
                             account: accountState.accounts.firstWhere(
                                 (element) =>
-                                    element.id == transaction.accountId),
+                                    element.id == transaction.accountId,
+                                orElse: () => accountError),
                           ));
                     },
                     contentPadding: EdgeInsets.zero,
@@ -321,6 +328,9 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
     return AppBar(
       centerTitle: true,
       toolbarHeight: 70,
+      leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back)),
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -341,9 +351,7 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
           ),
         ],
       ),
-      actions: [
-        IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
-      ],
+      
     );
   }
 }

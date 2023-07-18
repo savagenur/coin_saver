@@ -76,7 +76,6 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       SetPrimaryAccount event, Emitter<AccountState> emit) async {
     await setPrimaryAccountUsecase.call(event.accountId);
     List<AccountEntity> accounts = await getAccountsUsecase.call();
-    print(accounts.map((e) => e.isPrimary).toList());
     emit(AccountLoaded(accounts: accounts));
   }
 

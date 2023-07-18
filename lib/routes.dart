@@ -7,6 +7,7 @@ import 'package:coin_saver/features/presentation/pages/main_transaction/main_tra
 import 'package:coin_saver/features/presentation/pages/transaction_detail/transaction_detail_page.dart';
 import 'package:coin_saver/features/presentation/transactions/transactions_page.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 
 import 'constants/constants.dart';
 import 'features/presentation/pages/create_category/create_category_page.dart';
@@ -17,33 +18,36 @@ class AppRoute {
     switch (settings.name) {
       case PageConst.homePage:
         args = args as HomePage;
-
         return _routeBuilder(HomePage(
-          dateTime: args.dateTime,
-          isIncome: args.isIncome,
-        ));
+            isIncome: args.isIncome,
+            period: args.period,
+          ));
+        
       case PageConst.addTransactionPage:
         args = args as AddTransactionPage;
 
         return _routeBuilder(AddTransactionPage(
-          isIncome: args.isIncome,
-          account: args.account,
-          selectedDate: args.selectedDate,
-        ));
+              isIncome: args.isIncome,
+              account: args.account,
+              selectedDate: args.selectedDate,
+              transaction: args.transaction,
+              category: args.category,
+            ));
       case PageConst.catalogIconsPage:
-        return _routeBuilder(CatalogIconsPage());
+        return _routeBuilder(const CatalogIconsPage());
       case PageConst.colorsPage:
-        return _routeBuilder(ColorsPage());
+        return _routeBuilder(const ColorsPage());
       case PageConst.createCategoryPage:
         args = args as CreateCategoryPage;
-
         return _routeBuilder(CreateCategoryPage(
-          isIncome: args.isIncome,
-        ));
+            isIncome: args.isIncome,
+          ));
       case PageConst.transactionsPage:
         args = args as TransactionsPage;
         return _routeBuilder(TransactionsPage(
           account: args.account,
+          period: args.period,
+          isIncome: args.isIncome,
         ));
       case PageConst.mainTransactionPage:
         args = args as MainTransactionPage;
@@ -68,9 +72,10 @@ class AppRoute {
     }
   }
 
-  MaterialPageRoute _routeBuilder(Widget child) {
-    return MaterialPageRoute(
-      builder: (context) => child,
+  PageTransition _routeBuilder(Widget child) {
+    return PageTransition(
+      type: PageTransitionType.fade,
+      child: child,
     );
   }
 }

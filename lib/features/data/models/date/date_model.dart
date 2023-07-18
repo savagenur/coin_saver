@@ -1,5 +1,4 @@
 import 'package:coin_saver/features/domain/entities/date/date_entity.dart';
-import 'package:equatable/equatable.dart';
 
 class DateModel extends DateEntity {
   final String? name;

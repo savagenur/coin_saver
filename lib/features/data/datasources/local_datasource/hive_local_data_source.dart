@@ -203,7 +203,23 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     required AccountEntity accountEntity,
     required TransactionEntity transactionEntity,
   }) async {
-    TransactionModel transaction = TransactionModel(
+    // Step 1: Validate the account
+    final existingAccount = accountsBox.get(accountEntity.id);
+    if (existingAccount == null) {
+      // Account doesn't exist, handle error or throw an exception
+      throw Exception("Account not found!");
+    }
+
+    // Step 2: Calculate the updated account balance
+    final double transactionAmount = transactionEntity.isIncome
+        ? transactionEntity.amount
+        : -transactionEntity.amount;
+
+    final double updatedAccountBalance =
+        existingAccount.balance + transactionAmount;
+
+    // Step 3: Create the new transaction
+    final TransactionModel newTransaction = TransactionModel(
       id: transactionEntity.id,
       date: transactionEntity.date,
       amount: transactionEntity.amount,
@@ -215,40 +231,31 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       description: transactionEntity.description,
     );
 
-    AccountModel account = AccountModel(
-      id: accountEntity.id,
-      name: accountEntity.name,
-      iconData: accountEntity.iconData,
-      type: accountEntity.type,
-      color: accountEntity.color,
-      balance: transactionEntity.isIncome
-          ? accountEntity.balance + transactionEntity.amount
-          : accountEntity.balance - transactionEntity.amount,
-      currency: accountEntity.currency,
-      isPrimary: accountEntity.isPrimary,
-      isActive: accountEntity.isActive,
-      ownershipType: accountEntity.ownershipType,
-      openingDate: accountEntity.openingDate,
-      transactionHistory: List.from(accountEntity.transactionHistory
-          .map((e) => TransactionModel.fromEntity(e))
-          .toList())
-        ..add(transaction),
-    );
-    AccountModel totalAccount =
-        accountsBox.values.firstWhere((account) => account.id == "total");
-    totalAccount = totalAccount.copyWith(
-      balance: transactionEntity.isIncome
-          ? totalAccount.balance + transactionEntity.amount
-          : totalAccount.balance - transactionEntity.amount,
-      transactionHistory: List.from(totalAccount.transactionHistory)
-        ..add(transaction),
-    );
+    // Step 4: Update account and total account (if needed) inside a try-catch block
+    try {
+      // Start updating
+      final updatedAccount = existingAccount.copyWith(
+        balance: updatedAccountBalance,
+        transactionHistory: List.from(existingAccount.transactionHistory)
+          ..add(newTransaction),
+      );
+      accountsBox.put(existingAccount.id, updatedAccount);
 
-    Map<String, AccountModel> map = {};
-    map[account.id] = account;
-    map['total'] = totalAccount;
-
-    await accountsBox.putAll(map);
+      final totalAccount = accountsBox.get("total");
+      if (totalAccount != null) {
+        final updatedTotalAccount = totalAccount.copyWith(
+          balance: totalAccount.balance + transactionAmount,
+          transactionHistory: List.from(totalAccount.transactionHistory)
+            ..add(newTransaction),
+        );
+        accountsBox.put(totalAccount.id, updatedTotalAccount);
+      }
+      // End updating
+    } catch (e) {
+      // Handle the error, log, or revert changes if needed
+      // ...
+      rethrow;
+    }
   }
 
   @override
@@ -256,40 +263,55 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     required TransactionEntity transactionEntity,
     required AccountEntity accountEntity,
   }) async {
-    AccountModel account = AccountModel(
-      id: accountEntity.id,
-      name: accountEntity.name,
-      iconData: accountEntity.iconData,
-      type: accountEntity.type,
-      color: accountEntity.color,
-      balance: transactionEntity.isIncome
-          ? accountEntity.balance - transactionEntity.amount
-          : accountEntity.balance + transactionEntity.amount,
-      currency: accountEntity.currency,
-      isPrimary: accountEntity.isPrimary,
-      isActive: accountEntity.isActive,
-      ownershipType: accountEntity.ownershipType,
-      openingDate: accountEntity.openingDate,
-      transactionHistory: List.from(accountEntity.transactionHistory
-          .map((e) => TransactionModel.fromEntity(e))
-          .toList())
-        ..removeWhere((element) => element.id == transactionEntity.id),
-    );
-    AccountModel totalAccount =
-        accountsBox.values.firstWhere((account) => account.id == "total");
-    totalAccount = totalAccount.copyWith(
-      balance: transactionEntity.isIncome
-          ? totalAccount.balance - transactionEntity.amount
-          : totalAccount.balance + transactionEntity.amount,
-      transactionHistory: List.from(totalAccount.transactionHistory)
-        ..removeWhere((element) => element.id == transactionEntity.id),
+    // Step 1: Validate the account
+    final existingAccount = accountsBox.get(accountEntity.id);
+    if (existingAccount == null) {
+      // Account doesn't exist, handle error or throw an exception
+      throw Exception("Account not found!");
+    }
+
+    // Step 2: Calculate the updated account balance
+    final double transactionAmount = transactionEntity.isIncome
+        ? -transactionEntity.amount
+        : transactionEntity.amount;
+
+    final double updatedAccountBalance =
+        existingAccount.balance + transactionAmount;
+
+    // Step 3: Create a new transaction history list without the deleted transaction
+    final updatedTransactionHistory = List<TransactionModel>.from(
+      existingAccount.transactionHistory.where(
+        (transaction) => transaction.id != transactionEntity.id,
+      ),
     );
 
-    Map<String, AccountModel> map = {};
-    map[account.id] = account;
-    map['total'] = totalAccount;
+    // Step 4: Update account and total account (if needed) inside a try-catch block
+    try {
+      // Start updating
+      final updatedAccount = existingAccount.copyWith(
+        balance: updatedAccountBalance,
+        transactionHistory: updatedTransactionHistory,
+      );
+      accountsBox.put(existingAccount.id, updatedAccount);
 
-    await accountsBox.putAll(map);
+      final totalAccount = accountsBox.get("total");
+      if (totalAccount != null) {
+        final updatedTotalAccount = totalAccount.copyWith(
+          balance: totalAccount.balance + transactionAmount,
+          transactionHistory: List<TransactionModel>.from(
+            totalAccount.transactionHistory.where(
+              (transaction) => transaction.id != transactionEntity.id,
+            ),
+          ),
+        );
+        accountsBox.put(totalAccount.id, updatedTotalAccount);
+      }
+      // End updating
+    } catch (e) {
+      // Handle the error, log, or revert changes if needed
+      // ...
+      rethrow;
+    }
   }
 
   @override
@@ -297,9 +319,28 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     required TransactionEntity transactionEntity,
     required AccountEntity accountEntity,
   }) async {
-    TransactionEntity oldTransaction = accountEntity.transactionHistory
+    // Step 1: Validate the account
+    final existingAccount = accountsBox.get(accountEntity.id);
+    if (existingAccount == null) {
+      // Account doesn't exist, handle error or throw an exception
+      throw Exception("Account not found!");
+    }
+
+    // Step 2: Find the old transaction to get its amount
+    final TransactionEntity oldTransaction = accountEntity.transactionHistory
         .firstWhere((element) => element.id == transactionEntity.id);
-    TransactionModel transaction = TransactionModel(
+
+    // Step 3: Calculate the difference in amounts to update the account balance
+    final double amountDifference = transactionEntity.isIncome
+        ? transactionEntity.amount - oldTransaction.amount
+        : oldTransaction.amount - transactionEntity.amount;
+
+    // Step 4: Calculate the updated account balance
+    final double updatedAccountBalance =
+        existingAccount.balance + amountDifference;
+
+    // Step 5: Create a new transaction with the updated values
+    final TransactionModel updatedTransaction = TransactionModel(
       id: transactionEntity.id,
       date: transactionEntity.date,
       amount: transactionEntity.amount,
@@ -311,69 +352,67 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       description: transactionEntity.description,
     );
 
-    AccountModel account = AccountModel(
-      id: accountEntity.id,
-      name: accountEntity.name,
-      iconData: accountEntity.iconData,
-      type: accountEntity.type,
-      color: accountEntity.color,
-      balance: transactionEntity.isIncome
-          ? accountEntity.balance -
-              oldTransaction.amount +
-              transactionEntity.amount
-          : accountEntity.balance +
-              oldTransaction.amount -
-              transactionEntity.amount,
-      currency: accountEntity.currency,
-      isPrimary: accountEntity.isPrimary,
-      isActive: accountEntity.isActive,
-      ownershipType: accountEntity.ownershipType,
-      openingDate: accountEntity.openingDate,
-      transactionHistory: List.from(accountEntity.transactionHistory
-          .map((e) => TransactionModel.fromEntity(e))
-          .toList())
-        ..removeWhere((element) => element.id == transactionEntity.id)
-        ..add(transaction),
-    );
-    AccountModel totalAccount =
-        accountsBox.values.firstWhere((account) => account.id == "total");
-    totalAccount = totalAccount.copyWith(
-      balance: transactionEntity.isIncome
-          ? totalAccount.balance -
-              oldTransaction.amount +
-              transactionEntity.amount
-          : totalAccount.balance +
-              oldTransaction.amount -
-              transactionEntity.amount,
-      transactionHistory: List.from(totalAccount.transactionHistory)
-        ..removeWhere((element) => element.id == transactionEntity.id)
-        ..add(transaction),
+    // Step 6: Create a new transaction history list with the updated transaction
+    final updatedTransactionHistory = List<TransactionModel>.from(
+      accountEntity.transactionHistory
+          .where((element) => element.id != transactionEntity.id)
+          .toList()
+        ..add(updatedTransaction),
     );
 
-    Map<String, AccountModel> map = {};
-    map[account.id] = account;
-    map['total'] = totalAccount;
+    // Step 7: Update account and total account (if needed) inside a try-catch block
+    try {
+      // Start updating
+      final updatedAccount = existingAccount.copyWith(
+        balance: updatedAccountBalance,
+        transactionHistory: updatedTransactionHistory,
+      );
+      accountsBox.put(existingAccount.id, updatedAccount);
 
-    await accountsBox.putAll(map);
+      final totalAccount = accountsBox.get("total");
+      if (totalAccount != null) {
+        final updatedTotalAccount = totalAccount.copyWith(
+          balance: totalAccount.balance + amountDifference,
+          transactionHistory: List<TransactionModel>.from(
+            totalAccount.transactionHistory
+                .where((element) => element.id != transactionEntity.id)
+                .toList()
+              ..add(updatedTransaction),
+          ),
+        );
+        accountsBox.put(totalAccount.id, updatedTotalAccount);
+      }
+      // End updating
+    } catch (e) {
+      // Handle the error, log, or revert changes if needed
+      // ...
+      rethrow;
+    }
   }
 
   // Todo
   @override
   List<TransactionEntity> getTransactions() {
-    return accountsBox.values
-        .firstWhere((element) => element.isPrimary)
-        .transactionHistory;
+    final primaryAccount =
+        accountsBox.values.firstWhere((element) => element.isPrimary);
+    final List<TransactionEntity> transactions = primaryAccount
+        .transactionHistory
+        .map((transaction) => transaction.toEntity())
+        .toList();
+    return transactions;
   }
 
   // * Currency
   @override
   Future<void> createCurrency(CurrencyEntity currencyEntity) async {
-    await currencyBox.put(
-        0,
-        CurrencyModel(
-            code: currencyEntity.code,
-            name: currencyEntity.name,
-            symbol: currencyEntity.symbol));
+    final key = currencyEntity.code;
+    final CurrencyModel currencyModel = CurrencyModel(
+      code: currencyEntity.code,
+      name: currencyEntity.name,
+      symbol: currencyEntity.symbol,
+    );
+
+    await currencyBox.put(key, currencyModel);
   }
 
   @override
@@ -383,12 +422,12 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
 
   @override
   Future<void> updateCurrency(CurrencyEntity currencyEntity) async {
-    await currencyBox.put(
-        0,
-        CurrencyModel(
-            code: currencyEntity.code,
-            name: currencyEntity.name,
-            symbol: currencyEntity.symbol));
+    final CurrencyModel currencyModel = CurrencyModel(
+      code: currencyEntity.code,
+      name: currencyEntity.name,
+      symbol: currencyEntity.symbol,
+    );
+    await currencyBox.putAt(0, currencyModel);
   }
 
   // * Category
@@ -413,7 +452,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
   @override
   Future<List<CategoryEntity>> getCategories() async {
     List<CategoryEntity> categories =
-        categoriesBox.values.toList().cast<CategoryModel>();
+        categoriesBox.values.map((category) => category.toEntity()).toList();
     return categories;
   }
 
@@ -445,18 +484,35 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     }).toList();
   }
 
-  @override
-  List<TransactionEntity> getTransactionsForToday() {
-    final selectedDate = DateTime.now();
-    var totalTransactions = accountsBox.values
-        .firstWhere((account) => account.isPrimary)
-        .transactionHistory;
-    return totalTransactions.where((transaction) {
-      return transaction.date.day == selectedDate.day &&
-          transaction.date.month == selectedDate.month &&
-          transaction.date.year == selectedDate.year;
-    }).toList();
+@override
+List<TransactionEntity> getTransactionsForToday() {
+  final selectedDate = DateTime.now();
+
+  // Step 1: Get the primary account (or null if not found)
+  final primaryAccount = accountsBox.values.firstWhere((account) => account.isPrimary, orElse: () => accountError);
+
+  // Step 2: Check if the primary account exists
+  if (primaryAccount.id == "null") {
+    // Primary account not found, handle error or return an empty list
+    return [];
   }
+
+  // Step 3: Get the transaction history of the primary account
+  final totalTransactions = primaryAccount.transactionHistory;
+
+  // Step 4: Filter transactions for today
+  final transactionsForToday = totalTransactions.where((transaction) {
+    return transaction.date.day == selectedDate.day &&
+        transaction.date.month == selectedDate.month &&
+        transaction.date.year == selectedDate.year;
+  }).toList();
+
+  return transactionsForToday;
+}
+
+
+
+
 
   @override
   List<TransactionEntity> fetchTransactionsForMonth(

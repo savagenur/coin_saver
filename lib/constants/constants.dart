@@ -9,8 +9,8 @@ import '../features/data/models/account/account_model.dart';
 // print('Primary Color Hex Code: ${Theme.of(context).primaryColor.value.toRadixString(16).toUpperCase()}');
 
 AccountModel accountError = AccountModel(
-    id: "id",
-    name: "nameError",
+    id: "null",
+    name: "null",
     iconData: Icons.abc,
     color: Colors.green,
     type: AccountType.cash,
@@ -22,12 +22,12 @@ AccountModel accountError = AccountModel(
     openingDate: DateTime(2023),
     transactionHistory: []);
  TransactionModel transactionError = TransactionModel(
-    id: 'id',
+    id: 'null',
     date: DateTime.now(),
     amount: 0,
     category: CategoryModel(
-        id: "id",
-        name: "Error",
+        id: "null",
+        name: "null",
         iconData: Icons.data_array,
         color: Colors.black,
         isIncome: false,

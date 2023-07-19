@@ -78,7 +78,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
   // Blocs
   late SelectedCategoryCubit selectedCategoryCubit;
   late AccountBloc accountBloc;
-  late HomeTimePeriodBloc timePeriodBloc;
+  late HomeTimePeriodBloc homeTimePeriodBloc;
   late MainTransactionBloc mainTransactionBloc;
   late PeriodCubit periodCubit;
   late SelectedDateCubit selectedDateCubit;
@@ -95,7 +95,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
     // Blocs
     selectedCategoryCubit = context.read<SelectedCategoryCubit>();
     accountBloc = context.read<AccountBloc>();
-    timePeriodBloc = context.read<HomeTimePeriodBloc>();
+    homeTimePeriodBloc = context.read<HomeTimePeriodBloc>();
     mainTransactionBloc = context.read<MainTransactionBloc>();
     periodCubit = context.read<PeriodCubit>();
     selectedDateCubit = context.read<SelectedDateCubit>();
@@ -237,6 +237,9 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                                     TextFormField(
                                                       controller:
                                                           _descriptionController,
+                                                      textCapitalization:
+                                                          TextCapitalization
+                                                              .sentences,
                                                       maxLength: 4000,
                                                       minLines: 1,
                                                       maxLines: 6,
@@ -312,9 +315,8 @@ class AddTransactionPageState extends State<AddTransactionPage>
                     var selectedDate = dateRange.startDate;
                     return TableCalendar(
                       weekNumbersVisible: true,
-                      headerStyle: const HeaderStyle(
-                        formatButtonVisible: false
-                      ),
+                      headerStyle:
+                          const HeaderStyle(formatButtonVisible: false),
                       focusedDay: selectedDate,
                       firstDay: DateTime(2000),
                       lastDay: DateTime(DateTime.now().year,
@@ -446,7 +448,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
                     .copyWith(color: Theme.of(context).primaryColor),
               ),
               IconButton(
-                  onPressed: () {}, icon: const Icon(Icons.calculate_outlined)),
+                  onPressed: () {}, icon: const Icon(FontAwesomeIcons.calculator)),
             ],
           ),
         ),
@@ -454,68 +456,93 @@ class AddTransactionPageState extends State<AddTransactionPage>
     );
   }
 
-  _buildAddTransaction() async {
+  void _buildAddTransaction() async {
     if (_category == null) {
       setState(() {
         isErrorCategory = true;
       });
     }
+
     if (_account == null) {
       setState(() {
         isErrorAccount = true;
       });
     }
+
+    // Check for form validation and category/account selection
     if (_formKey.currentState!.validate() &&
         _category != null &&
         _account != null) {
       _formKey.currentState!.save();
 
       final TransactionEntity transaction = TransactionEntity(
-          id: widget.transaction != null
-              ? widget.transaction!.id
-              : sl<Uuid>().v1(),
-          date: _selectedDate,
-          amount: _amount,
-          category: _category!,
-          iconData: _category!.iconData,
-          accountId: _account!.name,
-          isIncome: _isIncome,
-          color: _category!.color,
-          description: _descriptionController.text);
+        id: widget.transaction != null
+            ? widget.transaction!.id
+            : sl<Uuid>().v1(),
+        date: _selectedDate,
+        amount: _amount,
+        category: _category!,
+        iconData: _category!.iconData,
+        accountId: _account!.name,
+        isIncome: _isIncome,
+        color: _category!.color,
+        description: _descriptionController.text,
+      );
+
       if (widget.transaction != null) {
         if (_account!.id != widget.account.id) {
-          await sl<DeleteTransactionUsecase>()
-              .call(widget.account, widget.transaction!);
-
-          mainTransactionBloc.add(
-              AddTransaction(transaction: transaction, account: _account!));
+          // Move the delete and add transaction calls inside a try-catch block
+          try {
+            // Delete the transaction from the old account
+            await sl<DeleteTransactionUsecase>()
+                .call(widget.account, widget.transaction!);
+            if (mounted) {
+              BlocProvider.of<MainTransactionBloc>(context).add(
+                  AddTransaction(transaction: transaction, account: _account!));
+            }
+            // Add the transaction to the new account
+          } catch (e) {
+            // Handle the error, show a snackbar, or revert changes if needed
+            // ...
+            return;
+          }
         } else {
-          mainTransactionBloc.add(
+          // Update the transaction within the same account
+          BlocProvider.of<MainTransactionBloc>(context).add(
               UpdateTransaction(transaction: transaction, account: _account!));
         }
       } else {
-        mainTransactionBloc
+        // Add a new transaction to the selected account
+        BlocProvider.of<MainTransactionBloc>(context)
             .add(AddTransaction(transaction: transaction, account: _account!));
       }
 
-      accountBloc.add(
-        SetPrimaryAccount(accountId: _account!.id),
-      );
-      timePeriodBloc.add(SetDayPeriod(
-        selectedDate: _selectedDate,
-      ));
+      if (mounted) {
+        // Set the selected account as the primary account
+      accountBloc
+          .add(SetPrimaryAccount(accountId: _account!.id));
 
+      // Set the selected date as the day period
+      homeTimePeriodBloc
+          .add(SetDayPeriod(selectedDate: _selectedDate));
+
+      // Change the period to 'day' in the PeriodCubit
       periodCubit.changePeriod(Period.day);
+
+      // Clear the selected category
       selectedCategoryCubit.changeCategory(null);
-      widget.transaction != null
-          ? {
-              Navigator.pop(context),
-              Navigator.pop(context),
-            }
-          : Navigator.pushNamed(context, PageConst.homePage,
-              arguments: HomePage(
-                isIncome: _isIncome,
-              ));
+
+      // Navigate to the appropriate screen based on the widget type
+      if (widget.transaction != null) {
+        // If it's an existing transaction, pop back to the previous screen(s)
+        Navigator.pop(context);
+        Navigator.pop(context);
+      } else {
+        // If it's a new transaction, navigate to the home page with the appropriate arguments
+        Navigator.pushNamed(context, PageConst.homePage,
+            arguments: HomePage(isIncome: _isIncome));
+      }
+      }
     }
   }
 
@@ -631,7 +658,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
                   backgroundColor: secondaryColor,
                   radius: 25,
                   child: Icon(
-                    Icons.add,
+                    FontAwesomeIcons.plus,
                     color: Colors.white,
                   ),
                 ),
@@ -703,17 +730,19 @@ class AddTransactionPageState extends State<AddTransactionPage>
       centerTitle: true,
       leading: IconButton(
           onPressed: () async {
-            await Navigator.pushNamedAndRemoveUntil(
-                context,
-                PageConst.homePage,
-                arguments: HomePage(
-                  period: _selectedPeriod,
-                  isIncome: _isIncome,
-                ),
-                (route) => route.settings.name == PageConst.homePage);
+            widget.transaction == null
+                ? Navigator.pop(context)
+                : await Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    PageConst.homePage,
+                    arguments: HomePage(
+                      period: _selectedPeriod,
+                      isIncome: _isIncome,
+                    ),
+                    (route) => route.settings.name == PageConst.homePage);
             selectedCategoryCubit.changeCategory(null);
           },
-          icon: const Icon(Icons.arrow_back)),
+          icon: const Icon(FontAwesomeIcons.arrowLeft)),
       title: const Text("Add Transactions"),
       bottom: TabBar(
         controller: _tabController,

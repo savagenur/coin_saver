@@ -20,7 +20,7 @@ class ColorsPage extends StatelessWidget {
               Navigator.pop(context);
               context.read<SelectedColorCubit>().changeColor(null);
             },
-            icon: const Icon(Icons.arrow_back)),
+            icon: const Icon(FontAwesomeIcons.arrowLeft)),
         title: const Text("Colors"),
       ),
       body: BlocBuilder<SelectedColorCubit, Color?>(
@@ -45,7 +45,7 @@ class ColorsPage extends StatelessWidget {
                     CircleAvatar(
                       backgroundColor: selectedColor,
                       child: selectedColor == null
-                          ? const Icon(Icons.question_mark)
+                          ? const Icon(FontAwesomeIcons.question)
                           : Container(),
                     ),
                   ],

@@ -67,7 +67,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
               selectedIconCubit.changeIcon(null);
               selectedColorCubit.changeColor(null);
             },
-            icon: const Icon(Icons.arrow_back)),
+            icon: const Icon(FontAwesomeIcons.arrowLeft)),
         title: const Text("Create Category"),
       ),
       body: Form(
@@ -104,7 +104,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                   _color ?? secondaryColor,
                                               child: Icon(
                                                 _iconData ??
-                                                    Icons.question_mark_sharp,
+                                                    FontAwesomeIcons.question,
                                                 color: Colors.white,
                                                 size: 20,
                                               ),
@@ -304,7 +304,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
             child: CircleAvatar(
               backgroundColor: secondaryColor,
               child: Icon(
-                Icons.add,
+                FontAwesomeIcons.plus,
                 color: Colors.white,
               ),
             ),
@@ -362,7 +362,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
               radius: 25,
               backgroundColor: Colors.amber,
               child: Icon(
-                Icons.more_horiz,
+                FontAwesomeIcons.ellipsis,
                 color: Colors.white,
               ),
             ),

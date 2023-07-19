@@ -9,6 +9,7 @@ import 'package:coin_saver/features/presentation/transactions/transactions_page.
 import 'package:coin_saver/features/presentation/widgets/day_navigation_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'package:coin_saver/constants/constants.dart';
@@ -180,7 +181,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       account: _account,
                                     ));
                               },
-                              child: const Icon(Icons.add),
+                              child: const Icon(FontAwesomeIcons.plus),
                             ),
                           ),
                         );
@@ -210,7 +211,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       centerTitle: true,
       leading: IconButton(
         onPressed: () {},
-        icon: const Icon(Icons.menu),
+        icon: const Icon(FontAwesomeIcons.bars),
       ),
       title: AccountSwitchPullDownBtn(accounts: accounts, account: account),
       bottom: TabBar(
@@ -249,7 +250,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     isIncome: _isIncome,
                   ));
             },
-            icon: const Icon(Icons.list_alt_rounded)),
+            icon: const Icon(FontAwesomeIcons.rectangleList)),
       ],
     );
   }

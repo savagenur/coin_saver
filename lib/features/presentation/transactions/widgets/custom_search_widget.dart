@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CustomSearchDelegate extends SearchDelegate<String> {
   @override
@@ -18,7 +19,7 @@ class CustomSearchDelegate extends SearchDelegate<String> {
   Widget buildLeading(BuildContext context) {
     // Leading icon on the left of the app bar (e.g., back button)
     return IconButton(
-      icon: const Icon(Icons.arrow_back),
+      icon: const Icon(FontAwesomeIcons.arrowLeft),
       onPressed: () {
         close(context, '');
       },

@@ -3,6 +3,7 @@ import 'package:coin_saver/features/domain/entities/account/account_entity.dart'
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
 import '../../domain/entities/transaction/transaction_entity.dart';
@@ -124,7 +125,8 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
                                       selectedPeriod, selectedDate, endDate);
                                 },
                           icon: const Icon(
-                            Icons.arrow_back_ios,
+                                FontAwesomeIcons.chevronLeft
+,
                           ),
                         ),
                       ),
@@ -157,7 +159,9 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          selectedPeriod == Period.period
+                          selectedPeriod == Period.period ||
+                                  DateFormat.yMd().format(selectedDate) ==
+                                      DateFormat.yMd().format(DateTime.now())
                               ? Container()
                               : GestureDetector(
                                   onTap: () {
@@ -166,7 +170,7 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
                                         .changeStartDate(DateTime.now());
                                   },
                                   child: const Icon(
-                                    Icons.calendar_month_outlined,
+                                    FontAwesomeIcons.calendarCheck,
                                   ),
                                 ),
                           IconButton(
@@ -185,7 +189,8 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
                                   }
                                 : null,
                             icon: const Icon(
-                              Icons.arrow_forward_ios,
+                                  FontAwesomeIcons.chevronRight
+,
                             ),
                           ),
                         ],

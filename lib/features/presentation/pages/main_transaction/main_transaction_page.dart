@@ -8,6 +8,7 @@ import 'package:coin_saver/features/presentation/pages/add_transaction/add_trans
 import 'package:coin_saver/features/presentation/pages/transaction_detail/transaction_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
@@ -191,7 +192,7 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                                             widget.mainTransaction.category,
                                       ));
                                 },
-                                child: const Icon(Icons.add),
+                                child: const Icon(FontAwesomeIcons.plus),
                               ),
                             );
                           }
@@ -330,7 +331,7 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
       toolbarHeight: 70,
       leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back)),
+          icon: const Icon(FontAwesomeIcons.arrowLeft)),
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

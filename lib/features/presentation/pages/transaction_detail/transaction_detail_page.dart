@@ -12,7 +12,7 @@ import 'package:intl/intl.dart';
 import '../../bloc/main_transaction/main_transaction_bloc.dart';
 
 class TransactionDetailPage extends StatelessWidget {
- final TransactionEntity transaction;
+  final TransactionEntity transaction;
   final AccountEntity account;
   const TransactionDetailPage(
       {super.key, required this.transaction, required this.account});
@@ -44,108 +44,108 @@ class TransactionDetailPage extends StatelessWidget {
         ],
       ),
       body: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  sizeVer(10),
-                  const Text(
-                    "Amount",
-                    style: TextStyle(
-                      color: secondaryColor,
-                    ),
-                  ),
-                  sizeVer(5),
-                  Text(
-                    NumberFormat.currency(symbol: account.currency.symbol)
-                        .format(transaction.amount),
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(fontWeight: FontWeight.w500),
-                  ),
-                  sizeVer(20),
-                  const Text(
-                    "Account",
-                    style: TextStyle(
-                      color: secondaryColor,
-                    ),
-                  ),
-                  sizeVer(5),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: account.color,
-                        child: Icon(
-                          account.iconData,
-                          color: Colors.white,
-                        ),
-                      ),
-                      sizeHor(10),
-                      Text(
-                        account.name,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(fontWeight: FontWeight.w500),
-                      ),
-                    ],
-                  ),
-                  sizeVer(20),
-                  const Text(
-                    "Category",
-                    style: TextStyle(
-                      color: secondaryColor,
-                    ),
-                  ),
-                  sizeVer(5),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: transaction.color,
-                        child: Icon(
-                          transaction.iconData,
-                          color: Colors.white,
-                        ),
-                      ),
-                      sizeHor(10),
-                      Text(
-                        transaction.category.name,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(fontWeight: FontWeight.w500),
-                      ),
-                    ],
-                  ),
-                  sizeVer(20),
-                  const Text(
-                    "Day",
-                    style: TextStyle(
-                      color: secondaryColor,
-                    ),
-                  ),
-                  sizeVer(5),
-                  Text(
-                    DateFormat.yMMMMEEEEd().format(transaction.date),
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(fontWeight: FontWeight.w500),
-                  ),
-                  sizeVer(30),
-                  MyButtonWidget(
-                    title: "Delete",
-                    backgroundColor: Colors.red.shade800,
-                    onTap: () {
-                      _buildShowDialog(context);
-                    },
-                  )
-                ],
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            sizeVer(10),
+            const Text(
+              "Amount",
+              style: TextStyle(
+                color: secondaryColor,
               ),
             ),
+            sizeVer(5),
+            Text(
+              NumberFormat.currency(symbol: account.currency.symbol)
+                  .format(transaction.amount),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium!
+                  .copyWith(fontWeight: FontWeight.w500),
+            ),
+            sizeVer(20),
+            const Text(
+              "Account",
+              style: TextStyle(
+                color: secondaryColor,
+              ),
+            ),
+            sizeVer(5),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircleAvatar(
+                  backgroundColor: account.color,
+                  child: Icon(
+                    account.iconData,
+                    color: Colors.white,
+                  ),
+                ),
+                sizeHor(10),
+                Text(
+                  account.name,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+            sizeVer(20),
+            const Text(
+              "Category",
+              style: TextStyle(
+                color: secondaryColor,
+              ),
+            ),
+            sizeVer(5),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircleAvatar(
+                  backgroundColor: transaction.color,
+                  child: Icon(
+                    transaction.iconData,
+                    color: Colors.white,
+                  ),
+                ),
+                sizeHor(10),
+                Text(
+                  transaction.category.name,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+            sizeVer(20),
+            const Text(
+              "Day",
+              style: TextStyle(
+                color: secondaryColor,
+              ),
+            ),
+            sizeVer(5),
+            Text(
+              DateFormat.yMMMMEEEEd().format(transaction.date),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium!
+                  .copyWith(fontWeight: FontWeight.w500),
+            ),
+            sizeVer(30),
+            MyButtonWidget(
+              title: "Delete",
+              backgroundColor: Colors.red.shade800,
+              onTap: () {
+                _buildShowDialog(context);
+              },
+            )
+          ],
+        ),
+      ),
     );
   }
 
@@ -168,13 +168,13 @@ class TransactionDetailPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               backgroundColor: Colors.red.shade800,
               onTap: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
                 context.read<MainTransactionBloc>().add(
                       DeleteTransaction(
                           transaction: transaction, account: account),
                     );
                 context.read<AccountBloc>().add(GetAccounts());
+                Navigator.pop(context);
+                Navigator.pop(context);
               },
             ),
           ],

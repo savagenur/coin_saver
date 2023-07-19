@@ -6,6 +6,7 @@ import 'package:coin_saver/features/presentation/transactions/widgets/custom_sea
 import 'package:coin_saver/features/presentation/transactions/widgets/list_date_transactions_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
 import '../../../constants/constants.dart';
@@ -249,7 +250,7 @@ class TransactionsPageState extends State<TransactionsPage>
                                                   account: _account,
                                                   selectedDate: _selectedDate));
                                         },
-                                        child: const Icon(Icons.add),
+                                        child: const Icon(FontAwesomeIcons.plus),
                                       ),
                                     ),
                                   ),
@@ -324,7 +325,7 @@ class TransactionsPageState extends State<TransactionsPage>
     if (_isSearching) {
       return AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(FontAwesomeIcons.arrowLeft),
             onPressed: () {
               setState(() {
                 _isSearching = false;
@@ -382,7 +383,7 @@ class TransactionsPageState extends State<TransactionsPage>
                   period: _selectedPeriod,
                 ),
                 (route) => route.settings.name == PageConst.homePage),
-            icon: const Icon(Icons.arrow_back)),
+            icon: const Icon(FontAwesomeIcons.arrowLeft)),
         title: AccountSwitchPullDownBtn(accounts: accounts, account: account),
         bottom: TabBar(
           onTap: (value) {
@@ -417,7 +418,7 @@ class TransactionsPageState extends State<TransactionsPage>
                   _isSearching = true;
                 });
               },
-              icon: const Icon(Icons.search)),
+              icon: const Icon(FontAwesomeIcons.magnifyingGlass)),
         ],
       );
     }

@@ -32,6 +32,7 @@ class AppRoute {
               selectedDate: args.selectedDate,
               transaction: args.transaction,
               category: args.category,
+              isTransactionsPage: args.isTransactionsPage,
             ));
       case PageConst.catalogIconsPage:
         return _routeBuilder(const CatalogIconsPage());

@@ -8,6 +8,7 @@ import 'package:coin_saver/features/presentation/pages/main_transaction/main_tra
 import 'package:coin_saver/features/presentation/transactions/transactions_page.dart';
 import 'package:coin_saver/features/presentation/widgets/day_navigation_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -47,7 +48,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late DateTime _selectedDateEnd;
   late AccountEntity _account;
   late double _totalExpense;
-  late final int _initialIndexTab ;
+  late final int _initialIndexTab;
   late TabController _tabController;
 
   @override
@@ -101,87 +102,96 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             0,
                             (previousValue, element) =>
                                 previousValue + element.amount);
-                        return DefaultTabController(
-                          initialIndex: _isIncome ? 1 : 0,
-                          length: 2,
-                          child: Scaffold(
-                            appBar:
-                                _buildAppBar(_account, accountState.accounts),
-                            body: SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: ShadowedContainerWidget(
-                                      borderRadius: BorderRadius.circular(30),
-                                      child: Column(
-                                        children: [
-                                          PeriodTabBar(
-                                              tabController: _tabController,
+                        return WillPopScope(
+                          onWillPop: () async{
+                            SystemNavigator.pop();
+                            return false;
+                          },
+                          child: DefaultTabController(
+                            initialIndex: _isIncome ? 1 : 0,
+                            length: 2,
+                            child: Scaffold(
+                              appBar:
+                                  _buildAppBar(_account, accountState.accounts),
+                              body: SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: ShadowedContainerWidget(
+                                        borderRadius: BorderRadius.circular(30),
+                                        child: Column(
+                                          children: [
+                                            PeriodTabBar(
+                                                tabController: _tabController,
+                                                selectedPeriod: _selectedPeriod,
+                                                selectedDate: _selectedDate,
+                                                selectedDateEnd:
+                                                    _selectedDateEnd,
+                                                transactions: transactions),
+                                            DayNavigationWidget(
                                               selectedPeriod: _selectedPeriod,
-                                              selectedDate: _selectedDate,
-                                              selectedDateEnd: _selectedDateEnd,
-                                              transactions: transactions),
-                                          DayNavigationWidget(
-                                            selectedPeriod: _selectedPeriod,
-                                            account: _account,
-                                            dateTime: _selectedDate,
-                                            isIncome: _isIncome,
-                                          ),
-                                          CircularChartWidget(
-                                              transactions: transactions,
-                                              selectedDate: _selectedDate,
-                                              tooltipBehavior: TooltipBehavior(
-                                                animationDuration: 1,
-                                                enable: true,
-                                                textStyle: const TextStyle(
-                                                    fontSize: 16),
-                                                format:
-                                                    'point.x - ${_account.currency.symbol}point.y',
-                                              ),
                                               account: _account,
-                                              totalExpense: _totalExpense),
-                                        ],
+                                              dateTime: _selectedDate,
+                                              isIncome: _isIncome,
+                                            ),
+                                            CircularChartWidget(
+                                                transactions: transactions,
+                                                selectedDate: _selectedDate,
+                                                tooltipBehavior:
+                                                    TooltipBehavior(
+                                                  animationDuration: 1,
+                                                  enable: true,
+                                                  textStyle: const TextStyle(
+                                                      fontSize: 16),
+                                                  format:
+                                                      'point.x - ${_account.currency.symbol}point.y',
+                                                ),
+                                                account: _account,
+                                                totalExpense: _totalExpense),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  ...List.generate(
-                                    transactions.length,
-                                    (index) => Padding(
-                                      padding: const EdgeInsets.only(
-                                          right: 10, bottom: 10, left: 10),
-                                      child: GestureDetector(
-                                          onTap: () {
-                                            Navigator.pushNamed(context,
-                                                PageConst.mainTransactionPage,
-                                                arguments: MainTransactionPage(
-                                                  mainTransaction:
-                                                      transactions[index],
-                                                ));
-                                          },
-                                          child: CategoryTile(
-                                            totalExpense: _totalExpense,
-                                            mainTransaction:
-                                                transactions[index],
-                                            account: _account,
-                                          )),
+                                    ...List.generate(
+                                      transactions.length,
+                                      (index) => Padding(
+                                        padding: const EdgeInsets.only(
+                                            right: 10, bottom: 10, left: 10),
+                                        child: GestureDetector(
+                                            onTap: () {
+                                              Navigator.pushNamed(context,
+                                                  PageConst.mainTransactionPage,
+                                                  arguments:
+                                                      MainTransactionPage(
+                                                    mainTransaction:
+                                                        transactions[index],
+                                                  ));
+                                            },
+                                            child: CategoryTile(
+                                              totalExpense: _totalExpense,
+                                              mainTransaction:
+                                                  transactions[index],
+                                              account: _account,
+                                            )),
+                                      ),
                                     ),
-                                  ),
-                                  sizeVer(70),
-                                ],
+                                    sizeVer(70),
+                                  ],
+                                ),
                               ),
-                            ),
-                            floatingActionButton: FloatingActionButton(
-                              onPressed: () {
-                                Navigator.pushNamed(
-                                    context, PageConst.addTransactionPage,
-                                    arguments: AddTransactionPage(
-                                      selectedDate: _selectedDate,
-                                      isIncome: _isIncome,
-                                      account: _account,
-                                    ));
-                              },
-                              child: const Icon(FontAwesomeIcons.plus),
+                              floatingActionButton: FloatingActionButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                      context, PageConst.addTransactionPage,
+                                      arguments: AddTransactionPage(
+                                        selectedDate: _selectedDate,
+                                        isIncome: _isIncome,
+                                        account: _account,
+                                      ));
+                                },
+                                child: const Icon(FontAwesomeIcons.plus),
+                              ),
                             ),
                           ),
                         );

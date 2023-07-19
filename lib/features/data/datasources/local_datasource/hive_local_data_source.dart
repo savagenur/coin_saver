@@ -284,6 +284,8 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         (transaction) => transaction.id != transactionEntity.id,
       ),
     );
+    // print(
+        // "updatedTransactionHistory.contains transactionId: ${updatedTransactionHistory.contains(transactionEntity)}");
 
     // Step 4: Update account and total account (if needed) inside a try-catch block
     try {
@@ -484,35 +486,32 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     }).toList();
   }
 
-@override
-List<TransactionEntity> getTransactionsForToday() {
-  final selectedDate = DateTime.now();
+  @override
+  List<TransactionEntity> getTransactionsForToday() {
+    final selectedDate = DateTime.now();
 
-  // Step 1: Get the primary account (or null if not found)
-  final primaryAccount = accountsBox.values.firstWhere((account) => account.isPrimary, orElse: () => accountError);
+    // Step 1: Get the primary account (or null if not found)
+    final primaryAccount = accountsBox.values
+        .firstWhere((account) => account.isPrimary, orElse: () => accountError);
 
-  // Step 2: Check if the primary account exists
-  if (primaryAccount.id == "null") {
-    // Primary account not found, handle error or return an empty list
-    return [];
+    // Step 2: Check if the primary account exists
+    if (primaryAccount.id == "null") {
+      // Primary account not found, handle error or return an empty list
+      return [];
+    }
+
+    // Step 3: Get the transaction history of the primary account
+    final totalTransactions = primaryAccount.transactionHistory;
+
+    // Step 4: Filter transactions for today
+    final transactionsForToday = totalTransactions.where((transaction) {
+      return transaction.date.day == selectedDate.day &&
+          transaction.date.month == selectedDate.month &&
+          transaction.date.year == selectedDate.year;
+    }).toList();
+
+    return transactionsForToday;
   }
-
-  // Step 3: Get the transaction history of the primary account
-  final totalTransactions = primaryAccount.transactionHistory;
-
-  // Step 4: Filter transactions for today
-  final transactionsForToday = totalTransactions.where((transaction) {
-    return transaction.date.day == selectedDate.day &&
-        transaction.date.month == selectedDate.month &&
-        transaction.date.year == selectedDate.year;
-  }).toList();
-
-  return transactionsForToday;
-}
-
-
-
-
 
   @override
   List<TransactionEntity> fetchTransactionsForMonth(

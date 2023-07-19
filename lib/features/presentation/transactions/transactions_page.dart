@@ -248,7 +248,9 @@ class TransactionsPageState extends State<TransactionsPage>
                                               arguments: AddTransactionPage(
                                                   isIncome: _isIncome,
                                                   account: _account,
-                                                  selectedDate: _selectedDate));
+                                                  selectedDate: _selectedDate,
+                                                  isTransactionsPage: true,
+                                                  ));
                                         },
                                         child: const Icon(FontAwesomeIcons.plus),
                                       ),

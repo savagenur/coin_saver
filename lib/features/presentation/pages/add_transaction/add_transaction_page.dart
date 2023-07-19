@@ -11,6 +11,7 @@ import 'package:coin_saver/features/presentation/bloc/cubit/selected_category/se
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/pages/add_category/add_category_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
+import 'package:coin_saver/features/presentation/transactions/transactions_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,6 +28,7 @@ import '../../widgets/my_button_widget.dart';
 
 class AddTransactionPage extends StatefulWidget {
   final bool isIncome;
+  final bool isTransactionsPage;
   final AccountEntity account;
   final DateTime selectedDate;
   final TransactionEntity? transaction;
@@ -38,6 +40,7 @@ class AddTransactionPage extends StatefulWidget {
     required this.selectedDate,
     this.transaction,
     this.category,
+    this.isTransactionsPage = false,
   });
 
   @override
@@ -158,16 +161,14 @@ class AddTransactionPageState extends State<AddTransactionPage>
                               key: _formKey,
                               child: WillPopScope(
                                 onWillPop: () async {
-                                  await Navigator.pushNamedAndRemoveUntil(
-                                      context,
-                                      PageConst.homePage,
-                                      arguments: HomePage(
-                                        period: _selectedPeriod,
-                                        isIncome: _isIncome,
-                                      ),
-                                      (route) =>
-                                          route.settings.name ==
-                                          PageConst.homePage);
+                                  if (widget.transaction != null) {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  } else if (widget.isTransactionsPage) {
+                                    Navigator.pop(context);
+                                  } else {
+                                    Navigator.pop(context);
+                                  }
                                   selectedCategoryCubit.changeCategory(null);
                                   return false;
                                 },
@@ -448,7 +449,8 @@ class AddTransactionPageState extends State<AddTransactionPage>
                     .copyWith(color: Theme.of(context).primaryColor),
               ),
               IconButton(
-                  onPressed: () {}, icon: const Icon(FontAwesomeIcons.calculator)),
+                  onPressed: () {},
+                  icon: const Icon(FontAwesomeIcons.calculator)),
             ],
           ),
         ),
@@ -497,7 +499,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
             await sl<DeleteTransactionUsecase>()
                 .call(widget.account, widget.transaction!);
             if (mounted) {
-              BlocProvider.of<MainTransactionBloc>(context).add(
+              mainTransactionBloc.add(
                   AddTransaction(transaction: transaction, account: _account!));
             }
             // Add the transaction to the new account
@@ -508,40 +510,42 @@ class AddTransactionPageState extends State<AddTransactionPage>
           }
         } else {
           // Update the transaction within the same account
-          BlocProvider.of<MainTransactionBloc>(context).add(
+          mainTransactionBloc.add(
               UpdateTransaction(transaction: transaction, account: _account!));
         }
       } else {
         // Add a new transaction to the selected account
-        BlocProvider.of<MainTransactionBloc>(context)
+        mainTransactionBloc
             .add(AddTransaction(transaction: transaction, account: _account!));
       }
 
       if (mounted) {
         // Set the selected account as the primary account
-      accountBloc
-          .add(SetPrimaryAccount(accountId: _account!.id));
+        accountBloc.add(SetPrimaryAccount(accountId: _account!.id));
 
-      // Set the selected date as the day period
-      homeTimePeriodBloc
-          .add(SetDayPeriod(selectedDate: _selectedDate));
+        // Set the selected date as the day period
+        homeTimePeriodBloc.add(SetDayPeriod(selectedDate: _selectedDate));
 
-      // Change the period to 'day' in the PeriodCubit
-      periodCubit.changePeriod(Period.day);
+        // Change the period to 'day' in the PeriodCubit
+        periodCubit.changePeriod(Period.day);
 
-      // Clear the selected category
-      selectedCategoryCubit.changeCategory(null);
+        // Clear the selected category
+        selectedCategoryCubit.changeCategory(null);
 
-      // Navigate to the appropriate screen based on the widget type
-      if (widget.transaction != null) {
-        // If it's an existing transaction, pop back to the previous screen(s)
-        Navigator.pop(context);
-        Navigator.pop(context);
-      } else {
-        // If it's a new transaction, navigate to the home page with the appropriate arguments
-        Navigator.pushNamed(context, PageConst.homePage,
-            arguments: HomePage(isIncome: _isIncome));
-      }
+        // Navigate to the appropriate screen based on the widget type
+        if (widget.transaction != null) {
+          // If it's an existing transaction, pop back to the previous screen(s)
+          Navigator.pop(context);
+          Navigator.pop(context);
+        } else if (widget.isTransactionsPage) {
+          Navigator.pushNamed(context, PageConst.transactionsPage,
+              arguments: TransactionsPage(
+                  account: _account!, period: Period.day, isIncome: _isIncome));
+        } else {
+          // If it's a new transaction, navigate to the home page with the appropriate arguments
+          Navigator.pushNamed(context, PageConst.homePage,
+              arguments: HomePage(isIncome: _isIncome));
+        }
       }
     }
   }
@@ -730,16 +734,12 @@ class AddTransactionPageState extends State<AddTransactionPage>
       centerTitle: true,
       leading: IconButton(
           onPressed: () async {
-            widget.transaction == null
-                ? Navigator.pop(context)
-                : await Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    PageConst.homePage,
-                    arguments: HomePage(
-                      period: _selectedPeriod,
-                      isIncome: _isIncome,
-                    ),
-                    (route) => route.settings.name == PageConst.homePage);
+            if (widget.transaction != null) {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            } else {
+              Navigator.pop(context);
+            }
             selectedCategoryCubit.changeCategory(null);
           },
           icon: const Icon(FontAwesomeIcons.arrowLeft)),

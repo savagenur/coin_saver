@@ -51,7 +51,9 @@ class CategoryTile extends StatelessWidget {
             Expanded(
               flex: 3,
               child: Text(
-                "${account.currency.symbol}${NumberFormat.compact().format(mainTransaction.amount)}",
+                NumberFormat.compactCurrency(symbol: account.currency.symbol,decimalDigits: 0,)
+                      .format(mainTransaction.amount)
+                ,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context)
                     .textTheme

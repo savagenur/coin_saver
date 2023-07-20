@@ -1,3 +1,5 @@
+import 'package:coin_saver/features/presentation/pages/accounts_page/accounts/accounts_page.dart';
+import 'package:coin_saver/features/presentation/pages/accounts_page/crud_account/crud_account_page.dart';
 import 'package:coin_saver/features/presentation/pages/add_category/add_category_page.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:coin_saver/features/presentation/pages/catalog_icons/catalog_icons_page.dart';
@@ -19,21 +21,21 @@ class AppRoute {
       case PageConst.homePage:
         args = args as HomePage;
         return _routeBuilder(HomePage(
-            isIncome: args.isIncome,
-            period: args.period,
-          ));
-        
+          isIncome: args.isIncome,
+          period: args.period,
+        ));
+
       case PageConst.addTransactionPage:
         args = args as AddTransactionPage;
 
         return _routeBuilder(AddTransactionPage(
-              isIncome: args.isIncome,
-              account: args.account,
-              selectedDate: args.selectedDate,
-              transaction: args.transaction,
-              category: args.category,
-              isTransactionsPage: args.isTransactionsPage,
-            ));
+          isIncome: args.isIncome,
+          account: args.account,
+          selectedDate: args.selectedDate,
+          transaction: args.transaction,
+          category: args.category,
+          isTransactionsPage: args.isTransactionsPage,
+        ));
       case PageConst.catalogIconsPage:
         return _routeBuilder(const CatalogIconsPage());
       case PageConst.colorsPage:
@@ -41,8 +43,8 @@ class AppRoute {
       case PageConst.createCategoryPage:
         args = args as CreateCategoryPage;
         return _routeBuilder(CreateCategoryPage(
-            isIncome: args.isIncome,
-          ));
+          isIncome: args.isIncome,
+        ));
       case PageConst.transactionsPage:
         args = args as TransactionsPage;
         return _routeBuilder(TransactionsPage(
@@ -67,6 +69,15 @@ class AppRoute {
         args = args as AddCategoryPage;
         return _routeBuilder(AddCategoryPage(
           isIncome: args.isIncome,
+        ));
+      case PageConst.accountsPage:
+        return _routeBuilder(const AccountsPage());
+      case PageConst.cRUDAccountPage:
+        args = args as CRUDAccountPage;
+        return _routeBuilder(CRUDAccountPage(
+          mainCurrency: args.mainCurrency,
+          account: args.account,
+          isUpdatePage: args.isUpdatePage,
         ));
       default:
         return _routeBuilder(const NotFoundPage());

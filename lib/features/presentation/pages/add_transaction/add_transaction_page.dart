@@ -177,7 +177,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                   child: Scaffold(
                                     appBar: _buildAppBar(),
                                     body: Listener(
-                                      onPointerDown: (event) {
+                                      onPointerDown: (_) {
                                         FocusScope.of(context).unfocus();
                                       },
                                       child: Padding(
@@ -372,7 +372,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
               Icon(
                 _account?.iconData ?? FontAwesomeIcons.circleExclamation,
                 color: isErrorAccount
-                    ? Colors.red.shade800
+                    ? Colors.red.shade900
                     : Theme.of(context).primaryColor,
               ),
               sizeHor(5),

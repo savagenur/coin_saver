@@ -48,12 +48,14 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   FutureOr<void> _onCreateAccount(
       CreateAccount event, Emitter<AccountState> emit) async {
     await createAccountUsecase.call(event.accountEntity);
+    await setPrimaryAccountUsecase.call(event.accountEntity.id);
     final accounts = await getAccountsUsecase.call();
     emit(AccountLoaded(accounts: accounts));
   }
 
   FutureOr<void> _onDeleteAccount(
       DeleteAccount event, Emitter<AccountState> emit) async {
+    await setPrimaryAccountUsecase.call("main");
     await deleteAccountUsecase.call(event.id);
     final accounts = await getAccountsUsecase.call();
     emit(AccountLoaded(accounts: accounts));
@@ -61,6 +63,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
 
   FutureOr<void> _onUpdateAccount(
       UpdateAccount event, Emitter<AccountState> emit) async {
+    await setPrimaryAccountUsecase.call(event.accountEntity.id);
     await updateAccountUsecase.call(event.accountEntity);
     final accounts = await getAccountsUsecase.call();
     emit(AccountLoaded(accounts: accounts));

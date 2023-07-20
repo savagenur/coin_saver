@@ -7,6 +7,7 @@ import 'package:coin_saver/features/presentation/pages/add_transaction/add_trans
 import 'package:coin_saver/features/presentation/widgets/my_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
 import '../../bloc/main_transaction/main_transaction_bloc.dart';
@@ -136,48 +137,69 @@ class TransactionDetailPage extends StatelessWidget {
                   .copyWith(fontWeight: FontWeight.w500),
             ),
             sizeVer(30),
-            MyButtonWidget(
-              title: "Delete",
-              backgroundColor: Colors.red.shade800,
-              onTap: () {
-                _buildShowDialog(context);
-              },
-            )
+            TextButton.icon(
+                onPressed: () {
+                  _buildShowDialog(context);
+                },
+                icon: Icon(
+                  FontAwesomeIcons.trashCan,
+                  color: Colors.red.shade900,
+                ),
+                label: Text(
+                  "Delete",
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge!
+                      .copyWith(color: Colors.red.shade900),
+                ))
           ],
         ),
       ),
     );
   }
 
-  Future<dynamic> _buildShowDialog(BuildContext context) {
+  Future<void> _buildShowDialog(BuildContext context) {
     return showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text("Are you sure you want to delete?"),
           actionsAlignment: MainAxisAlignment.spaceEvenly,
-          actions: [
-            MyButtonWidget(
-              title: "Cancel",
-              borderRadius: BorderRadius.circular(20),
-              backgroundColor: Colors.grey.shade400,
-              onTap: () => Navigator.pop(context),
+          actions: [Row(
+            children: [
+
+            Expanded(
+              child: TextButton(
+                  onPressed: () {
+                    context.read<MainTransactionBloc>().add(
+                          DeleteTransaction(
+                              transaction: transaction, account: account),
+                        );
+                    context.read<AccountBloc>().add(GetAccounts());
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "Yes",
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge!
+                        .copyWith(color: Colors.red.shade900),
+                  )),
             ),
-            MyButtonWidget(
-              title: "Delete",
-              borderRadius: BorderRadius.circular(20),
-              backgroundColor: Colors.red.shade800,
-              onTap: () {
-                context.read<MainTransactionBloc>().add(
-                      DeleteTransaction(
-                          transaction: transaction, account: account),
-                    );
-                context.read<AccountBloc>().add(GetAccounts());
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
+            Expanded(
+              child: TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    "No",
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge!
+                        .copyWith(color: Colors.grey),
+                  )),
             ),
           ],
+          )],
         );
       },
     );

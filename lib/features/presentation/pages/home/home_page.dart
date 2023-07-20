@@ -7,6 +7,7 @@ import 'package:coin_saver/features/presentation/pages/home/widgets/period_tab_b
 import 'package:coin_saver/features/presentation/pages/main_transaction/main_transaction_page.dart';
 import 'package:coin_saver/features/presentation/transactions/transactions_page.dart';
 import 'package:coin_saver/features/presentation/widgets/day_navigation_widget.dart';
+import 'package:coin_saver/features/presentation/widgets/my_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +22,6 @@ import '../../../domain/entities/transaction/transaction_entity.dart';
 import '../../bloc/account/account_bloc.dart';
 import '../../bloc/cubit/selected_date/selected_date_cubit.dart';
 import '../../bloc/home_time_period/home_time_period_bloc.dart';
-import '../../bloc/main_transaction/main_transaction_bloc.dart';
 import '../../widgets/category_tile.dart';
 
 class HomePage extends StatefulWidget {
@@ -42,7 +42,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late bool _isIncome;
   // Selected Period
   late Period _selectedPeriod;
-
+  // Drawer key
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   // DateTime
   late DateTime _selectedDate;
   late DateTime _selectedDateEnd;
@@ -103,7 +104,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             (previousValue, element) =>
                                 previousValue + element.amount);
                         return WillPopScope(
-                          onWillPop: () async{
+                          onWillPop: () async {
                             SystemNavigator.pop();
                             return false;
                           },
@@ -111,6 +112,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             initialIndex: _isIncome ? 1 : 0,
                             length: 2,
                             child: Scaffold(
+                              key: _scaffoldKey,
+                              drawer: const MyDrawer(),
                               appBar:
                                   _buildAppBar(_account, accountState.accounts),
                               body: SingleChildScrollView(
@@ -220,7 +223,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       toolbarHeight: 70,
       centerTitle: true,
       leading: IconButton(
-        onPressed: () {},
+        onPressed: () {
+          _scaffoldKey.currentState?.openDrawer();
+        },
         icon: const Icon(FontAwesomeIcons.bars),
       ),
       title: AccountSwitchPullDownBtn(accounts: accounts, account: account),

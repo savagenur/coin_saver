@@ -37,16 +37,16 @@ class MainTransactionBloc
       GetTransactions event, Emitter<MainTransactionState> emit) async {
     final List<TransactionEntity> transactions =
         await getTransactionsUsecase.call();
+    emit(MainTransactionLoading());
     emit(MainTransactionLoaded(transactions: transactions));
   }
 
   Future<void> _onAddTransaction(
       AddTransaction event, Emitter<MainTransactionState> emit) async {
-    
-
     await addTransactionUsecase.call(event.account, event.transaction);
     final List<TransactionEntity> transactions =
         await getTransactionsUsecase.call();
+    emit(MainTransactionLoading());
 
     emit(MainTransactionLoaded(transactions: transactions));
   }
@@ -56,6 +56,7 @@ class MainTransactionBloc
     await deleteTransactionUsecase.call(event.account, event.transaction);
     final List<TransactionEntity> transactions =
         await getTransactionsUsecase.call();
+    emit(MainTransactionLoading());
     emit(MainTransactionLoaded(transactions: transactions));
   }
 
@@ -64,6 +65,7 @@ class MainTransactionBloc
     await updateTransactionUsecase.call(event.account, event.transaction);
     final List<TransactionEntity> transactions =
         await getTransactionsUsecase.call();
+    emit(MainTransactionLoading());
     emit(MainTransactionLoaded(transactions: transactions));
   }
 }

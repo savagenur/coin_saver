@@ -57,11 +57,13 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       await colorsBox.addAll(mainColors);
 
       // Currency
-      Map<String, CurrencyModel> currencyMap = {};
-      for (var currency in currencies) {
-        currencyMap[currency.code] = currency;
-      }
-      await currencyBox.putAll(currencyMap);
+      // Map<String, CurrencyModel> currencyMap = {};
+      // for (var currency in currencies) {
+      //   currencyMap[currency.code] = currency;
+      // }
+      // await currencyBox.putAll(currencyMap);
+      await currencyBox
+          .add(currencies.firstWhere((element) => element.code == "KGS"));
       // MainCategories
       Map<String, CategoryModel> categoryMap = {};
       for (var category in mainCategories) {
@@ -70,17 +72,16 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       await categoriesBox.putAll(categoryMap);
 
       // Accounts
-      String accountId = uuid.v1();
       await accountsBox.put(
           "total",
           AccountModel(
               id: "total",
               name: "Total",
-              iconData: FontAwesomeIcons.coins,
+              iconData: FontAwesomeIcons.sackDollar,
               type: AccountType.cash,
               color: Colors.blue.shade800,
               balance: 0,
-              currency: currencyBox.get("KGS")!,
+              currency: currencyBox.getAt(0)!,
               isPrimary: false,
               isActive: true,
               ownershipType: OwnershipType.joint,
@@ -95,27 +96,13 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
               type: AccountType.cash,
               color: Colors.blue.shade800,
               balance: 0,
-              currency: currencyBox.get("KGS")!,
+              currency: currencyBox.getAt(0)!,
               isPrimary: true,
               isActive: true,
               ownershipType: OwnershipType.individual,
               openingDate: DateTime.now(),
               transactionHistory: const []));
-      await accountsBox.put(
-          accountId,
-          AccountModel(
-              id: accountId,
-              name: "Optima card",
-              iconData: FontAwesomeIcons.moneyBill,
-              type: AccountType.cash,
-              color: Colors.green.shade800,
-              balance: 0,
-              currency: currencyBox.get("KGS")!,
-              isPrimary: false,
-              isActive: true,
-              ownershipType: OwnershipType.individual,
-              openingDate: DateTime.now(),
-              transactionHistory: const []));
+      
     }
   }
 
@@ -145,56 +132,114 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
 
   @override
   Future<void> createAccount(AccountEntity accountEntity) async {
-    await accountsBox.put(
-      accountEntity.id,
-      AccountModel(
+    final AccountModel newAccount = AccountModel(
+        id: accountEntity.id,
+        name: accountEntity.name,
+        iconData: accountEntity.iconData,
+        type: accountEntity.type,
+        color: accountEntity.color,
+        balance: accountEntity.balance,
+        currency: CurrencyModel.fromEntity(accountEntity.currency),
+        isPrimary: accountEntity.isPrimary,
+        isActive: true,
+        ownershipType: accountEntity.ownershipType,
+        openingDate: accountEntity.openingDate,
+        transactionHistory: accountEntity.transactionHistory
+            .map((e) => TransactionModel.fromEntity(e))
+            .toList());
+
+    try {
+      await accountsBox.put(accountEntity.id, newAccount);
+
+      final totalAccount = accountsBox.get("total");
+      if (totalAccount != null) {
+        final updatedTotalAccount = totalAccount.copyWith(
+          balance: totalAccount.balance + accountEntity.balance,
+        );
+        accountsBox.put(totalAccount.id, updatedTotalAccount);
+      }
+      // End updating
+    } catch (e) {
+      // Handle the error, log, or revert changes if needed
+      // ...
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteAccount(String id) async {
+    final existingAccount = accountsBox.get(id);
+    if (existingAccount == null) {
+      throw Exception("Account not Found!");
+    }
+    final double oldAccountBalance = existingAccount.balance;
+    try {
+      await accountsBox.delete(id);
+
+      final totalAccount = accountsBox.get("total");
+      if (totalAccount != null) {
+        final updatedTotalAccount = totalAccount.copyWith(
+          balance: totalAccount.balance - oldAccountBalance,
+        );
+        await accountsBox.put(totalAccount.id, updatedTotalAccount);
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<AccountEntity>> getAccounts() async {
+    List<AccountEntity> accounts = accountsBox.values.toList()..sort((a, b) => a.openingDate.compareTo(b.openingDate),);
+    return accounts;
+  }
+
+  @override
+  Future<void> updateAccount(AccountEntity accountEntity) async {
+    // Step 1: Validate the account
+    final existingAccount = accountsBox.get(accountEntity.id);
+    if (existingAccount == null) {
+      // Account doesn't exist, handle error or throw an exception
+      throw Exception("Account not found!");
+    }
+
+    final double oldAccountBalance = existingAccount.balance;
+    final double updatedAccountBalance =
+        accountEntity.balance - oldAccountBalance;
+
+    // Step 7: Update account and total account (if needed) inside a try-catch block
+    try {
+      // Start updating
+      final updatedAccount = AccountModel(
           id: accountEntity.id,
           name: accountEntity.name,
           iconData: accountEntity.iconData,
           type: accountEntity.type,
           color: accountEntity.color,
           balance: accountEntity.balance,
-          currency: accountEntity.currency,
-          isPrimary: true,
-          isActive: true,
+          currency: CurrencyModel.fromEntity(accountEntity.currency),
+          isPrimary: accountEntity.isPrimary,
+          isActive: accountEntity.isActive,
           ownershipType: accountEntity.ownershipType,
           openingDate: accountEntity.openingDate,
           transactionHistory: accountEntity.transactionHistory
               .map((e) => TransactionModel.fromEntity(e))
-              .toList()),
-    );
-  }
+              .toList());
+      await accountsBox.put(existingAccount.id, updatedAccount);
 
-  @override
-  Future<void> deleteAccount(String id) async {
-    await accountsBox.delete(id);
-  }
-
-  @override
-  Future<List<AccountEntity>> getAccounts() async {
-    List<AccountEntity> accounts = accountsBox.values.toList();
-    return accounts;
-  }
-
-  @override
-  Future<void> updateAccount(AccountEntity accountEntity) async {
-    await accountsBox.put(
-        accountEntity.id,
-        AccountModel(
-            id: accountEntity.id,
-            name: accountEntity.name,
-            iconData: accountEntity.iconData,
-            type: accountEntity.type,
-            color: accountEntity.color,
-            balance: accountEntity.balance,
-            currency: accountEntity.currency,
-            isPrimary: accountEntity.isPrimary,
-            isActive: accountEntity.isActive,
-            ownershipType: accountEntity.ownershipType,
-            openingDate: accountEntity.openingDate,
-            transactionHistory: accountEntity.transactionHistory
-                .map((e) => TransactionModel.fromEntity(e))
-                .toList()));
+      final totalAccount = accountsBox.get("total");
+      if (totalAccount != null) {
+        final updatedTotalAccount = totalAccount.copyWith(
+          balance: totalAccount.balance + updatedAccountBalance,
+        );
+        await accountsBox.put(totalAccount.id, updatedTotalAccount);
+      }
+      // End updating
+    } catch (e) {
+      // Handle the error, log, or revert changes if needed
+      // ...
+      rethrow;
+    }
   }
 
   // * Transaction
@@ -285,7 +330,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       ),
     );
     // print(
-        // "updatedTransactionHistory.contains transactionId: ${updatedTransactionHistory.contains(transactionEntity)}");
+    // "updatedTransactionHistory.contains transactionId: ${updatedTransactionHistory.contains(transactionEntity)}");
 
     // Step 4: Update account and total account (if needed) inside a try-catch block
     try {

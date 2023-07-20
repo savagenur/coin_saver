@@ -3,6 +3,7 @@ import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart'
 import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/transaction_period/transaction_period_cubit.dart';
+import 'package:coin_saver/features/presentation/bloc/currency/currency_bloc.dart';
 import 'package:coin_saver/routes.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
@@ -56,6 +57,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (_) => sl<CategoryBloc>()..add(GetCategories()),
+        ),
+        BlocProvider(
+          create: (_) => sl<CurrencyBloc>()..add(GetCurrency()),
         ),
         BlocProvider(
           create: (_) => sl<MainTransactionBloc>()..add(GetTransactions()),

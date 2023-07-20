@@ -56,4 +56,8 @@ final List<Color> colors = [
   Colors.amber.shade600,
   Colors.amber,  Colors.amber.shade400,
   Colors.amber.shade200,
+  Colors.black,
+  Colors.black87,
+  Colors.black54,  Colors.black45,
+  Colors.black38,
 ];

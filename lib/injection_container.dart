@@ -10,6 +10,7 @@ import 'package:coin_saver/features/domain/usecases/account/transaction/add_tran
 import 'package:coin_saver/features/domain/usecases/account/transaction/get_transactions_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/account/transaction/update_transaction_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/account/update_account_usecase.dart';
+import 'package:coin_saver/features/domain/usecases/currency/get_currency_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/hive/init_hive_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/time_period/fetch_transactions_for_day_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/time_period/get_transactions_for_today_usecase.dart';
@@ -19,6 +20,7 @@ import 'package:coin_saver/features/presentation/bloc/cubit/selected_category/se
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_icon/selected_icon_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/transaction_period/transaction_period_cubit.dart';
+import 'package:coin_saver/features/presentation/bloc/currency/currency_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:uuid/uuid.dart';
 
@@ -67,6 +69,9 @@ Future<void> initGetIt() async {
         fetchTransactionsForYearUsecase: sl.call(),
         fetchTransactionsForPeriodUsecase: sl.call(),
         getTransactionsUsecase: sl.call()),
+  );
+  sl.registerFactory(
+    () => CurrencyBloc(getCurrencyUsecase: sl.call()),
   );
   
   sl.registerFactory(
@@ -118,6 +123,10 @@ Future<void> initGetIt() async {
   sl.registerLazySingleton(() => DeleteAccountUsecase(repository: sl.call()));
   sl.registerLazySingleton(
       () => SetPrimaryAccountUsecase(repository: sl.call()));
+
+// * Currency usecases
+  sl.registerLazySingleton(() => GetCurrencyUsecase(repository: sl.call()));
+  
 
 // * Transaction usecases
   sl.registerLazySingleton(() => AddTransactionUsecase(repository: sl.call()));

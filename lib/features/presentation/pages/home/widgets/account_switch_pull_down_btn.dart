@@ -33,6 +33,7 @@ class AccountSwitchPullDownBtn extends StatelessWidget {
                       NumberFormat.currency(symbol: accountItem.currency.symbol)
                           .format(accountItem.balance),
                   icon: accountItem.iconData,
+                  iconColor: Theme.of(context).primaryColor,
                 ))
             .toList();
       },
@@ -48,7 +49,7 @@ class AccountSwitchPullDownBtn extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(account.iconData),
-                    sizeHor(5),
+                    sizeHor(10),
                     Text(
                       account.name,
                       style: Theme.of(context)

@@ -70,6 +70,8 @@ class PageConst {
   static const String transactionsPage = "/transactionsPage";
   static const String mainTransactionPage = "/mainTransactionPage";
   static const String transactionDetailPage = "/transactionDetailPage";
+  static const String accountsPage = "/accountsPage";
+  static const String cRUDAccountPage = "/cRUDAccountPage";
 }
 
 class BoxConst {

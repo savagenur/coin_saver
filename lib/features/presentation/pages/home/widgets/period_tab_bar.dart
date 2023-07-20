@@ -37,51 +37,12 @@ class PeriodTabBar extends StatelessWidget {
       unselectedLabelColor: Theme.of(context).primaryColor,
       onTap: (value) {
         _selectedPeriod = periodValues[value]!;
-
-        switch (_selectedPeriod) {
-          case Period.day:
-            context
-                .read<HomeTimePeriodBloc>()
-                .add(SetDayPeriod(selectedDate: selectedDate));
-            context.read<PeriodCubit>().changePeriod(_selectedPeriod);
-            break;
-          case Period.week:
-            context
-                .read<HomeTimePeriodBloc>()
-                .add(SetWeekPeriod(selectedDate: selectedDate));
-            context.read<PeriodCubit>().changePeriod(_selectedPeriod);
-
-            break;
-          case Period.month:
-            context
-                .read<HomeTimePeriodBloc>()
-                .add(SetMonthPeriod(selectedDate: selectedDate));
-            context.read<PeriodCubit>().changePeriod(_selectedPeriod);
-
-            break;
-          case Period.year:
-            context
-                .read<HomeTimePeriodBloc>()
-                .add(SetYearPeriod(selectedDate: selectedDate));
-            context.read<PeriodCubit>().changePeriod(_selectedPeriod);
-
-            break;
-          case Period.period:
-            context.read<HomeTimePeriodBloc>().add(SetPeriod(
-                selectedStart: selectedDate, selectedEnd: selectedDateEnd));
-            context.read<PeriodCubit>().changePeriod(_selectedPeriod);
-            showDialog(
-              context: context,
-              builder: (context) {
-                return PeriodCalendarWidget(
-                    selectedDate: selectedDate, transactions: transactions);
-              },
-            );
-
-            break;
-          default:
-            0;
-        }
+        switchTransactionsTimePeriod(
+            context: context,
+            period: _selectedPeriod,
+            selectedDate: selectedDate,
+            selectedDateEnd: selectedDateEnd,
+            transactions: transactions);
       },
       tabs: kChartPeriodTitles
           .map(
@@ -94,5 +55,58 @@ class PeriodTabBar extends StatelessWidget {
           )
           .toList(),
     );
+  }
+}
+
+void switchTransactionsTimePeriod({
+  required BuildContext context,
+  required Period period,
+  required DateTime selectedDate,
+  required DateTime selectedDateEnd,
+  required List<TransactionEntity> transactions,
+}) {
+  switch (period) {
+    case Period.day:
+      context
+          .read<HomeTimePeriodBloc>()
+          .add(SetDayPeriod(selectedDate: selectedDate));
+      context.read<PeriodCubit>().changePeriod(period);
+      break;
+    case Period.week:
+      context
+          .read<HomeTimePeriodBloc>()
+          .add(SetWeekPeriod(selectedDate: selectedDate));
+      context.read<PeriodCubit>().changePeriod(period);
+
+      break;
+    case Period.month:
+      context
+          .read<HomeTimePeriodBloc>()
+          .add(SetMonthPeriod(selectedDate: selectedDate));
+      context.read<PeriodCubit>().changePeriod(period);
+
+      break;
+    case Period.year:
+      context
+          .read<HomeTimePeriodBloc>()
+          .add(SetYearPeriod(selectedDate: selectedDate));
+      context.read<PeriodCubit>().changePeriod(period);
+
+      break;
+    case Period.period:
+      context.read<HomeTimePeriodBloc>().add(
+          SetPeriod(selectedStart: selectedDate, selectedEnd: selectedDateEnd));
+      context.read<PeriodCubit>().changePeriod(period);
+      showDialog(
+        context: context,
+        builder: (context) {
+          return PeriodCalendarWidget(
+              selectedDate: selectedDate, transactions: transactions);
+        },
+      );
+
+      break;
+    default:
+      0;
   }
 }

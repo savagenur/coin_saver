@@ -31,7 +31,7 @@ const Map<String, List<IconData>> categoryIcons = {
     FontAwesomeIcons.receipt,
     FontAwesomeIcons.cartShopping,
     FontAwesomeIcons.coins,
-    FontAwesomeIcons.bank,
+    FontAwesomeIcons.buildingColumns,
     FontAwesomeIcons.sackDollar,
     FontAwesomeIcons.scaleBalanced,
     FontAwesomeIcons.commentDollar,

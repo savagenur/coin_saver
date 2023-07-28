@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:coin_saver/features/domain/usecases/hive/init_hive_usecase.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/transaction_period/transaction_period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/currency/currency_bloc.dart';
+import 'package:coin_saver/features/presentation/pages/charts_page/charts/charts_page.dart';
 import 'package:coin_saver/routes.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +24,7 @@ import 'features/presentation/pages/home/home_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'injection_container.dart';
 import 'observer.dart';
+
 
 void main() async {
   await Hive.initFlutter();
@@ -41,6 +45,8 @@ void main() async {
   await sl<InitHiveAdaptersBoxesUsecase>().call();
   await sl<InitHiveUsecase>().call();
   // await removeHive();
+
+
 
   runApp(const MyApp());
 }
@@ -67,7 +73,6 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (_) => sl<HomeTimePeriodBloc>()..add(GetTodayPeriod()),
         ),
-        
         BlocProvider(
           create: (_) => sl<TransactionPeriodCubit>(),
         ),

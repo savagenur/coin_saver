@@ -2,25 +2,25 @@ import 'package:coin_saver/features/domain/entities/account/account_entity.dart'
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/widgets/account_switch_pull_down_btn.dart';
 import 'package:coin_saver/features/presentation/pages/home/widgets/period_tab_bar.dart';
-import 'package:coin_saver/features/presentation/transactions/widgets/custom_search_widget.dart';
-import 'package:coin_saver/features/presentation/transactions/widgets/list_date_transactions_widget.dart';
+import 'package:coin_saver/features/presentation/pages/transactions/widgets/custom_search_widget.dart';
+import 'package:coin_saver/features/presentation/pages/transactions/widgets/list_date_transactions_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
-import '../../../constants/constants.dart';
-import '../../../constants/period_enum.dart';
-import '../../domain/entities/transaction/transaction_entity.dart';
-import '../bloc/account/account_bloc.dart';
-import '../bloc/cubit/period/period_cubit.dart';
-import '../bloc/cubit/selected_date/selected_date_cubit.dart';
-import '../bloc/cubit/transaction_period/transaction_period_cubit.dart';
-import '../bloc/home_time_period/home_time_period_bloc.dart';
-import '../pages/home/home_page.dart';
-import '../pages/main_transaction/main_transaction_page.dart';
-import '../widgets/day_navigation_widget.dart';
-import '../widgets/shadowed_container_widget.dart';
+import '../../../../constants/constants.dart';
+import '../../../../constants/period_enum.dart';
+import '../../../domain/entities/transaction/transaction_entity.dart';
+import '../../bloc/account/account_bloc.dart';
+import '../../bloc/cubit/period/period_cubit.dart';
+import '../../bloc/cubit/selected_date/selected_date_cubit.dart';
+import '../../bloc/cubit/transaction_period/transaction_period_cubit.dart';
+import '../../bloc/home_time_period/home_time_period_bloc.dart';
+import '../home/home_page.dart';
+import '../main_transaction/main_transaction_page.dart';
+import '../../widgets/day_navigation_widget.dart';
+import '../../widgets/shadowed_container_widget.dart';
 
 class TransactionsPage extends StatefulWidget {
   final AccountEntity account;
@@ -86,6 +86,13 @@ class TransactionsPageState extends State<TransactionsPage>
             .toLowerCase()
             .contains(query.toLowerCase());
       }).toList();
+    });
+  }
+
+  void isSearchingToFalse() {
+    setState(() {
+      _isSearching = false;
+      _searchQuery = "";
     });
   }
 
@@ -225,6 +232,8 @@ class TransactionsPageState extends State<TransactionsPage>
                                                             accounts:
                                                                 accountState
                                                                     .accounts,
+                                                            isSearchingToFalse:
+                                                                isSearchingToFalse,
                                                           ),
                                                         ),
                                                       ),
@@ -246,13 +255,14 @@ class TransactionsPageState extends State<TransactionsPage>
                                           Navigator.pushNamed(context,
                                               PageConst.addTransactionPage,
                                               arguments: AddTransactionPage(
-                                                  isIncome: _isIncome,
-                                                  account: _account,
-                                                  selectedDate: _selectedDate,
-                                                  isTransactionsPage: true,
-                                                  ));
+                                                isIncome: _isIncome,
+                                                account: _account,
+                                                selectedDate: _selectedDate,
+                                                isTransactionsPage: true,
+                                              ));
                                         },
-                                        child: const Icon(FontAwesomeIcons.plus),
+                                        child:
+                                            const Icon(FontAwesomeIcons.plus),
                                       ),
                                     ),
                                   ),
@@ -326,52 +336,27 @@ class TransactionsPageState extends State<TransactionsPage>
   AppBar _buildAppBar(AccountEntity account, List<AccountEntity> accounts) {
     if (_isSearching) {
       return AppBar(
-          leading: IconButton(
-            icon: const Icon(FontAwesomeIcons.arrowLeft),
-            onPressed: () {
-              setState(() {
-                _isSearching = false;
-                _searchQuery = '';
-              });
-            },
+        leading: IconButton(
+          icon: const Icon(FontAwesomeIcons.arrowLeft),
+          onPressed: () {
+            setState(() {
+              _isSearching = false;
+              _searchQuery = '';
+            });
+          },
+        ),
+        title: TextField(
+          onChanged: _searchTransactions,
+          autofocus: true,
+          cursorColor: Colors.white,
+          style: const TextStyle(color: Colors.white),
+          decoration: const InputDecoration(
+            hintStyle: TextStyle(color: Colors.white),
+            hintText: 'Search...',
+            border: InputBorder.none,
           ),
-          title: TextField(
-            onChanged: _searchTransactions,
-            autofocus: true,
-            cursorColor: Colors.white,
-            style: TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-              hintStyle: TextStyle(color: Colors.white),
-              hintText: 'Search...',
-              border: InputBorder.none,
-            ),
-          ),
-          bottom: TabBar(
-            onTap: (value) {
-              switch (value) {
-                case 0:
-                  setState(() {
-                    _isIncome = false;
-                  });
-                  break;
-                case 1:
-                  setState(() {
-                    _isIncome = true;
-                  });
-                  break;
-                default:
-              }
-            },
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            indicatorPadding: const EdgeInsets.only(bottom: 5),
-            labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-            tabs: const [
-              Tab(
-                child: Text("EXPENSES"),
-              ),
-              Tab(child: Text("INCOME")),
-            ],
-          ));
+        ),
+      );
     } else {
       return AppBar(
         toolbarHeight: 70,

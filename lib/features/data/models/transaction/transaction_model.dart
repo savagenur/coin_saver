@@ -52,6 +52,9 @@ class TransactionModel extends TransactionEntity {
   final Color color;
   @HiveField(21)
   final IconData iconData;
+  @HiveField(22)
+  final bool? isTransfer;
+
 
   TransactionModel({
     required this.id,
@@ -62,6 +65,7 @@ class TransactionModel extends TransactionEntity {
     required this.accountId,
     required this.isIncome,
     required this.color,
+    this.isTransfer,
     this.description,
     this.tags,
     this.payee,
@@ -85,6 +89,7 @@ class TransactionModel extends TransactionEntity {
           description: description,
           accountId: accountId,
           isIncome: isIncome,
+          isTransfer: isTransfer,
           color: color,
           tags: tags,
           payee: payee,
@@ -111,6 +116,7 @@ class TransactionModel extends TransactionEntity {
     String? description,
     String? accountId,
     bool? isIncome,
+    bool? isTransfer,
     Color? color,
     List<String>? tags,
     String? payee,
@@ -136,6 +142,7 @@ class TransactionModel extends TransactionEntity {
       description: description ?? this.description,
       accountId: accountId ?? this.accountId,
       isIncome: isIncome ?? this.isIncome,
+      isTransfer: isTransfer ?? this.isTransfer,
       color: color ?? this.color,
       tags: tags ?? this.tags,
       payee: payee ?? this.payee,
@@ -162,6 +169,7 @@ class TransactionModel extends TransactionEntity {
       iconData: iconData,
       accountId: accountId,
       isIncome: isIncome,
+      isTransfer: isTransfer,
       color: color,
       currency: currency,
       description: description,
@@ -189,6 +197,7 @@ class TransactionModel extends TransactionEntity {
       iconData: entity.iconData,
       accountId: entity.accountId,
       isIncome: entity.isIncome,
+      isTransfer: entity.isTransfer,
       color: entity.color,
       currency: entity.currency,
       description: entity.description,

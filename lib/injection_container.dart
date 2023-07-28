@@ -1,6 +1,9 @@
+import 'package:coin_saver/features/data/datasources/local_datasource/base_currency_local_data_source.dart';
 import 'package:coin_saver/features/data/datasources/local_datasource/base_hive_local_data_source.dart';
 import 'package:coin_saver/features/data/datasources/local_datasource/hive_local_data_source.dart';
+import 'package:coin_saver/features/data/repositories/currency_repository.dart';
 import 'package:coin_saver/features/data/repositories/hive_repository.dart';
+import 'package:coin_saver/features/domain/repositories/base_currency_repository.dart';
 import 'package:coin_saver/features/domain/repositories/base_hive_repository.dart';
 import 'package:coin_saver/features/domain/usecases/account/create_account_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/account/delete_account_usecase.dart';
@@ -11,6 +14,8 @@ import 'package:coin_saver/features/domain/usecases/account/transaction/get_tran
 import 'package:coin_saver/features/domain/usecases/account/transaction/update_transaction_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/account/update_account_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/currency/get_currency_usecase.dart';
+import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_api_usecase.dart';
+import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_assets_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/hive/init_hive_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/time_period/fetch_transactions_for_day_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/time_period/get_transactions_for_today_usecase.dart';
@@ -24,6 +29,7 @@ import 'package:coin_saver/features/presentation/bloc/currency/currency_bloc.dar
 import 'package:get_it/get_it.dart';
 import 'package:uuid/uuid.dart';
 
+import 'features/data/datasources/local_datasource/currency_local_date_source.dart';
 import 'features/domain/usecases/account/transaction/delete_transaction_usecase.dart';
 import 'features/domain/usecases/category/create_category_usecase.dart';
 import 'features/domain/usecases/category/delete_category_usecase.dart';
@@ -73,7 +79,7 @@ Future<void> initGetIt() async {
   sl.registerFactory(
     () => CurrencyBloc(getCurrencyUsecase: sl.call()),
   );
-  
+
   sl.registerFactory(
     () => MainTransactionBloc(
       getTransactionsUsecase: sl.call(),
@@ -126,7 +132,6 @@ Future<void> initGetIt() async {
 
 // * Currency usecases
   sl.registerLazySingleton(() => GetCurrencyUsecase(repository: sl.call()));
-  
 
 // * Transaction usecases
   sl.registerLazySingleton(() => AddTransactionUsecase(repository: sl.call()));
@@ -146,6 +151,10 @@ Future<void> initGetIt() async {
 
 // * Currency usecases
 
+// * ExchangeRate usecases
+sl.registerLazySingleton(() => GetExchangeRatesFromAssets(repository: sl.call()));
+sl.registerLazySingleton(() => GetExchangeRatesFromApi(repository: sl.call()));
+
 // * Time Period usecases
   sl.registerLazySingleton(
       () => FetchTransactionsForDayUsecase(repository: sl.call()));
@@ -163,6 +172,13 @@ Future<void> initGetIt() async {
       () => HiveRepository(hiveLocalDataSource: sl.call()));
   sl.registerLazySingleton<BaseHiveLocalDataSource>(
       () => HiveLocalDataSource());
+
+// Repository
+  sl.registerLazySingleton<BaseCurrencyRepository>(
+      () => CurrencyRepository(currencyLocalDataSource: sl.call()));
+
+  sl.registerLazySingleton<BaseCurrencyLocalDataSource>(
+      () => CurrencyLocalDataSource());
 
 // Externals
   sl.registerLazySingleton(() => const Uuid());

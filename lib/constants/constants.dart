@@ -80,4 +80,5 @@ class BoxConst {
   static const String currency = "currency";
   static const String categories = "categories";
   static const String mainTransactions = "mainTransactions";
+  static const String exchangeRates = "exchangeRates";
 }

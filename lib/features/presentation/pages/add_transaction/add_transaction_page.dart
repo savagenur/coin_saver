@@ -11,7 +11,8 @@ import 'package:coin_saver/features/presentation/bloc/cubit/selected_category/se
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/pages/add_category/add_category_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
-import 'package:coin_saver/features/presentation/transactions/transactions_page.dart';
+import 'package:coin_saver/features/presentation/pages/main_transaction/main_transaction_page.dart';
+import 'package:coin_saver/features/presentation/pages/transactions/transactions_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,10 +26,12 @@ import '../../bloc/cubit/selected_date/selected_date_cubit.dart';
 import '../../bloc/home_time_period/home_time_period_bloc.dart';
 import '../../bloc/main_transaction/main_transaction_bloc.dart';
 import '../../widgets/my_button_widget.dart';
+import '../main_transaction/main_transaction_page.dart';
 
 class AddTransactionPage extends StatefulWidget {
   final bool isIncome;
   final bool isTransactionsPage;
+  final bool isMainTransactionPage;
   final AccountEntity account;
   final DateTime selectedDate;
   final TransactionEntity? transaction;
@@ -41,6 +44,7 @@ class AddTransactionPage extends StatefulWidget {
     this.transaction,
     this.category,
     this.isTransactionsPage = false,
+    this.isMainTransactionPage = false,
   });
 
   @override
@@ -541,6 +545,9 @@ class AddTransactionPageState extends State<AddTransactionPage>
           Navigator.pushNamed(context, PageConst.transactionsPage,
               arguments: TransactionsPage(
                   account: _account!, period: Period.day, isIncome: _isIncome));
+        } else if (widget.isMainTransactionPage) {
+          Navigator.pop(context);
+          Navigator.pop(context);
         } else {
           // If it's a new transaction, navigate to the home page with the appropriate arguments
           Navigator.pushNamed(context, PageConst.homePage,

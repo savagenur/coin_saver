@@ -41,6 +41,8 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
   IconData? _iconData;
   Color? _color;
   final ScrollController _colorController = ScrollController();
+  final TextEditingController _amountController = TextEditingController();
+  final FocusNode _amountFocusNode = FocusNode();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late SelectedIconCubit selectedIconCubit;
   late SelectedColorCubit selectedColorCubit;
@@ -55,12 +57,37 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
     _account = widget.account;
     _balance = widget.account?.balance ?? 0;
     _accountName = widget.account?.name ?? "";
+    _amountController.text = _balance.round().toString();
+    _amountFocusNode.addListener(_onFocusChange);
     selectedIconCubit = context.read<SelectedIconCubit>();
     selectedColorCubit = context.read<SelectedColorCubit>();
     accountBloc = context.read<AccountBloc>();
     if (widget.account != null) {
       selectedIconCubit.changeIcon(widget.account?.iconData);
       selectedColorCubit.changeColor(widget.account?.color);
+    }
+  }
+
+  @override
+  void dispose() {
+    _amountFocusNode.removeListener(_onFocusChange);
+    _amountController.dispose();
+    _amountFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    if (_amountFocusNode.hasFocus && _balance == 0) {
+      setState(() {
+        _amountController.text = "";
+      });
+    } else if (!_amountFocusNode.hasFocus && _amountController.text == "" ||
+        _amountController.text == "-") {
+      setState(() {
+        _amountController.text = "0";
+      });
+    } else {
+      _balance = double.parse(_amountController.text);
     }
   }
 
@@ -114,6 +141,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                 sizeVer(10),
                                 TextFormField(
                                   initialValue: _accountName,
+                                  autofocus: true,
                                   textCapitalization:
                                       TextCapitalization.sentences,
                                   validator: (value) {
@@ -371,7 +399,8 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
           child: SizedBox(
             width: MediaQuery.of(context).size.width * .3,
             child: TextFormField(
-              initialValue: _balance.round().toString(),
+              focusNode: _amountFocusNode,
+              controller: _amountController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return "Please enter\nvalid amount.";
@@ -382,7 +411,6 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                 _balance = double.parse(newValue!);
               },
               maxLength: 12,
-              autofocus: true,
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
               maxLines: 1,
@@ -393,7 +421,6 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
               ],
               decoration: const InputDecoration(
                 counterText: "",
-                hintText: "Balance",
               ),
               style: Theme.of(context)
                   .textTheme

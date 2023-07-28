@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../constants/constants.dart';
-import '../../../domain/entities/account/account_entity.dart';
-import '../../../domain/entities/transaction/transaction_entity.dart';
-import '../../pages/transaction_detail/transaction_detail_page.dart';
+import '../../../../../constants/constants.dart';
+import '../../../../domain/entities/account/account_entity.dart';
+import '../../../../domain/entities/transaction/transaction_entity.dart';
+import '../../transaction_detail/transaction_detail_page.dart';
 
 class ListDateTransactionsWidget extends StatelessWidget {
   final Map<DateTime, List<TransactionEntity>> _filteredTransactionsMap;
   final AccountEntity _account;
   final List<AccountEntity> _accounts;
+  final Function(
+    
+  ) isSearchingToFalse;
   const ListDateTransactionsWidget({
     super.key,
     required Map<DateTime, List<TransactionEntity>> filteredTransactionsMap,
     required AccountEntity account,
     required List<AccountEntity> accounts,
+    required this.isSearchingToFalse,
   })  : _filteredTransactionsMap = filteredTransactionsMap,
         _account = account,
         _accounts = accounts;
@@ -26,7 +30,8 @@ class ListDateTransactionsWidget extends StatelessWidget {
         ...List.generate(
           _filteredTransactionsMap.keys.length,
           (keyIndex) {
-            DateTime dateTime = _filteredTransactionsMap.keys.elementAt(keyIndex);
+            DateTime dateTime =
+                _filteredTransactionsMap.keys.elementAt(keyIndex);
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -36,10 +41,12 @@ class ListDateTransactionsWidget extends StatelessWidget {
                     color: secondaryColor,
                   ),
                 ),
-                ...List.generate(_filteredTransactionsMap.values.elementAt(keyIndex).length,
+                ...List.generate(
+                    _filteredTransactionsMap.values.elementAt(keyIndex).length,
                     (valueIndex) {
                   var transaction = _filteredTransactionsMap[
-                      _filteredTransactionsMap.keys.elementAt(keyIndex)]![valueIndex];
+                      _filteredTransactionsMap.keys
+                          .elementAt(keyIndex)]![valueIndex];
                   String accountName = _accounts
                       .firstWhere(
                         (element) => element.id == transaction.accountId,
@@ -48,7 +55,7 @@ class ListDateTransactionsWidget extends StatelessWidget {
                       .name;
 
                   return ListTile(
-                    onTap: () {
+                    onTap: () async {
                       Navigator.pushNamed(
                           context, PageConst.transactionDetailPage,
                           arguments: TransactionDetailPage(
@@ -58,6 +65,8 @@ class ListDateTransactionsWidget extends StatelessWidget {
                                     element.id == transaction.accountId,
                                 orElse: () => accountError),
                           ));
+                      await Future.delayed(const Duration(milliseconds: 300));
+                      isSearchingToFalse();
                     },
                     contentPadding: EdgeInsets.zero,
                     leading: CircleAvatar(

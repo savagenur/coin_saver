@@ -1,4 +1,10 @@
+import 'dart:convert';
+
+import 'package:coin_saver/features/data/datasources/local_datasource/base_currency_local_data_source.dart';
+import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_api_usecase.dart';
+import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_assets_usecase.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
@@ -20,6 +26,8 @@ import 'package:coin_saver/injection_container.dart';
 
 import '../../models/account_type.dart';
 import '../../models/color.dart';
+import '../../models/exchange_rate/exchange_rate_model.dart';
+import '../../models/exchange_rate/rate_model.dart';
 import '../../models/icon_data.dart';
 import '../../models/ownership_type.dart';
 import '../../models/payment_type.dart';
@@ -30,6 +38,8 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
   late final Box<CurrencyModel> currencyBox;
   late final Box<CategoryModel> categoriesBox;
   late final Box<Color> colorsBox;
+  late final Box<ExchangeRateModel> exchangeRatesBox;
+  late final List<ExchangeRateModel> exchangeRates;
 
   // * Initialization Hive
   @override
@@ -40,6 +50,8 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     Hive.registerAdapter<CategoryModel>(CategoryModelAdapter());
     Hive.registerAdapter<CurrencyModel>(CurrencyModelAdapter());
     Hive.registerAdapter<AccountModel>(AccountModelAdapter());
+    Hive.registerAdapter<ExchangeRateModel>(ExchangeRateModelAdapter());
+    Hive.registerAdapter<RateModel>(RateModelAdapter());
 
     Hive.registerAdapter<IconData>(IconDataAdapter());
     Hive.registerAdapter<Color>(ColorAdapter());
@@ -49,19 +61,24 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     currencyBox = await Hive.openBox<CurrencyModel>(BoxConst.currency);
     categoriesBox = await Hive.openBox<CategoryModel>(BoxConst.categories);
     colorsBox = await Hive.openBox<Color>(BoxConst.colors);
+    exchangeRatesBox =
+        await Hive.openBox<ExchangeRateModel>(BoxConst.exchangeRates);
   }
 
   @override
   Future<void> initHive() async {
     if (currencyBox.isEmpty) {
       await colorsBox.addAll(mainColors);
+      if (exchangeRatesBox.isEmpty) {
+        exchangeRates = await sl<GetExchangeRatesFromAssets>().call();
+        final Map<String, ExchangeRateModel> exchangeRatesMap = {};
+        for (ExchangeRateModel exchangeRate in exchangeRates) {
+          exchangeRatesMap[exchangeRate.base] = exchangeRate;
+        }
+        print(exchangeRates);
+        await exchangeRatesBox.putAll(exchangeRatesMap);
+      }
 
-      // Currency
-      // Map<String, CurrencyModel> currencyMap = {};
-      // for (var currency in currencies) {
-      //   currencyMap[currency.code] = currency;
-      // }
-      // await currencyBox.putAll(currencyMap);
       await currencyBox
           .add(currencies.firstWhere((element) => element.code == "KGS"));
       // MainCategories
@@ -102,7 +119,18 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
               ownershipType: OwnershipType.individual,
               openingDate: DateTime.now(),
               transactionHistory: const []));
-      
+    } else {
+      try {
+        exchangeRates = await sl<GetExchangeRatesFromApi>().call();
+
+        final Map<String, ExchangeRateModel> exchangeRatesMap = {};
+        for (ExchangeRateModel exchangeRate in exchangeRates) {
+          exchangeRatesMap[exchangeRate.base] = exchangeRate;
+        }
+        await exchangeRatesBox.putAll(exchangeRatesMap);
+      } catch (e) {
+        print("Error: $e");
+      }
     }
   }
 
@@ -190,7 +218,10 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
 
   @override
   Future<List<AccountEntity>> getAccounts() async {
-    List<AccountEntity> accounts = accountsBox.values.toList()..sort((a, b) => a.openingDate.compareTo(b.openingDate),);
+    List<AccountEntity> accounts = accountsBox.values.toList()
+      ..sort(
+        (a, b) => a.openingDate.compareTo(b.openingDate),
+      );
     return accounts;
   }
 

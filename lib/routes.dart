@@ -7,7 +7,7 @@ import 'package:coin_saver/features/presentation/pages/colors/colors_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
 import 'package:coin_saver/features/presentation/pages/main_transaction/main_transaction_page.dart';
 import 'package:coin_saver/features/presentation/pages/transaction_detail/transaction_detail_page.dart';
-import 'package:coin_saver/features/presentation/transactions/transactions_page.dart';
+import 'package:coin_saver/features/presentation/pages/transactions/transactions_page.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 

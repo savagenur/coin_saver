@@ -56,4 +56,6 @@ class TransactionPeriodCubit extends Cubit<List<TransactionEntity>> {
 
     emit(transactions);
   }
+
+  
 }

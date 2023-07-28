@@ -39,6 +39,7 @@ class TransactionEntity extends Equatable {
   final String? notes;
   final List<String>? linkedTransactions;
   final bool? isVoid;
+  final bool? isTransfer;
 
   TransactionEntity({
     required this.id,
@@ -49,6 +50,7 @@ class TransactionEntity extends Equatable {
     required this.accountId,
     required this.isIncome,
     required this.color,
+    this.isTransfer=false,
     this.description,
     this.tags,
     this.payee,
@@ -72,6 +74,7 @@ class TransactionEntity extends Equatable {
         amount,
         category,
         iconData,
+        isTransfer,
         description,
         accountId,
         isIncome,
@@ -99,6 +102,7 @@ class TransactionEntity extends Equatable {
     String? description,
     String? accountId,
     bool? isIncome,
+    bool? isTransfer,
     Color? color,
     List<String>? tags,
     String? payee,
@@ -123,6 +127,7 @@ class TransactionEntity extends Equatable {
       description: description ?? this.description,
       accountId: accountId ?? this.accountId,
       isIncome: isIncome ?? this.isIncome,
+     isTransfer:isTransfer ?? this.isTransfer,
       color: color ?? this.color,
       tags: tags ?? this.tags,
       payee: payee ?? this.payee,

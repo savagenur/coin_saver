@@ -52,6 +52,20 @@ class DeleteAccount extends AccountEvent {
       ];
 }
 
+class AddTransfer extends AccountEvent {
+  final AccountEntity accountFrom;
+  final AccountEntity accountTo;
+  final TransactionEntity transactionEntity;
+
+  const AddTransfer({
+    required this.accountFrom,
+    required this.accountTo,
+    required this.transactionEntity,
+  });
+  @override
+  List<Object> get props => [];
+}
+
 // class AddTransaction extends AccountEvent {
 //   final AccountEntity accountEntity;
 //   final TransactionEntity transactionEntity;

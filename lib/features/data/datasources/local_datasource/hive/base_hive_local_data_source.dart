@@ -21,6 +21,11 @@ abstract class BaseHiveLocalDataSource {
     required AccountEntity accountEntity,
     required TransactionEntity transactionEntity,
   });
+  Future<void> addTransfer({
+    required AccountEntity accountFrom,
+    required AccountEntity accountTo,
+    required TransactionEntity transactionEntity,
+  });
   Future<void> deleteTransaction({
     required TransactionEntity transactionEntity,
     required AccountEntity accountEntity,

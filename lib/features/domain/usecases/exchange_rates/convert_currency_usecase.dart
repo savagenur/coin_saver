@@ -5,6 +5,6 @@ class ConvertCurrencyUsecase {
   ConvertCurrencyUsecase({
     required this.repository,
   });
-  Future<double> call(String base, String desired) async =>
+  double call(String base, String desired)  =>
       repository.convertCurrency(base, desired);
 }

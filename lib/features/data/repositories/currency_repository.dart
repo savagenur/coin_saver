@@ -13,10 +13,10 @@ class CurrencyRepository implements BaseCurrencyRepository {
       currencyLocalDataSource.getExchangeRatesFromApi();
 
   @override
-  Future<List<ExchangeRateModel>> getExchangeRatesFromAssets()  async =>
+  Future<List<ExchangeRateModel>> getExchangeRatesFromAssets() async =>
       currencyLocalDataSource.getExchangeRatesFromAssets();
-      
-        @override
-        Future<double> convertCurrency(String base, String desired) async =>
-      currencyLocalDataSource.convertCurrency(base,desired);
+
+  @override
+  double convertCurrency(String base, String desired)  =>
+      currencyLocalDataSource.convertCurrency(base, desired);
 }

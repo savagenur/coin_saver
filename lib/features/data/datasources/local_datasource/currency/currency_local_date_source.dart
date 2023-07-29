@@ -61,7 +61,7 @@ class CurrencyLocalDataSource implements BaseCurrencyLocalDataSource {
   }
 
   @override
-  Future<double> convertCurrency(String base, String desired) async {
+  double convertCurrency(String base, String desired)  {
     var exchangeRates =
         exchangeRatesBox.values.cast<ExchangeRateModel>().toList();
     var exchangeRate =

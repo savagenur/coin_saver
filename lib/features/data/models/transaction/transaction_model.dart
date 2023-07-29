@@ -54,9 +54,16 @@ class TransactionModel extends TransactionEntity {
   final IconData iconData;
   @HiveField(22)
   final bool? isTransfer;
+  @HiveField(23)
+  final String? accountFromId;
+  @HiveField(24)
+  final String? accountToId;
+  @HiveField(25)
+  final double? amountFrom;
+  @HiveField(26)
+  final double? amountTo;
 
-
-  TransactionModel({
+  const TransactionModel({
     required this.id,
     required this.date,
     required this.amount,
@@ -66,6 +73,10 @@ class TransactionModel extends TransactionEntity {
     required this.isIncome,
     required this.color,
     this.isTransfer,
+    this.accountFromId,
+    this.accountToId,
+    this.amountFrom,
+    this.amountTo,
     this.description,
     this.tags,
     this.payee,
@@ -104,6 +115,10 @@ class TransactionModel extends TransactionEntity {
           notes: notes,
           linkedTransactions: linkedTransactions,
           isVoid: isVoid,
+          accountFromId: accountFromId,
+          accountToId: accountToId,
+          amountFrom: amountFrom,
+          amountTo: amountTo,
         );
 
   @override
@@ -117,6 +132,10 @@ class TransactionModel extends TransactionEntity {
     String? accountId,
     bool? isIncome,
     bool? isTransfer,
+    String? accountFromId,
+    String? accountToId,
+    double? amountFrom,
+    double? amountTo,
     Color? color,
     List<String>? tags,
     String? payee,
@@ -157,6 +176,10 @@ class TransactionModel extends TransactionEntity {
       notes: notes ?? this.notes,
       linkedTransactions: linkedTransactions ?? this.linkedTransactions,
       isVoid: isVoid ?? this.isVoid,
+      accountFromId: accountFromId ?? this.accountFromId,
+      accountToId: accountToId ?? this.accountToId,
+      amountFrom: amountFrom ?? this.amountFrom,
+      amountTo: amountTo ?? this.amountTo,
     );
   }
 
@@ -185,6 +208,10 @@ class TransactionModel extends TransactionEntity {
       receiptImage: receiptImage,
       reminderDate: reminderDate,
       tags: tags,
+      accountFromId: accountFromId,
+      accountToId: accountToId,
+      amountFrom: amountFrom,
+      amountTo: amountTo,
     );
   }
 
@@ -213,6 +240,10 @@ class TransactionModel extends TransactionEntity {
       receiptImage: entity.receiptImage,
       reminderDate: entity.reminderDate,
       tags: entity.tags,
+      accountFromId: entity.accountFromId,
+      accountToId: entity.accountToId,
+      amountFrom: entity.amountFrom,
+      amountTo: entity.amountTo,
     );
   }
 }

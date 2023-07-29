@@ -30,6 +30,7 @@ import 'package:get_it/get_it.dart';
 import 'package:uuid/uuid.dart';
 
 import 'features/data/datasources/local_datasource/currency/currency_local_date_source.dart';
+import 'features/domain/usecases/account/transaction/add_transfer_usecase.dart';
 import 'features/domain/usecases/account/transaction/delete_transaction_usecase.dart';
 import 'features/domain/usecases/category/create_category_usecase.dart';
 import 'features/domain/usecases/category/delete_category_usecase.dart';
@@ -58,6 +59,7 @@ Future<void> initGetIt() async {
       setPrimaryAccountUsecase: sl.call(),
       addTransactionUsecase: sl.call(),
       deleteTransactionUsecase: sl.call(),
+      addTransferUsecase: sl.call(),
       deleteAccountUsecase: sl.call()));
 
   sl.registerFactory(
@@ -136,6 +138,7 @@ Future<void> initGetIt() async {
 
 // * Transaction usecases
   sl.registerLazySingleton(() => AddTransactionUsecase(repository: sl.call()));
+  sl.registerLazySingleton(() => AddTransferUsecase(repository: sl.call()));
   sl.registerLazySingleton(
       () => DeleteTransactionUsecase(repository: sl.call()));
   sl.registerLazySingleton(

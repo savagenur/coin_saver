@@ -1,4 +1,5 @@
 import 'package:coin_saver/features/presentation/pages/accounts_page/accounts/accounts_page.dart';
+import 'package:coin_saver/features/presentation/pages/accounts_page/create_transfer/create_transfer_page.dart';
 import 'package:coin_saver/features/presentation/pages/accounts_page/crud_account/crud_account_page.dart';
 import 'package:coin_saver/features/presentation/pages/add_category/add_category_page.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
@@ -79,6 +80,8 @@ class AppRoute {
           account: args.account,
           isUpdatePage: args.isUpdatePage,
         ));
+      case PageConst.createTransferPage:
+        return _routeBuilder(CreateTransferPage());
       default:
         return _routeBuilder(const NotFoundPage());
     }

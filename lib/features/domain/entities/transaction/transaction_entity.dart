@@ -40,8 +40,12 @@ class TransactionEntity extends Equatable {
   final List<String>? linkedTransactions;
   final bool? isVoid;
   final bool? isTransfer;
+  final String? accountFromId;
+  final String? accountToId;
+  final double? amountFrom;
+  final double? amountTo;
 
-  TransactionEntity({
+  const TransactionEntity({
     required this.id,
     required this.date,
     required this.amount,
@@ -50,7 +54,11 @@ class TransactionEntity extends Equatable {
     required this.accountId,
     required this.isIncome,
     required this.color,
-    this.isTransfer=false,
+    this.isTransfer = false,
+    this.accountFromId,
+    this.accountToId,
+    this.amountFrom,
+    this.amountTo,
     this.description,
     this.tags,
     this.payee,
@@ -75,6 +83,10 @@ class TransactionEntity extends Equatable {
         category,
         iconData,
         isTransfer,
+        accountFromId,
+        accountToId,
+        amountFrom,
+        amountTo,
         description,
         accountId,
         isIncome,
@@ -103,6 +115,10 @@ class TransactionEntity extends Equatable {
     String? accountId,
     bool? isIncome,
     bool? isTransfer,
+    String? accountFromId,
+    String? accountToId,
+    double? amountFrom,
+    double? amountTo,
     Color? color,
     List<String>? tags,
     String? payee,
@@ -127,7 +143,7 @@ class TransactionEntity extends Equatable {
       description: description ?? this.description,
       accountId: accountId ?? this.accountId,
       isIncome: isIncome ?? this.isIncome,
-     isTransfer:isTransfer ?? this.isTransfer,
+      isTransfer: isTransfer ?? this.isTransfer,
       color: color ?? this.color,
       tags: tags ?? this.tags,
       payee: payee ?? this.payee,
@@ -142,6 +158,10 @@ class TransactionEntity extends Equatable {
       notes: notes ?? this.notes,
       linkedTransactions: linkedTransactions ?? this.linkedTransactions,
       isVoid: isVoid ?? this.isVoid,
+      accountFromId: accountFromId??this.accountFromId,
+      accountToId: accountToId??this.accountToId,
+      amountFrom: amountFrom??this.amountFrom,
+      amountTo: amountTo??this.amountTo,
     );
   }
 }

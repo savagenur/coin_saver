@@ -60,9 +60,9 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
     _account = widget.account;
     _balance = widget.account?.balance ?? 0;
     _accountName = widget.account?.name ?? "";
-    _amountController.text = _balance.round().toString();
+    _amountController.text = _balance.toStringAsFixed(2).toString();
     _amountFocusNode.addListener(_onFocusChange);
-    _currency = _account?.currency?? widget.mainCurrency;
+    _currency = _account?.currency ?? widget.mainCurrency;
     selectedIconCubit = context.read<SelectedIconCubit>();
     selectedColorCubit = context.read<SelectedColorCubit>();
     accountBloc = context.read<AccountBloc>();
@@ -194,7 +194,6 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                   ],
                                 ),
                                 sizeVer(10),
-
                                 SingleChildScrollView(
                                     controller: _colorController,
                                     scrollDirection: Axis.horizontal,
@@ -219,32 +218,46 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                                   color: Colors.red.shade900),
                                         ))
                                     : Container(),
-                              _isUpdatePage?Container():  Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                  "Select currency:",
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                                PullDownButton(
-                                  itemBuilder: (context) {
-                                    return currencies
-                                        .map((currency) =>
-                                            PullDownMenuItem.selectable(
-                                                onTap: () {
-                                                 setState(() {
-                                                    _currency = currency;
-                                                 });
-                                                },
-                                                title: currency.code))
-                                        .toList();
-                                  },
-                                  buttonBuilder: (context, showMenu) {
-                                    return TextButton(onPressed: showMenu, child: Text(_currency.code,style: const TextStyle(fontWeight: FontWeight.bold),));
-                                  },
-                                ),
-                                  ],
-                                ),
+                                _isUpdatePage
+                                    ? Container()
+                                    : Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            "Select currency:",
+                                            style:
+                                                TextStyle(color: Colors.grey),
+                                          ),
+                                          PullDownButton(
+                                            itemBuilder: (context) {
+                                              return currencies
+                                                  .map((currency) =>
+                                                      PullDownMenuItem
+                                                          .selectable(
+                                                              onTap: () {
+                                                                setState(() {
+                                                                  _currency =
+                                                                      currency;
+                                                                });
+                                                              },
+                                                              title: currency
+                                                                  .code))
+                                                  .toList();
+                                            },
+                                            buttonBuilder: (context, showMenu) {
+                                              return TextButton(
+                                                  onPressed: showMenu,
+                                                  child: Text(
+                                                    _currency.code,
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ));
+                                            },
+                                          ),
+                                        ],
+                                      ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -290,8 +303,11 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                   child: TextButton(
                       onPressed: () {
                         accountBloc.add(DeleteAccount(id: _account!.id));
+
                         Navigator.pop(context);
                         Navigator.pop(context);
+                        selectedIconCubit.changeIcon(null);
+                        selectedColorCubit.changeColor(null);
                       },
                       child: Text(
                         "Yes",
@@ -448,7 +464,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
               textAlign: TextAlign.center,
               showCursor: true,
               inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d{0,2}$'))
+                FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d{0,4}$'))
               ],
               decoration: const InputDecoration(
                 counterText: "",

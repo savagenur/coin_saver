@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:coin_saver/features/domain/usecases/account/transaction/add_transaction_usecase.dart';
+import 'package:coin_saver/features/domain/usecases/account/transaction/add_transfer_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/account/transaction/delete_transaction_usecase.dart';
 import 'package:equatable/equatable.dart';
 
@@ -25,6 +26,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   final SetPrimaryAccountUsecase setPrimaryAccountUsecase;
   final AddTransactionUsecase addTransactionUsecase;
   final DeleteTransactionUsecase deleteTransactionUsecase;
+  final AddTransferUsecase addTransferUsecase;
   AccountBloc({
     required this.createAccountUsecase,
     required this.getAccountsUsecase,
@@ -33,12 +35,14 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     required this.setPrimaryAccountUsecase,
     required this.addTransactionUsecase,
     required this.deleteTransactionUsecase,
+    required this.addTransferUsecase,
   }) : super(AccountInitial()) {
     on<CreateAccount>(_onCreateAccount);
     on<DeleteAccount>(_onDeleteAccount);
     on<UpdateAccount>(_onUpdateAccount);
     on<SetPrimaryAccount>(_onSetPrimaryAccount);
     on<GetAccounts>(_onGetAccounts);
+    on<AddTransfer>(_onAddTransfer);
 
     // Transaction
     // on<AddTransaction>(_onAddTransaction);
@@ -56,7 +60,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
 
   FutureOr<void> _onDeleteAccount(
       DeleteAccount event, Emitter<AccountState> emit) async {
-    // await setPrimaryAccountUsecase.call("main");
+    await setPrimaryAccountUsecase.call("main");
     await deleteAccountUsecase.call(event.id);
     final accounts = await getAccountsUsecase.call();
     emit(AccountLoading());
@@ -110,5 +114,15 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       }
     }
     return accounts;
+  }
+
+  FutureOr<void> _onAddTransfer(
+      AddTransfer event, Emitter<AccountState> emit) async {
+    await addTransferUsecase.call(
+        accountFrom: event.accountFrom,
+        accountTo: event.accountTo,
+        transactionEntity: event.transactionEntity);
+    final accounts = await getAccountsUsecase.call();
+    emit(AccountLoaded(accounts: accounts));
   }
 }

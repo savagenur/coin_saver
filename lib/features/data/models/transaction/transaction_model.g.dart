@@ -26,6 +26,10 @@ class TransactionModelAdapter extends TypeAdapter<TransactionModel> {
       isIncome: fields[6] as bool,
       color: fields[20] as Color,
       isTransfer: fields[22] as bool?,
+      accountFromId: fields[23] as String?,
+      accountToId: fields[24] as String?,
+      amountFrom: fields[25] as double?,
+      amountTo: fields[26] as double?,
       description: fields[4] as String?,
       tags: (fields[7] as List?)?.cast<String>(),
       payee: fields[8] as String?,
@@ -46,7 +50,7 @@ class TransactionModelAdapter extends TypeAdapter<TransactionModel> {
   @override
   void write(BinaryWriter writer, TransactionModel obj) {
     writer
-      ..writeByte(23)
+      ..writeByte(27)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -92,7 +96,15 @@ class TransactionModelAdapter extends TypeAdapter<TransactionModel> {
       ..writeByte(21)
       ..write(obj.iconData)
       ..writeByte(22)
-      ..write(obj.isTransfer);
+      ..write(obj.isTransfer)
+      ..writeByte(23)
+      ..write(obj.accountFromId)
+      ..writeByte(24)
+      ..write(obj.accountToId)
+      ..writeByte(25)
+      ..write(obj.amountFrom)
+      ..writeByte(26)
+      ..write(obj.amountTo);
   }
 
   @override

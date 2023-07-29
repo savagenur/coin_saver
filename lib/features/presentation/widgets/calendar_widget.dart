@@ -54,8 +54,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
                   ),
                   focusedDay: _selectedDate,
                   firstDay: DateTime(2000),
-                  lastDay: DateTime(DateTime.now().year, DateTime.now().month,
-                      DateTime.now().day),
+                  lastDay: DateTime.now(),
                   currentDay: _selectedDate,
                   onDaySelected: (selectedDay, focusedDay) {
                     setState(() {

@@ -23,7 +23,7 @@ class AccountsPage extends StatelessWidget {
 
     return WillPopScope(
       onWillPop: () async {
-        Navigator.popUntil(context, (route) =>route.isFirst);
+        Navigator.popUntil(context, (route) => route.isFirst);
         return true;
       },
       child: Scaffold(
@@ -84,7 +84,10 @@ class AccountsPage extends StatelessWidget {
                                   context: context,
                                   title: "New transfer",
                                   iconData: FontAwesomeIcons.rightLeft,
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, PageConst.createTransferPage);
+                                  },
                                 ),
                               ],
                             ),
@@ -124,7 +127,7 @@ class AccountsPage extends StatelessWidget {
                                           trailing: Text(
                                             NumberFormat.compactCurrency(
                                               symbol: account.currency.symbol,
-                                              decimalDigits: 0,
+                                              decimalDigits: 2,
                                             ).format(account.balance),
                                             style: Theme.of(context)
                                                 .textTheme

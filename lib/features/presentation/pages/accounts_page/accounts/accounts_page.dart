@@ -3,6 +3,7 @@ import 'package:coin_saver/features/domain/entities/currency/currency_entity.dar
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/currency/currency_bloc.dart';
+import 'package:coin_saver/features/presentation/pages/accounts_page/create_transfer/create_transfer_page.dart';
 import 'package:coin_saver/features/presentation/pages/accounts_page/crud_account/crud_account_page.dart';
 import 'package:coin_saver/features/presentation/widgets/my_drawer.dart';
 import 'package:flutter/material.dart';
@@ -78,7 +79,10 @@ class AccountsPage extends StatelessWidget {
                                   context: context,
                                   title: "Transfer history",
                                   iconData: FontAwesomeIcons.clockRotateLeft,
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, PageConst.transferHistoryPage);
+                                  },
                                 ),
                                 _buildTransferButton(
                                   context: context,
@@ -86,7 +90,7 @@ class AccountsPage extends StatelessWidget {
                                   iconData: FontAwesomeIcons.rightLeft,
                                   onTap: () {
                                     Navigator.pushNamed(
-                                        context, PageConst.createTransferPage);
+                                        context, PageConst.createTransferPage,arguments: const CreateTransferPage());
                                   },
                                 ),
                               ],

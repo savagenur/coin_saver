@@ -17,7 +17,8 @@ import 'package:uuid/uuid.dart';
 import '../../../bloc/account/account_bloc.dart';
 
 class CreateTransferPage extends StatefulWidget {
-  const CreateTransferPage({super.key});
+  final DateTime? selectedDate;
+  const CreateTransferPage({super.key, this.selectedDate});
 
   @override
   State<CreateTransferPage> createState() => _CreateTransferPageState();
@@ -31,7 +32,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
   double _amountFrom = 0;
   double _amountTo = 0;
   double _exchangeRate = 0;
-  DateTime _selectedDate = DateTime.now();
+  late DateTime _selectedDate;
   final TextEditingController _amountFromController = TextEditingController();
   final TextEditingController _amountToController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
@@ -41,6 +42,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
   @override
   void initState() {
     super.initState();
+    _selectedDate = widget.selectedDate ?? DateTime.now();
     _amountListener();
   }
 
@@ -172,10 +174,9 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
                       style: TextStyle(color: Colors.grey),
                     ),
                     sizeVer(5),
-                     TextField(
+                    TextField(
                       controller: _commentController,
                       decoration: const InputDecoration(
-                        
                         hintText: "Comment",
                       ),
                     ),
@@ -291,7 +292,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
             focusNode: _fromFocusNode,
             controller: _amountFromController,
             validator: (value) {
-              if (value == null || value.isEmpty ||_amountFrom==0) {
+              if (value == null || value.isEmpty || _amountFrom == 0) {
                 return "Please enter\nvalid amount.";
               }
               return null;
@@ -300,7 +301,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
             // onSaved: (newValue) {
             //   _amountFrom = double.parse(newValue!);
             // },
-            
+
             maxLength: 20,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             maxLines: 1,
@@ -309,7 +310,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,4}'))
             ],
-            decoration:  InputDecoration(
+            decoration: InputDecoration(
               errorStyle: TextStyle(color: Colors.red.shade900),
               counterText: "",
               hintText: "0",
@@ -356,7 +357,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
             focusNode: _toFocusNode,
             controller: _amountToController,
             validator: (value) {
-              if (value == null || value.isEmpty||_amountTo==0) {
+              if (value == null || value.isEmpty || _amountTo == 0) {
                 return "Please enter\nvalid amount.";
               }
               return null;

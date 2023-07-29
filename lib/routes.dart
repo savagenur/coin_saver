@@ -1,6 +1,7 @@
 import 'package:coin_saver/features/presentation/pages/accounts_page/accounts/accounts_page.dart';
 import 'package:coin_saver/features/presentation/pages/accounts_page/create_transfer/create_transfer_page.dart';
 import 'package:coin_saver/features/presentation/pages/accounts_page/crud_account/crud_account_page.dart';
+import 'package:coin_saver/features/presentation/pages/accounts_page/transfer_history/transfer_history_page.dart';
 import 'package:coin_saver/features/presentation/pages/add_category/add_category_page.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:coin_saver/features/presentation/pages/catalog_icons/catalog_icons_page.dart';
@@ -81,7 +82,12 @@ class AppRoute {
           isUpdatePage: args.isUpdatePage,
         ));
       case PageConst.createTransferPage:
-        return _routeBuilder(CreateTransferPage());
+        args = args as CreateTransferPage;
+        return _routeBuilder(CreateTransferPage(
+          selectedDate: args.selectedDate,
+        ));
+      case PageConst.transferHistoryPage:
+        return _routeBuilder(const TransferHistoryPage());
       default:
         return _routeBuilder(const NotFoundPage());
     }

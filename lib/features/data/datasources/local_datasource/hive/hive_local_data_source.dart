@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:coin_saver/features/data/datasources/local_datasource/base_currency_local_data_source.dart';
+import 'package:coin_saver/features/data/datasources/local_datasource/currency/base_currency_local_data_source.dart';
+import 'package:coin_saver/features/domain/usecases/exchange_rates/convert_currency_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_api_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_assets_usecase.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ import 'package:coin_saver/constants/colors.dart';
 import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/constants/currencies.dart';
 import 'package:coin_saver/constants/main_categories.dart';
-import 'package:coin_saver/features/data/datasources/local_datasource/base_hive_local_data_source.dart';
+import 'package:coin_saver/features/data/datasources/local_datasource/hive/base_hive_local_data_source.dart';
 import 'package:coin_saver/features/data/models/account/account_model.dart';
 import 'package:coin_saver/features/data/models/category/category_model.dart';
 import 'package:coin_saver/features/data/models/currency/currency_model.dart';
@@ -24,13 +25,13 @@ import 'package:coin_saver/features/domain/entities/currency/currency_entity.dar
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 import 'package:coin_saver/injection_container.dart';
 
-import '../../models/account_type.dart';
-import '../../models/color.dart';
-import '../../models/exchange_rate/exchange_rate_model.dart';
-import '../../models/exchange_rate/rate_model.dart';
-import '../../models/icon_data.dart';
-import '../../models/ownership_type.dart';
-import '../../models/payment_type.dart';
+import '../../../models/account_type.dart';
+import '../../../models/color.dart';
+import '../../../models/exchange_rate/exchange_rate_model.dart';
+import '../../../models/exchange_rate/rate_model.dart';
+import '../../../models/icon_data.dart';
+import '../../../models/ownership_type.dart';
+import '../../../models/payment_type.dart';
 
 class HiveLocalDataSource implements BaseHiveLocalDataSource {
   final Uuid uuid = sl<Uuid>();
@@ -70,17 +71,19 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     if (currencyBox.isEmpty) {
       await colorsBox.addAll(mainColors);
       if (exchangeRatesBox.isEmpty) {
-        exchangeRates = await sl<GetExchangeRatesFromAssets>().call();
+        exchangeRates = await sl<GetExchangeRatesFromAssetsUsecase>().call();
         final Map<String, ExchangeRateModel> exchangeRatesMap = {};
         for (ExchangeRateModel exchangeRate in exchangeRates) {
           exchangeRatesMap[exchangeRate.base] = exchangeRate;
         }
-        print(exchangeRates);
         await exchangeRatesBox.putAll(exchangeRatesMap);
       }
 
       await currencyBox
-          .add(currencies.firstWhere((element) => element.code == "KGS"));
+          .add(currencies.firstWhere((element) => element.code == "USD"));
+
+      await currencyBox
+          .add(currencies.firstWhere((element) => element.code == "EUR"));
       // MainCategories
       Map<String, CategoryModel> categoryMap = {};
       for (var category in mainCategories) {
@@ -113,7 +116,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
               type: AccountType.cash,
               color: Colors.blue.shade800,
               balance: 0,
-              currency: currencyBox.getAt(0)!,
+              currency: currencyBox.getAt(1)!,
               isPrimary: true,
               isActive: true,
               ownershipType: OwnershipType.individual,
@@ -121,7 +124,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
               transactionHistory: const []));
     } else {
       try {
-        exchangeRates = await sl<GetExchangeRatesFromApi>().call();
+        exchangeRates = await sl<GetExchangeRatesFromApiUsecase>().call();
 
         final Map<String, ExchangeRateModel> exchangeRatesMap = {};
         for (ExchangeRateModel exchangeRate in exchangeRates) {
@@ -181,10 +184,13 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
 
       final totalAccount = accountsBox.get("total");
       if (totalAccount != null) {
+        final exchangeRate = await sl<ConvertCurrencyUsecase>()
+            .call(accountEntity.currency.code, totalAccount.currency.code);
+        final convertedAmount = exchangeRate * accountEntity.balance;
         final updatedTotalAccount = totalAccount.copyWith(
-          balance: totalAccount.balance + accountEntity.balance,
+          balance: totalAccount.balance + convertedAmount,
         );
-        accountsBox.put(totalAccount.id, updatedTotalAccount);
+        await accountsBox.put(totalAccount.id, updatedTotalAccount);
       }
       // End updating
     } catch (e) {
@@ -206,8 +212,11 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
 
       final totalAccount = accountsBox.get("total");
       if (totalAccount != null) {
+        final exchangeRate = await sl<ConvertCurrencyUsecase>()
+            .call(existingAccount.currency.code, totalAccount.currency.code);
+        final convertedAmount = exchangeRate * oldAccountBalance;
         final updatedTotalAccount = totalAccount.copyWith(
-          balance: totalAccount.balance - oldAccountBalance,
+          balance: totalAccount.balance - convertedAmount,
         );
         await accountsBox.put(totalAccount.id, updatedTotalAccount);
       }
@@ -218,7 +227,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
 
   @override
   Future<List<AccountEntity>> getAccounts() async {
-    List<AccountEntity> accounts = accountsBox.values.toList()
+    List<AccountEntity> accounts =  accountsBox.values.toList()
       ..sort(
         (a, b) => a.openingDate.compareTo(b.openingDate),
       );
@@ -260,8 +269,11 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
 
       final totalAccount = accountsBox.get("total");
       if (totalAccount != null) {
+        final exchangeRate = await sl<ConvertCurrencyUsecase>()
+            .call(existingAccount.currency.code, totalAccount.currency.code);
+        final convertedAmount = exchangeRate * updatedAccountBalance;
         final updatedTotalAccount = totalAccount.copyWith(
-          balance: totalAccount.balance + updatedAccountBalance,
+          balance: totalAccount.balance + convertedAmount,
         );
         await accountsBox.put(totalAccount.id, updatedTotalAccount);
       }
@@ -315,16 +327,20 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         transactionHistory: List.from(existingAccount.transactionHistory)
           ..add(newTransaction),
       );
-      accountsBox.put(existingAccount.id, updatedAccount);
+      await accountsBox.put(existingAccount.id, updatedAccount);
 
       final totalAccount = accountsBox.get("total");
       if (totalAccount != null) {
+        final exchangeRate = await sl<ConvertCurrencyUsecase>()
+            .call(existingAccount.currency.code, totalAccount.currency.code);
+        final convertedAmount = transactionAmount * exchangeRate;
         final updatedTotalAccount = totalAccount.copyWith(
-          balance: totalAccount.balance + transactionAmount,
+          balance: totalAccount.balance + convertedAmount,
           transactionHistory: List.from(totalAccount.transactionHistory)
-            ..add(newTransaction),
+            ..add(newTransaction.copyWith(
+                amount: transactionEntity.amount * exchangeRate)),
         );
-        accountsBox.put(totalAccount.id, updatedTotalAccount);
+        await accountsBox.put(totalAccount.id, updatedTotalAccount);
       }
       // End updating
     } catch (e) {
@@ -370,19 +386,25 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         balance: updatedAccountBalance,
         transactionHistory: updatedTransactionHistory,
       );
-      accountsBox.put(existingAccount.id, updatedAccount);
+      await accountsBox.put(existingAccount.id, updatedAccount);
 
-      final totalAccount = accountsBox.get("total");
+      final totalAccount =  accountsBox.get("total");
       if (totalAccount != null) {
+        final totalAmount = totalAccount.transactionHistory
+            .firstWhere((element) => element.id == transactionEntity.id)
+            .amount;
+        final convertedAmount =
+            transactionEntity.isIncome ? -totalAmount : totalAmount;
         final updatedTotalAccount = totalAccount.copyWith(
-          balance: totalAccount.balance + transactionAmount,
+          balance: totalAccount.balance + convertedAmount,
           transactionHistory: List<TransactionModel>.from(
             totalAccount.transactionHistory.where(
               (transaction) => transaction.id != transactionEntity.id,
             ),
           ),
         );
-        accountsBox.put(totalAccount.id, updatedTotalAccount);
+
+        await accountsBox.put(totalAccount.id, updatedTotalAccount);
       }
       // End updating
     } catch (e) {
@@ -436,29 +458,32 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
           .where((element) => element.id != transactionEntity.id)
           .toList()
         ..add(updatedTransaction),
-    );
-
-    // Step 7: Update account and total account (if needed) inside a try-catch block
+    ); // Step 7: Update account and total account (if needed) inside a try-catch block
     try {
       // Start updating
       final updatedAccount = existingAccount.copyWith(
         balance: updatedAccountBalance,
         transactionHistory: updatedTransactionHistory,
       );
-      accountsBox.put(existingAccount.id, updatedAccount);
+      await accountsBox.put(existingAccount.id, updatedAccount);
 
       final totalAccount = accountsBox.get("total");
       if (totalAccount != null) {
+        final exchangeRate = await sl<ConvertCurrencyUsecase>()
+            .call(existingAccount.currency.code, totalAccount.currency.code);
+
+        final convertedAmount = amountDifference * exchangeRate;
         final updatedTotalAccount = totalAccount.copyWith(
-          balance: totalAccount.balance + amountDifference,
+          balance: totalAccount.balance + convertedAmount,
           transactionHistory: List<TransactionModel>.from(
             totalAccount.transactionHistory
                 .where((element) => element.id != transactionEntity.id)
                 .toList()
-              ..add(updatedTransaction),
+              ..add(updatedTransaction.copyWith(
+                  amount: transactionEntity.amount * exchangeRate)),
           ),
         );
-        accountsBox.put(totalAccount.id, updatedTotalAccount);
+        await accountsBox.put(totalAccount.id, updatedTotalAccount);
       }
       // End updating
     } catch (e) {

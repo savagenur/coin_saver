@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/features/domain/usecases/hive/init_hive_usecase.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
@@ -25,7 +26,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'injection_container.dart';
 import 'observer.dart';
 
-
 void main() async {
   await Hive.initFlutter();
   await initGetIt();
@@ -45,8 +45,6 @@ void main() async {
   await sl<InitHiveAdaptersBoxesUsecase>().call();
   await sl<InitHiveUsecase>().call();
   // await removeHive();
-
-
 
   runApp(const MyApp());
 }
@@ -103,6 +101,7 @@ class MyApp extends StatelessWidget {
         routes: {
           "/": (context) => const HomePage(),
         },
+        
         onGenerateRoute: AppRoute().onGenerateRoute,
       ),
     );

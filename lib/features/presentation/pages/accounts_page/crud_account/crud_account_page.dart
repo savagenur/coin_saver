@@ -1,4 +1,5 @@
 import 'package:coin_saver/constants/account_icons.dart';
+import 'package:coin_saver/constants/currencies.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:coin_saver/features/domain/usecases/account/create_account_usecase.dart';
@@ -12,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../../constants/constants.dart';
@@ -38,6 +40,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
   late String _accountName;
   late bool _isUpdatePage;
   late AccountEntity? _account;
+  late CurrencyEntity _currency;
   IconData? _iconData;
   Color? _color;
   final ScrollController _colorController = ScrollController();
@@ -59,6 +62,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
     _accountName = widget.account?.name ?? "";
     _amountController.text = _balance.round().toString();
     _amountFocusNode.addListener(_onFocusChange);
+    _currency = _account?.currency?? widget.mainCurrency;
     selectedIconCubit = context.read<SelectedIconCubit>();
     selectedColorCubit = context.read<SelectedColorCubit>();
     accountBloc = context.read<AccountBloc>();
@@ -189,6 +193,8 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                         : Container(),
                                   ],
                                 ),
+                                sizeVer(10),
+
                                 SingleChildScrollView(
                                     controller: _colorController,
                                     scrollDirection: Axis.horizontal,
@@ -213,7 +219,32 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                                   color: Colors.red.shade900),
                                         ))
                                     : Container(),
-                                sizeVer(20),
+                              _isUpdatePage?Container():  Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                  "Select currency:",
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                                PullDownButton(
+                                  itemBuilder: (context) {
+                                    return currencies
+                                        .map((currency) =>
+                                            PullDownMenuItem.selectable(
+                                                onTap: () {
+                                                 setState(() {
+                                                    _currency = currency;
+                                                 });
+                                                },
+                                                title: currency.code))
+                                        .toList();
+                                  },
+                                  buttonBuilder: (context, showMenu) {
+                                    return TextButton(onPressed: showMenu, child: Text(_currency.code,style: const TextStyle(fontWeight: FontWeight.bold),));
+                                  },
+                                ),
+                                  ],
+                                ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -224,7 +255,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                                 .5,
                                         borderRadius: BorderRadius.circular(30),
                                         paddingVertical: 15,
-                                        onTap: _buildCreateAccount),
+                                        onTap: _buildCRUDAccount),
                                   ],
                                 ),
                                 sizeVer(20),
@@ -434,7 +465,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
             children: [
               sizeHor(3),
               Text(
-                widget.mainCurrency.code,
+                _currency.code,
                 style: Theme.of(context)
                     .textTheme
                     .titleLarge!
@@ -447,7 +478,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
     );
   }
 
-  void _buildCreateAccount() {
+  void _buildCRUDAccount() {
     if (_iconData == null) {
       setState(() {
         _isErrorIcon = true;
@@ -469,6 +500,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
       final bool isPrimary = _isUpdatePage ? true : false;
       final DateTime openingDate =
           accountId == "main" ? _account!.openingDate : DateTime.now();
+      final currency = _isUpdatePage ? _account!.currency : _currency;
       final accountEntity = AccountEntity(
           id: accountId,
           name: _accountName,
@@ -476,7 +508,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
           color: _color!,
           type: AccountType.cash,
           balance: _balance,
-          currency: widget.mainCurrency,
+          currency: currency,
           isPrimary: isPrimary,
           isActive: true,
           ownershipType: OwnershipType.individual,

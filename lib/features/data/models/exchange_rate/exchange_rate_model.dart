@@ -16,10 +16,18 @@ class ExchangeRateModel extends ExchangeRateEntity {
           rates: rates.map((e) => e.toEntity()).toList(),
         );
 
-  factory ExchangeRateModel.fromJson(Map<String, dynamic> json) {
+  factory ExchangeRateModel.fromJsonAssets(Map<String, dynamic> json) {
     return ExchangeRateModel(
       base: json['base'],
       rates: List<RateModel>.from(json['rates'].entries.map((MapEntry entry) =>
+          RateModel(rateName: entry.key, rate: entry.value.toDouble()))),
+    );
+  }
+  factory ExchangeRateModel.fromJsonApi(
+      Map<String, dynamic> json, String base) {
+    return ExchangeRateModel(
+      base: base,
+      rates: List<RateModel>.from(json['data'].entries.map((MapEntry entry) =>
           RateModel(rateName: entry.key, rate: entry.value.toDouble()))),
     );
   }

@@ -1,5 +1,8 @@
+
 import 'package:bloc/bloc.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
+import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
+import 'package:coin_saver/injection_container.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../../domain/entities/transaction/transaction_entity.dart';
@@ -56,6 +59,7 @@ class MainTransactionBloc
     await deleteTransactionUsecase.call(event.account, event.transaction);
     final List<TransactionEntity> transactions =
         await getTransactionsUsecase.call();
+    sl<AccountBloc>().add(GetAccounts());
     emit(MainTransactionLoading());
     emit(MainTransactionLoaded(transactions: transactions));
   }

@@ -1,7 +1,7 @@
-import '../../../domain/entities/account/account_entity.dart';
-import '../../../domain/entities/category/category_entity.dart';
-import '../../../domain/entities/currency/currency_entity.dart';
-import '../../../domain/entities/transaction/transaction_entity.dart';
+import '../../../../domain/entities/account/account_entity.dart';
+import '../../../../domain/entities/category/category_entity.dart';
+import '../../../../domain/entities/currency/currency_entity.dart';
+import '../../../../domain/entities/transaction/transaction_entity.dart';
 
 abstract class BaseHiveLocalDataSource {
   // Hive

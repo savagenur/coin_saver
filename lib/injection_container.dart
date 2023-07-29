@@ -1,6 +1,6 @@
-import 'package:coin_saver/features/data/datasources/local_datasource/base_currency_local_data_source.dart';
-import 'package:coin_saver/features/data/datasources/local_datasource/base_hive_local_data_source.dart';
-import 'package:coin_saver/features/data/datasources/local_datasource/hive_local_data_source.dart';
+import 'package:coin_saver/features/data/datasources/local_datasource/currency/base_currency_local_data_source.dart';
+import 'package:coin_saver/features/data/datasources/local_datasource/hive/base_hive_local_data_source.dart';
+import 'package:coin_saver/features/data/datasources/local_datasource/hive/hive_local_data_source.dart';
 import 'package:coin_saver/features/data/repositories/currency_repository.dart';
 import 'package:coin_saver/features/data/repositories/hive_repository.dart';
 import 'package:coin_saver/features/domain/repositories/base_currency_repository.dart';
@@ -29,12 +29,13 @@ import 'package:coin_saver/features/presentation/bloc/currency/currency_bloc.dar
 import 'package:get_it/get_it.dart';
 import 'package:uuid/uuid.dart';
 
-import 'features/data/datasources/local_datasource/currency_local_date_source.dart';
+import 'features/data/datasources/local_datasource/currency/currency_local_date_source.dart';
 import 'features/domain/usecases/account/transaction/delete_transaction_usecase.dart';
 import 'features/domain/usecases/category/create_category_usecase.dart';
 import 'features/domain/usecases/category/delete_category_usecase.dart';
 import 'features/domain/usecases/category/get_categories_usecase.dart';
 import 'features/domain/usecases/category/update_category_usecase.dart';
+import 'features/domain/usecases/exchange_rates/convert_currency_usecase.dart';
 import 'features/domain/usecases/hive/init_hive_adapters_boxes_usecase.dart';
 import 'features/domain/usecases/time_period/fetch_transactions_for_month_usecase.dart';
 import 'features/domain/usecases/time_period/fetch_transactions_for_period_usecase.dart';
@@ -152,8 +153,11 @@ Future<void> initGetIt() async {
 // * Currency usecases
 
 // * ExchangeRate usecases
-sl.registerLazySingleton(() => GetExchangeRatesFromAssets(repository: sl.call()));
-sl.registerLazySingleton(() => GetExchangeRatesFromApi(repository: sl.call()));
+  sl.registerLazySingleton(
+      () => GetExchangeRatesFromAssetsUsecase(repository: sl.call()));
+  sl.registerLazySingleton(
+      () => GetExchangeRatesFromApiUsecase(repository: sl.call()));
+  sl.registerLazySingleton(() => ConvertCurrencyUsecase(repository: sl.call()));
 
 // * Time Period usecases
   sl.registerLazySingleton(

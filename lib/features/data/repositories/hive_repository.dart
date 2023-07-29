@@ -1,4 +1,4 @@
-import 'package:coin_saver/features/data/datasources/local_datasource/base_hive_local_data_source.dart';
+import 'package:coin_saver/features/data/datasources/local_datasource/hive/base_hive_local_data_source.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/category/category_entity.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';

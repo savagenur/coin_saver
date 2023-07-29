@@ -165,41 +165,45 @@ class TransactionDetailPage extends StatelessWidget {
         return AlertDialog(
           title: const Text("Are you sure you want to delete?"),
           actionsAlignment: MainAxisAlignment.spaceEvenly,
-          actions: [Row(
-            children: [
+          actions: [
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                      onPressed: () async {
+                        context.read<MainTransactionBloc>().add(
+                              DeleteTransaction(
+                                  transaction: transaction, account: account),
+                            );
 
-            Expanded(
-              child: TextButton(
-                  onPressed: () {
-                    context.read<MainTransactionBloc>().add(
-                          DeleteTransaction(
-                              transaction: transaction, account: account),
-                        );
-                    context.read<AccountBloc>().add(GetAccounts());
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    "Yes",
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge!
-                        .copyWith(color: Colors.red.shade900),
-                  )),
-            ),
-            Expanded(
-              child: TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(
-                    "No",
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge!
-                        .copyWith(color: Colors.grey),
-                  )),
-            ),
+                        context
+                            .read<AccountBloc>()
+                            .add(SetPrimaryAccount(accountId: account.id));
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        "Yes",
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge!
+                            .copyWith(color: Colors.red.shade900),
+                      )),
+                ),
+                Expanded(
+                  child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        "No",
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge!
+                            .copyWith(color: Colors.grey),
+                      )),
+                ),
+              ],
+            )
           ],
-          )],
         );
       },
     );

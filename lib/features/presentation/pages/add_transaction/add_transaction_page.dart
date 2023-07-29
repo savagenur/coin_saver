@@ -358,7 +358,9 @@ class AddTransactionPageState extends State<AddTransactionPage>
           _accounts.length - 1,
           (index) => PullDownMenuItem.selectable(
             onTap: () {
-              _account = accounts[index];
+              setState(() {
+                _account = accounts[index];
+              });
               isErrorAccount = false;
             },
             selected: accounts[index] == _account,
@@ -443,9 +445,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
             children: [
               sizeHor(3),
               Text(
-                _accounts
-                    .firstWhere((element) => element.id == "main")
-                    .currency
+                _account!.currency
                     .code,
                 style: Theme.of(context)
                     .textTheme

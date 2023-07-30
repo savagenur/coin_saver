@@ -139,6 +139,8 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     await updateTransferUsecase.call(
         accountFrom: event.accountFrom,
         accountTo: event.accountTo,
+        oldAccountTo: event.oldAccountTo,
+        oldAccountFrom: event.oldAccountFrom,
         transactionEntity: event.transactionEntity);
     final accounts = await getAccountsUsecase.call();
     emit(AccountLoaded(accounts: accounts));

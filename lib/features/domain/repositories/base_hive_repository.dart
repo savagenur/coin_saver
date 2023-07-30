@@ -29,6 +29,8 @@ abstract class BaseHiveRepository {
   Future<void> updateTransfer({
     required AccountEntity accountFrom,
     required AccountEntity accountTo,
+    required AccountEntity oldAccountTo,
+    required AccountEntity oldAccountFrom,
     required TransactionEntity transactionEntity,
   });
   Future<void> deleteTransfer({

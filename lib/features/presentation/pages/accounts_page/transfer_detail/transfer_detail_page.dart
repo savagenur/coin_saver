@@ -36,8 +36,8 @@ class _TransferDetailPageState extends State<TransferDetailPage> {
           _amountFromString =
               NumberFormat.currency(symbol: _accountFrom!.currency.symbol)
                   .format(widget.transfer.amountFrom);
-          _amountToString = _accountFrom!.currency.symbol ==
-                  _accountTo!.currency.symbol
+          _amountToString = _accountFrom!.currency.code ==
+                  _accountTo!.currency.code
               ? ""
               : "(${NumberFormat.currency(symbol: _accountTo!.currency.symbol).format(widget.transfer.amountTo)})";
           return Scaffold(

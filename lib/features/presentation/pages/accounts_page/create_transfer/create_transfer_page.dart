@@ -459,7 +459,10 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
               UpdateTransfer(
                   accountFrom: _accountFrom!,
                   accountTo: _accountTo!,
-                  transactionEntity: transaction),
+                  transactionEntity: transaction,
+                  oldAccountFrom:widget.accountFrom!,
+                  oldAccountTo:widget.accountTo!,
+                  ),
             );
         Navigator.pop(context);
       } else {

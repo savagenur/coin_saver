@@ -11,12 +11,16 @@ class UpdateTransferUsecase {
   Future<void> call({
     required AccountEntity accountFrom,
     required AccountEntity accountTo,
+    required AccountEntity oldAccountTo,
+    required AccountEntity oldAccountFrom,
     required TransactionEntity transactionEntity,
   }) async {
     
     return repository.updateTransfer(
         accountFrom: accountFrom,
         accountTo: accountTo,
+        oldAccountTo: oldAccountTo,
+        oldAccountFrom: oldAccountFrom,
         transactionEntity: transactionEntity);
   }
 }

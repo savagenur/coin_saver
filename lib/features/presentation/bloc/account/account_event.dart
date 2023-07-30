@@ -63,10 +63,13 @@ class AddTransfer extends AccountEvent {
     required this.transactionEntity,
   });
   @override
-  List<Object> get props => [accountFrom,
-accountTo,
-transactionEntity,];
+  List<Object> get props => [
+        accountFrom,
+        accountTo,
+        transactionEntity,
+      ];
 }
+
 class DeleteTransfer extends AccountEvent {
   final AccountEntity accountFrom;
   final AccountEntity accountTo;
@@ -78,24 +81,35 @@ class DeleteTransfer extends AccountEvent {
     required this.transactionEntity,
   });
   @override
-  List<Object> get props => [accountFrom,
-accountTo,
-transactionEntity,];
+  List<Object> get props => [
+        accountFrom,
+        accountTo,
+        transactionEntity,
+      ];
 }
+
 class UpdateTransfer extends AccountEvent {
   final AccountEntity accountFrom;
   final AccountEntity accountTo;
+  final AccountEntity oldAccountTo;
+  final AccountEntity oldAccountFrom;
   final TransactionEntity transactionEntity;
 
   const UpdateTransfer({
     required this.accountFrom,
     required this.accountTo,
     required this.transactionEntity,
+    required this.oldAccountTo,
+    required this.oldAccountFrom,
   });
   @override
-  List<Object> get props => [accountFrom,
-accountTo,
-transactionEntity,];
+  List<Object> get props => [
+        accountFrom,
+        accountTo,
+        oldAccountTo,
+        oldAccountFrom,
+        transactionEntity,
+      ];
 }
 
 // class AddTransaction extends AccountEvent {

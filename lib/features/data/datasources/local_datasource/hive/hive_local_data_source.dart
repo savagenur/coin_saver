@@ -184,7 +184,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
 
       final totalAccount = accountsBox.get("total");
       if (totalAccount != null) {
-        final exchangeRate =  sl<ConvertCurrencyUsecase>()
+        final exchangeRate = sl<ConvertCurrencyUsecase>()
             .call(accountEntity.currency.code, totalAccount.currency.code);
         final convertedAmount = exchangeRate * accountEntity.balance;
         final updatedTotalAccount = totalAccount.copyWith(
@@ -420,55 +420,104 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
   Future<void> updateTransfer(
       {required AccountEntity accountFrom,
       required AccountEntity accountTo,
+      required AccountEntity oldAccountTo,
+      required AccountEntity oldAccountFrom,
       required TransactionEntity transactionEntity}) async {
-    final AccountModel accountModelFrom = AccountModel(
-        id: accountFrom.id,
-        name: accountFrom.name,
-        iconData: accountFrom.iconData,
-        type: accountFrom.type,
-        color: accountFrom.color,
-        balance: accountFrom.balance - transactionEntity.amountFrom!,
-        currency: accountFrom.currency,
-        isPrimary: accountFrom.isPrimary,
-        isActive: accountFrom.isActive,
-        ownershipType: accountFrom.ownershipType,
-        openingDate: accountFrom.openingDate,
-        transactionHistory: List.from(accountFrom.transactionHistory)
-            .map((e) => TransactionModel.fromEntity(e))
-            .where((element) => element.id != transactionEntity.id)
-            .toList()
-          ..add(TransactionModel.fromEntity(transactionEntity)));
-    final AccountModel accountModelTo = AccountModel(
-        id: accountTo.id,
-        name: accountTo.name,
-        iconData: accountTo.iconData,
-        type: accountTo.type,
-        color: accountTo.color,
-        balance: accountTo.balance + transactionEntity.amountTo!,
-        currency: accountTo.currency,
-        isPrimary: accountTo.isPrimary,
-        isActive: accountTo.isActive,
-        ownershipType: accountTo.ownershipType,
-        openingDate: accountTo.openingDate,
-        transactionHistory: List.from(accountTo.transactionHistory)
-            .map((e) => TransactionModel.fromEntity(e))
-            .where((element) => element.id != transactionEntity.id)
-            .toList()
-          ..add(TransactionModel.fromEntity(transactionEntity)));
     try {
       final totalAccount = accountsBox.get("total");
+      // Old transfer
+      final oldTransfer = totalAccount!.transactionHistory
+          .firstWhere((element) => element.id == transactionEntity.id);
+      final amountDifferenceFrom = -transactionEntity.amountFrom!;
+      final amountDifferenceTo = transactionEntity.amountTo!;
+      // Delete from old accounts
+      final oldAccountModelFrom = AccountModel(
+          id: oldAccountFrom.id,
+          name: oldAccountFrom.name,
+          iconData: oldAccountFrom.iconData,
+          type: oldAccountFrom.type,
+          color: oldAccountFrom.color,
+          balance: oldAccountFrom.balance + oldTransfer.amountFrom!,
+          currency: oldAccountFrom.currency,
+          isPrimary: oldAccountFrom.isPrimary,
+          isActive: oldAccountFrom.isActive,
+          ownershipType: oldAccountFrom.ownershipType,
+          openingDate: oldAccountFrom.openingDate,
+          transactionHistory: List.from(oldAccountFrom.transactionHistory)
+              .map((e) => TransactionModel.fromEntity(e))
+              .where((element) => element.id != transactionEntity.id)
+              .toList());
+      final oldAccountModelTo = AccountModel(
+          id: oldAccountTo.id,
+          name: oldAccountTo.name,
+          iconData: oldAccountTo.iconData,
+          type: oldAccountTo.type,
+          color: oldAccountTo.color,
+          balance: oldAccountTo.balance - oldTransfer.amountTo!,
+          currency: oldAccountTo.currency,
+          isPrimary: oldAccountTo.isPrimary,
+          isActive: oldAccountTo.isActive,
+          ownershipType: oldAccountTo.ownershipType,
+          openingDate: oldAccountTo.openingDate,
+          transactionHistory: List.from(oldAccountTo.transactionHistory)
+              .map((e) => TransactionModel.fromEntity(e))
+              .where((element) => element.id != transactionEntity.id)
+              .toList());
+      // Putting old accounts
+      await accountsBox.put(oldAccountModelTo.id, oldAccountModelTo);
+      await accountsBox.put(oldAccountModelFrom.id, oldAccountModelFrom);
+      // Getting updated accounts
+      final newAccountFrom = accountsBox.get(accountFrom.id);
+      final newAccountTo = accountsBox.get(accountTo.id);
+      final AccountModel accountModelFrom = AccountModel(
+          id: newAccountFrom!.id,
+          name: newAccountFrom.name,
+          iconData: newAccountFrom.iconData,
+          type: newAccountFrom.type,
+          color: newAccountFrom.color,
+          balance: newAccountFrom.balance + amountDifferenceFrom,
+          currency: newAccountFrom.currency,
+          isPrimary: newAccountFrom.isPrimary,
+          isActive: newAccountFrom.isActive,
+          ownershipType: newAccountFrom.ownershipType,
+          openingDate: newAccountFrom.openingDate,
+          transactionHistory: List.from(newAccountFrom.transactionHistory)
+              .map((e) => TransactionModel.fromEntity(e))
+              .where((element) => element.id != transactionEntity.id)
+              .toList()
+            ..add(TransactionModel.fromEntity(transactionEntity)));
+      final AccountModel accountModelTo = AccountModel(
+          id: newAccountTo!.id,
+          name: newAccountTo.name,
+          iconData: newAccountTo.iconData,
+          type: newAccountTo.type,
+          color: newAccountTo.color,
+          balance: newAccountTo.balance + amountDifferenceTo,
+          currency: newAccountTo.currency,
+          isPrimary: newAccountTo.isPrimary,
+          isActive: newAccountTo.isActive,
+          ownershipType: newAccountTo.ownershipType,
+          openingDate: newAccountTo.openingDate,
+          transactionHistory: List.from(newAccountTo.transactionHistory)
+              .map((e) => TransactionModel.fromEntity(e))
+              .where((element) => element.id != transactionEntity.id)
+              .toList()
+            ..add(TransactionModel.fromEntity(transactionEntity)));
 
-      if (totalAccount != null) {
-        final updatedTotalAccount = totalAccount.copyWith(
-            transactionHistory:
-                List<TransactionModel>.from(totalAccount.transactionHistory)
-                    .where((element) => element.id != transactionEntity.id)
-                    .toList()
-                  ..add(TransactionModel.fromEntity(transactionEntity)));
-        await accountsBox.put(accountModelFrom.id, accountModelFrom);
-        await accountsBox.put(accountModelTo.id, accountModelTo);
-        await accountsBox.put(totalAccount.id, updatedTotalAccount);
-      }
+      final updatedTotalAccount = totalAccount.copyWith(
+          transactionHistory:
+              List<TransactionModel>.from(totalAccount.transactionHistory)
+                  .where((element) => element.id != transactionEntity.id)
+                  .toList()
+                ..add(TransactionModel.fromEntity(transactionEntity)));
+      List accounts = [
+        accountsBox.put(totalAccount.id, updatedTotalAccount),
+        accountsBox.put(accountModelFrom.id, accountModelFrom),
+        accountsBox.put(accountModelTo.id, accountModelTo),
+      ];
+      await Future.wait(accounts.map((account) async {
+        await account;
+      }));
     } catch (_) {}
   }
 

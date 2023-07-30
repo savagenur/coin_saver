@@ -62,7 +62,8 @@ class _TransferHistoryPageState extends State<TransferHistoryPage>
                     builder: (context, timePeriodState) {
                       if (timePeriodState is HomeTimePeriodLoaded) {
                         _transfers = timePeriodState.transactions
-                            .where((transaction) => transaction.isTransfer!=null)
+                            .where(
+                                (transaction) => transaction.isTransfer != null)
                             .toList()
                           ..sort(
                             (a, b) => b.amount.compareTo(a.amount),
@@ -70,9 +71,10 @@ class _TransferHistoryPageState extends State<TransferHistoryPage>
                         return Scaffold(
                           appBar: _buildAppBar(context),
                           body: Padding(
-                            padding: const EdgeInsets.all(10),
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: Column(
                               children: [
+                                _buildPullDwnBtn(),
                                 Expanded(
                                   child: ShadowedContainerWidget(
                                     borderRadius: BorderRadius.circular(30),
@@ -92,15 +94,18 @@ class _TransferHistoryPageState extends State<TransferHistoryPage>
                                           child: SingleChildScrollView(
                                             child: Column(
                                               children:
-                                                   _transfers!.map((transfer) {
+                                                  _transfers!.map((transfer) {
                                                 final accountFrom = _accounts!
                                                     .firstWhere((element) =>
                                                         element.id ==
                                                         transfer.accountFromId);
-                                                final accountTo = _accounts!
-                                                    .firstWhere((element) =>
-                                                        element.id ==
-                                                        transfer.accountToId,orElse: () => accountError,);
+                                                final accountTo =
+                                                    _accounts!.firstWhere(
+                                                  (element) =>
+                                                      element.id ==
+                                                      transfer.accountToId,
+                                                  orElse: () => accountError,
+                                                );
                                                 return ListTile(
                                                   onTap: () {
                                                     Navigator.pushNamed(
@@ -133,9 +138,9 @@ class _TransferHistoryPageState extends State<TransferHistoryPage>
                                                               .amountFrom!)),
                                                       sizeVer(5),
                                                       accountFrom.currency
-                                                                  .symbol ==
-                                                              accountTo.currency
-                                                                  .symbol
+                                                                  .code ==
+                                                              accountTo
+                                                                  .currency.code
                                                           ? const SizedBox()
                                                           : Text(NumberFormat.currency(
                                                                   symbol: accountTo
@@ -154,6 +159,7 @@ class _TransferHistoryPageState extends State<TransferHistoryPage>
                                     ),
                                   ),
                                 ),
+                                sizeVer(10)
                               ],
                             ),
                           ),
@@ -184,6 +190,50 @@ class _TransferHistoryPageState extends State<TransferHistoryPage>
     );
   }
 
+  PullDownButton _buildPullDwnBtn() {
+    return PullDownButton(
+                                itemBuilder: (context) {
+                                  return _accounts!
+                                      .map(
+                                        (account) =>
+                                            PullDownMenuItem.selectable(
+                                          onTap: () {
+                                            context.read<AccountBloc>().add(
+                                                SetPrimaryAccount(
+                                                    accountId: account.id));
+                                          },
+                                          selected: account.isPrimary,
+                                          title: account.name,
+                                          icon: account.iconData,
+                                          iconColor:
+                                              Theme.of(context).primaryColor,
+                                        ),
+                                      )
+                                      .toList();
+                                },
+                                buttonBuilder: (context, showMenu) {
+                                  return TextButton(
+                                      onPressed: showMenu,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            _account!.iconData,
+                                          ),
+                                          sizeHor(5),
+                                          Text(
+                                            _account!.name,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleLarge,
+                                          ),
+                                        ],
+                                      ));
+                                },
+                              );
+  }
+
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       leading: IconButton(
@@ -193,32 +243,6 @@ class _TransferHistoryPageState extends State<TransferHistoryPage>
         icon: const FaIcon(FontAwesomeIcons.arrowLeft),
       ),
       title: const Text("Transfers"),
-      actions: [
-        PullDownButton(
-          itemBuilder: (context) {
-            return _accounts!
-                .map(
-                  (account) => PullDownMenuItem.selectable(
-                    onTap: () {
-                      context
-                          .read<AccountBloc>()
-                          .add(SetPrimaryAccount(accountId: account.id));
-                    },
-                    selected: account.isPrimary,
-                    title: account.name,
-                    icon: account.iconData,
-                    iconColor: Theme.of(context).primaryColor,
-                  ),
-                )
-                .toList();
-          },
-          buttonBuilder: (context, showMenu) {
-            return IconButton(
-                onPressed: showMenu,
-                icon: const Icon(FontAwesomeIcons.addressCard));
-          },
-        )
-      ],
     );
   }
 }

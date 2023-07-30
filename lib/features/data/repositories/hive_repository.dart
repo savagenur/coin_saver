@@ -76,10 +76,14 @@ class HiveRepository implements BaseHiveRepository {
   Future<void> updateTransfer(
           {required AccountEntity accountFrom,
           required AccountEntity accountTo,
+          required AccountEntity oldAccountTo,
+          required AccountEntity oldAccountFrom,
           required TransactionEntity transactionEntity}) async =>
       hiveLocalDataSource.updateTransfer(
           accountFrom: accountFrom,
           accountTo: accountTo,
+          oldAccountTo: oldAccountTo,
+          oldAccountFrom: oldAccountFrom,
           transactionEntity: transactionEntity);
 
   @override

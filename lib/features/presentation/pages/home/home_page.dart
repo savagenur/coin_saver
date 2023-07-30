@@ -93,7 +93,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         List<TransactionEntity> transactions = timePeriodState
                             .transactions
                             .where((transaction) =>
-                                transaction.isIncome == _isIncome &&!transaction.isTransfer!)
+                                transaction.isIncome == _isIncome &&transaction.isTransfer==null )
                             .toList()
                           ..sort(
                             (a, b) => b.amount.compareTo(a.amount),

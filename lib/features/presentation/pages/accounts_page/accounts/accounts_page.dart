@@ -90,7 +90,8 @@ class AccountsPage extends StatelessWidget {
                                   iconData: FontAwesomeIcons.rightLeft,
                                   onTap: () {
                                     Navigator.pushNamed(
-                                        context, PageConst.createTransferPage,arguments: const CreateTransferPage());
+                                        context, PageConst.createTransferPage,
+                                        arguments: const CreateTransferPage());
                                   },
                                 ),
                               ],

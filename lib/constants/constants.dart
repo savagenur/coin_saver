@@ -15,13 +15,14 @@ AccountModel accountError = AccountModel(
     color: Colors.green,
     type: AccountType.cash,
     balance: 0,
-    currency: const CurrencyEntity(code: "code", name: "name", symbol: "symbol"),
+    currency:
+        const CurrencyEntity(code: "code", name: "name", symbol: "symbol"),
     isPrimary: false,
     isActive: true,
     ownershipType: OwnershipType.business,
     openingDate: DateTime(2023),
     transactionHistory: []);
- TransactionModel transactionError = TransactionModel(
+TransactionModel transactionError = TransactionModel(
     id: 'null',
     date: DateTime.now(),
     amount: 0,
@@ -74,6 +75,7 @@ class PageConst {
   static const String cRUDAccountPage = "/cRUDAccountPage";
   static const String createTransferPage = "/createTransferPage";
   static const String transferHistoryPage = "/transferHistoryPage";
+  static const String transferDetailPage = "/transferDetailPage";
 }
 
 class BoxConst {

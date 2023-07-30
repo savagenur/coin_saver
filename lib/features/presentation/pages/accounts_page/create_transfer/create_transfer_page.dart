@@ -18,7 +18,22 @@ import '../../../bloc/account/account_bloc.dart';
 
 class CreateTransferPage extends StatefulWidget {
   final DateTime? selectedDate;
-  const CreateTransferPage({super.key, this.selectedDate});
+  final bool isUpdate;
+  final AccountEntity? accountFrom;
+  final AccountEntity? accountTo;
+  final double amountFrom;
+  final double amountTo;
+  final TransactionEntity? transfer;
+
+  const CreateTransferPage(
+      {super.key,
+      this.selectedDate,
+      this.isUpdate = false,
+      this.accountFrom,
+      this.accountTo,
+      this.amountFrom = 0,
+      this.amountTo = 0,
+      this.transfer});
 
   @override
   State<CreateTransferPage> createState() => _CreateTransferPageState();
@@ -28,13 +43,15 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   AccountEntity? _accountFrom;
   AccountEntity? _accountTo;
+  TransactionEntity? _transfer;
   List<AccountEntity> _accounts = [];
-  double _amountFrom = 0;
-  double _amountTo = 0;
+  late double _amountFrom;
+  late double _amountTo;
+  late bool _isUpdate;
   double _exchangeRate = 0;
   late DateTime _selectedDate;
-  final TextEditingController _amountFromController = TextEditingController();
-  final TextEditingController _amountToController = TextEditingController();
+  late final TextEditingController _amountFromController;
+  late final TextEditingController _amountToController;
   final TextEditingController _commentController = TextEditingController();
   final FocusNode _fromFocusNode = FocusNode();
   final FocusNode _toFocusNode = FocusNode();
@@ -42,7 +59,17 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
   @override
   void initState() {
     super.initState();
+    _transfer = widget.transfer;
+    _isUpdate = widget.isUpdate;
     _selectedDate = widget.selectedDate ?? DateTime.now();
+    _accountFrom = widget.accountFrom;
+    _accountTo = widget.accountTo;
+    _amountFrom = widget.amountFrom;
+    _amountTo = widget.amountTo;
+    _amountFromController =
+        TextEditingController(text: _amountFrom.toStringAsFixed(2));
+    _amountToController =
+        TextEditingController(text: _amountTo.toStringAsFixed(2));
     _amountListener();
   }
 
@@ -51,6 +78,8 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
       _convertCurrency();
     });
     _amountToController.addListener(() {
+      print(_amountFrom);
+      print(_amountTo);
       _convertCurrency();
     });
   }
@@ -101,7 +130,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
                   },
                   icon: const FaIcon(FontAwesomeIcons.arrowLeft),
                 ),
-                title: const Text("Create transfer"),
+                title: Text(_isUpdate ? "Update transfer" : "Create transfer"),
               ),
               body: SingleChildScrollView(
                 padding: const EdgeInsets.all(10),
@@ -188,7 +217,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
               floatingActionButton: MyButtonWidget(
                 width: MediaQuery.of(context).size.width * .4,
                 borderRadius: BorderRadius.circular(20),
-                title: "Add",
+                title: _isUpdate ? "Update" : "Add",
                 onTap: _buildAddTransfer,
               ),
             ),
@@ -401,7 +430,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
 
   void _buildAddTransfer() {
     if (_formKey.currentState!.validate()) {
-      final id = sl<Uuid>().v1();
+      final id = _isUpdate ? _transfer!.id : sl<Uuid>().v1();
       final TransactionEntity transaction = TransactionEntity(
         id: id,
         date: _selectedDate,
@@ -425,12 +454,23 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
         amountTo: _amountTo,
         description: _commentController.text,
       );
-      context.read<AccountBloc>().add(
-            AddTransfer(
-                accountFrom: _accountFrom!,
-                accountTo: _accountTo!,
-                transactionEntity: transaction),
-          );
+      if (_isUpdate) {
+        context.read<AccountBloc>().add(
+              UpdateTransfer(
+                  accountFrom: _accountFrom!,
+                  accountTo: _accountTo!,
+                  transactionEntity: transaction),
+            );
+        Navigator.pop(context);
+      } else {
+        context.read<AccountBloc>().add(
+              AddTransfer(
+                  accountFrom: _accountFrom!,
+                  accountTo: _accountTo!,
+                  transactionEntity: transaction),
+            );
+      }
+
       Navigator.pop(context);
     }
   }

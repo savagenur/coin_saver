@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
 import 'constants/constants.dart';
+import 'features/presentation/pages/accounts_page/transfer_detail/transfer_detail_page.dart';
 import 'features/presentation/pages/create_category/create_category_page.dart';
 
 class AppRoute {
@@ -85,9 +86,19 @@ class AppRoute {
         args = args as CreateTransferPage;
         return _routeBuilder(CreateTransferPage(
           selectedDate: args.selectedDate,
+          accountFrom: args.accountFrom,
+          accountTo: args.accountTo,
+          amountFrom: args.amountFrom,
+          amountTo: args.amountTo,
+          isUpdate: args.isUpdate,
+          transfer: args.transfer,
         ));
       case PageConst.transferHistoryPage:
         return _routeBuilder(const TransferHistoryPage());
+      case PageConst.transferDetailPage:
+        args = args as TransferDetailPage;
+
+        return _routeBuilder(TransferDetailPage(transfer: args.transfer));
       default:
         return _routeBuilder(const NotFoundPage());
     }

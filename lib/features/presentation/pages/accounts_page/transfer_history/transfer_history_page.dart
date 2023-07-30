@@ -5,6 +5,7 @@ import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_date/selected_date_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/home_time_period/home_time_period_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
+import 'package:coin_saver/features/presentation/pages/accounts_page/transfer_detail/transfer_detail_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/widgets/period_tab_bar.dart';
 import 'package:coin_saver/features/presentation/widgets/day_navigation_widget.dart';
 import 'package:coin_saver/features/presentation/widgets/shadowed_container_widget.dart';
@@ -61,7 +62,7 @@ class _TransferHistoryPageState extends State<TransferHistoryPage>
                     builder: (context, timePeriodState) {
                       if (timePeriodState is HomeTimePeriodLoaded) {
                         _transfers = timePeriodState.transactions
-                            .where((transaction) => transaction.isTransfer!)
+                            .where((transaction) => transaction.isTransfer!=null)
                             .toList()
                           ..sort(
                             (a, b) => b.amount.compareTo(a.amount),
@@ -91,7 +92,7 @@ class _TransferHistoryPageState extends State<TransferHistoryPage>
                                           child: SingleChildScrollView(
                                             child: Column(
                                               children:
-                                                  _transfers!.map((transfer) {
+                                                   _transfers!.map((transfer) {
                                                 final accountFrom = _accounts!
                                                     .firstWhere((element) =>
                                                         element.id ==
@@ -99,10 +100,17 @@ class _TransferHistoryPageState extends State<TransferHistoryPage>
                                                 final accountTo = _accounts!
                                                     .firstWhere((element) =>
                                                         element.id ==
-                                                        transfer.accountToId);
+                                                        transfer.accountToId,orElse: () => accountError,);
                                                 return ListTile(
                                                   onTap: () {
-                                                    
+                                                    Navigator.pushNamed(
+                                                        context,
+                                                        PageConst
+                                                            .transferDetailPage,
+                                                        arguments:
+                                                            TransferDetailPage(
+                                                                transfer:
+                                                                    transfer));
                                                   },
                                                   minLeadingWidth: 20,
                                                   leading: const Icon(
@@ -124,12 +132,17 @@ class _TransferHistoryPageState extends State<TransferHistoryPage>
                                                           .format(transfer
                                                               .amountFrom!)),
                                                       sizeVer(5),
-                                                      Text(NumberFormat.currency(
-                                                              symbol: accountTo
-                                                                  .currency
-                                                                  .symbol)
-                                                          .format(transfer
-                                                              .amountTo!)),
+                                                      accountFrom.currency
+                                                                  .symbol ==
+                                                              accountTo.currency
+                                                                  .symbol
+                                                          ? const SizedBox()
+                                                          : Text(NumberFormat.currency(
+                                                                  symbol: accountTo
+                                                                      .currency
+                                                                      .symbol)
+                                                              .format(transfer
+                                                                  .amountTo!)),
                                                     ],
                                                   ),
                                                 );

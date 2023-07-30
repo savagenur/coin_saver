@@ -59,7 +59,29 @@ class HiveRepository implements BaseHiveRepository {
     required TransactionEntity transactionEntity,
   }) async =>
       hiveLocalDataSource.addTransfer(
-          accountFrom: accountFrom, accountTo: accountTo,transactionEntity: transactionEntity);
+          accountFrom: accountFrom,
+          accountTo: accountTo,
+          transactionEntity: transactionEntity);
+  @override
+  Future<void> deleteTransfer(
+          {required AccountEntity accountFrom,
+          required AccountEntity accountTo,
+          required TransactionEntity transactionEntity}) async =>
+      hiveLocalDataSource.deleteTransfer(
+          accountFrom: accountFrom,
+          accountTo: accountTo,
+          transactionEntity: transactionEntity);
+
+  @override
+  Future<void> updateTransfer(
+          {required AccountEntity accountFrom,
+          required AccountEntity accountTo,
+          required TransactionEntity transactionEntity}) async =>
+      hiveLocalDataSource.updateTransfer(
+          accountFrom: accountFrom,
+          accountTo: accountTo,
+          transactionEntity: transactionEntity);
+
   @override
   Future<void> deleteTransaction(
           {required TransactionEntity transactionEntity,

@@ -121,16 +121,16 @@ class HiveRepository implements BaseHiveRepository {
       hiveLocalDataSource.createCategory(categoryEntity);
 
   @override
-  Future<void> deleteCategory(String categoryId) async =>
-      hiveLocalDataSource.deleteCategory(categoryId);
+  Future<void> deleteCategory(bool isIncome,String categoryId) async =>
+      hiveLocalDataSource.deleteCategory(isIncome,categoryId);
 
   @override
   Future<List<CategoryEntity>> getCategories() async =>
       hiveLocalDataSource.getCategories();
 
   @override
-  Future<void> updateCategory(int index, CategoryEntity categoryEntity) async =>
-      hiveLocalDataSource.updateCategory(index, categoryEntity);
+  Future<void> updateCategory( CategoryEntity categoryEntity) async =>
+      hiveLocalDataSource.updateCategory( categoryEntity);
 
   // Selected Date Transactions
   @override

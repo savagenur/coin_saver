@@ -7,8 +7,8 @@ class UpdateCategoryUsecase {
   UpdateCategoryUsecase({
     required this.repository,
   });
-  Future<void> call(int index, CategoryEntity categoryEntity) async {
-    return repository.updateCategory(index,categoryEntity);
+  Future<void> call(CategoryEntity categoryEntity) async {
+    return repository.updateCategory(categoryEntity);
   }
 
   

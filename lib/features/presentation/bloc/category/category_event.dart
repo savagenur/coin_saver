@@ -20,22 +20,26 @@ class CreateCategory extends CategoryEvent {
   @override
   List<Object> get props => [category];
 }
+
 class DeleteCategory extends CategoryEvent {
+  final bool isIncome;
   final String categoryId;
   const DeleteCategory({
+    required this.isIncome,
     required this.categoryId,
   });
   @override
-  List<Object> get props => [categoryId];
+  List<Object> get props => [
+        categoryId,
+        isIncome,
+      ];
 }
 
 class UpdateCategory extends CategoryEvent {
-  final int index;
   final CategoryEntity category;
   const UpdateCategory({
-    required this.index,
     required this.category,
   });
   @override
-  List<Object> get props => [index, category];
+  List<Object> get props => [category];
 }

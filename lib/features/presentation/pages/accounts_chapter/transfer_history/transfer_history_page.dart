@@ -5,7 +5,7 @@ import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_date/selected_date_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/home_time_period/home_time_period_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
-import 'package:coin_saver/features/presentation/pages/accounts_page/transfer_detail/transfer_detail_page.dart';
+import 'package:coin_saver/features/presentation/pages/accounts_chapter/transfer_detail/transfer_detail_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/widgets/period_tab_bar.dart';
 import 'package:coin_saver/features/presentation/widgets/day_navigation_widget.dart';
 import 'package:coin_saver/features/presentation/widgets/shadowed_container_widget.dart';

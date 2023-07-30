@@ -76,6 +76,7 @@ class PageConst {
   static const String createTransferPage = "/createTransferPage";
   static const String transferHistoryPage = "/transferHistoryPage";
   static const String transferDetailPage = "/transferDetailPage";
+  static const String categoriesPage = "/categoriesPage";
 }
 
 class BoxConst {

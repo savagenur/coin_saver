@@ -3,8 +3,8 @@ import 'package:coin_saver/features/domain/entities/currency/currency_entity.dar
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/currency/currency_bloc.dart';
-import 'package:coin_saver/features/presentation/pages/accounts_page/create_transfer/create_transfer_page.dart';
-import 'package:coin_saver/features/presentation/pages/accounts_page/crud_account/crud_account_page.dart';
+import 'package:coin_saver/features/presentation/pages/accounts_chapter/create_transfer/create_transfer_page.dart';
+import 'package:coin_saver/features/presentation/pages/accounts_chapter/crud_account/crud_account_page.dart';
 import 'package:coin_saver/features/presentation/widgets/my_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -445,8 +445,12 @@ class AddTransactionPageState extends State<AddTransactionPage>
             children: [
               sizeHor(3),
               Text(
-                _account!.currency
-                    .code,
+                _account == null
+                    ? _accounts
+                        .firstWhere((element) => element.id == "total")
+                        .currency
+                        .code
+                    : _account!.currency.code,
                 style: Theme.of(context)
                     .textTheme
                     .titleLarge!

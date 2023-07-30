@@ -48,7 +48,11 @@ class MyDrawer extends StatelessWidget {
             leading: const Icon(FontAwesomeIcons.quoteRight),
             title: const Text('Categories'),
             onTap: () {
-              // Handle drawer item tap (navigate to home screen, etc.).
+              Navigator.pop(context);
+              Navigator.pushNamed(
+                context,
+                PageConst.categoriesPage,
+              );
             },
           ),
           ListTile(

@@ -48,7 +48,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
 
   FutureOr<void> _onUpdateCategory(
       UpdateCategory event, Emitter<CategoryState> emit) async {
-    await updateCategoryUsecase.call(event.index, event.category);
+    await updateCategoryUsecase.call( event.category);
     final List<CategoryEntity> categories = await getCategoriesUsecase.call();
     emit(CategoryLoading());
     emit(CategoryLoaded(categories: categories));
@@ -57,7 +57,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
 
   FutureOr<void> _onDeleteCategory(
       DeleteCategory event, Emitter<CategoryState> emit) async {
-    await deleteCategoryUsecase.call(event.categoryId);
+    await deleteCategoryUsecase.call(event.isIncome,event.categoryId);
     final List<CategoryEntity> categories = await getCategoriesUsecase.call();
     emit(CategoryLoading());
     emit(CategoryLoaded(categories: categories));

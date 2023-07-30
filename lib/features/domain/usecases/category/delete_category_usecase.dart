@@ -5,8 +5,8 @@ class DeleteCategoryUsecase {
   DeleteCategoryUsecase({
     required this.repository,
   });
-  Future<void> call(String categoryId ) async {
-    return repository.deleteCategory(categoryId);
+  Future<void> call(bool isIncome,String categoryId ) async {
+    return repository.deleteCategory( isIncome,categoryId);
   }
 
   

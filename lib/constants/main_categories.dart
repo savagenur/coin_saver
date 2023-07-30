@@ -7,6 +7,22 @@ import 'package:uuid/uuid.dart';
 import '../features/data/models/category/category_model.dart';
 
 Uuid uuid = sl<Uuid>();
+ CategoryModel categoryExpenseOther = CategoryModel(
+    id: "otherExpense",
+    name: "Other",
+    iconData: FontAwesomeIcons.question,
+    color: Colors.red.shade700,
+    isIncome: false,
+    dateTime: DateTime.now(),
+  );
+  CategoryModel categoryIncomeOther = CategoryModel(
+    id: "otherIncome",
+    name: "Other",
+    iconData: FontAwesomeIcons.question,
+    color: Colors.grey,
+    isIncome: true,
+    dateTime: DateTime.now(),
+  );
 List<CategoryModel> mainCategories = [
   // EXPENSES
   CategoryModel(
@@ -70,6 +86,7 @@ List<CategoryModel> mainCategories = [
     isIncome: false,
     dateTime: DateTime.now(),
   ),
+  categoryExpenseOther,
 
   // INCOME
 
@@ -99,13 +116,6 @@ List<CategoryModel> mainCategories = [
     isIncome: true,
     dateTime: DateTime.now(),
   ),
-
-  CategoryModel(
-    id: uuid.v1(),
-    name: "Other",
-    iconData: FontAwesomeIcons.question,
-    color: Colors.grey,
-    isIncome: true,
-    dateTime: DateTime.now(),
-  ),
+categoryIncomeOther
+  ,
 ];

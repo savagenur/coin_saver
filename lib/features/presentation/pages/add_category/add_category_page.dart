@@ -105,7 +105,6 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
                             selectedCategoryCubit
                                 .changeCategory(categoryEntity);
                             categoryBloc.add(UpdateCategory(
-                                index: index,
                                 category: categoryEntity.copyWith(
                                     dateTime: DateTime.now())));
                             Navigator.pop(context);

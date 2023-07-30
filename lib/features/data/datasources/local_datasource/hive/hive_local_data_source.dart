@@ -759,7 +759,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
 
   // * Category
   @override
-  Future<void> createCategory(CategoryEntity categoryEntity) async {
+  Future<void> createCategory( CategoryEntity categoryEntity) async {
     CategoryModel categoryModel = CategoryModel(
       id: categoryEntity.id,
       name: categoryEntity.name,
@@ -772,7 +772,29 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
   }
 
   @override
-  Future<void> deleteCategory(String categoryId) async {
+  Future<void> deleteCategory(bool isIncome,String categoryId) async {
+    final accounts = accountsBox.values.cast<AccountModel>().toList();
+    CategoryModel categoryModel =isIncome?categoryIncomeOther:categoryExpenseOther ;
+    await Future.wait(accounts.map((account) async {
+      final List<TransactionModel> updatedTransactions = [];
+      // Updating transaction list
+      for (var transaction in account.transactionHistory) {
+        if (transaction.category.id == categoryId ) {
+          updatedTransactions.add(transaction.copyWith(
+              category: categoryModel,iconData: categoryModel.iconData,color: categoryModel.color));
+        } else {
+          updatedTransactions.add(transaction);
+        }
+      }
+
+      await accountsBox.put(
+          account.id,
+          account.copyWith(
+            transactionHistory: updatedTransactions,
+          ));
+    }));
+
+    
     await categoriesBox.delete(categoryId);
   }
 
@@ -784,15 +806,28 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
   }
 
   @override
-  Future<void> updateCategory(int index, CategoryEntity categoryEntity) async {
-    CategoryModel categoryModel = CategoryModel(
-      id: categoryEntity.id,
-      name: categoryEntity.name,
-      iconData: categoryEntity.iconData,
-      color: categoryEntity.color,
-      isIncome: categoryEntity.isIncome,
-      dateTime: categoryEntity.dateTime,
-    );
+  Future<void> updateCategory(CategoryEntity categoryEntity) async {
+    final accounts = accountsBox.values.cast<AccountModel>().toList();
+    CategoryModel categoryModel = CategoryModel.fromEntity(categoryEntity);
+    await Future.wait(accounts.map((account) async {
+      final List<TransactionModel> updatedTransactions = [];
+      // Updating transaction list
+      for (var transaction in account.transactionHistory) {
+        if (transaction.category.id == categoryEntity.id &&
+            transaction.category.isIncome == categoryEntity.isIncome) {
+          updatedTransactions.add(transaction.copyWith(
+              category: categoryModel));
+        } else {
+          updatedTransactions.add(transaction);
+        }
+      }
+
+      await accountsBox.put(
+          account.id,
+          account.copyWith(
+            transactionHistory: updatedTransactions,
+          ));
+    }));
 
     await categoriesBox.put(
       categoryEntity.id,

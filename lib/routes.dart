@@ -1,10 +1,11 @@
-import 'package:coin_saver/features/presentation/pages/accounts_page/accounts/accounts_page.dart';
-import 'package:coin_saver/features/presentation/pages/accounts_page/create_transfer/create_transfer_page.dart';
-import 'package:coin_saver/features/presentation/pages/accounts_page/crud_account/crud_account_page.dart';
-import 'package:coin_saver/features/presentation/pages/accounts_page/transfer_history/transfer_history_page.dart';
+import 'package:coin_saver/features/presentation/pages/accounts_chapter/accounts/accounts_page.dart';
+import 'package:coin_saver/features/presentation/pages/accounts_chapter/create_transfer/create_transfer_page.dart';
+import 'package:coin_saver/features/presentation/pages/accounts_chapter/crud_account/crud_account_page.dart';
+import 'package:coin_saver/features/presentation/pages/accounts_chapter/transfer_history/transfer_history_page.dart';
 import 'package:coin_saver/features/presentation/pages/add_category/add_category_page.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:coin_saver/features/presentation/pages/catalog_icons/catalog_icons_page.dart';
+import 'package:coin_saver/features/presentation/pages/categories_chapter/categories/categories_page.dart';
 import 'package:coin_saver/features/presentation/pages/colors/colors_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
 import 'package:coin_saver/features/presentation/pages/main_transaction/main_transaction_page.dart';
@@ -14,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
 import 'constants/constants.dart';
-import 'features/presentation/pages/accounts_page/transfer_detail/transfer_detail_page.dart';
+import 'features/presentation/pages/accounts_chapter/transfer_detail/transfer_detail_page.dart';
 import 'features/presentation/pages/create_category/create_category_page.dart';
 
 class AppRoute {
@@ -47,6 +48,8 @@ class AppRoute {
         args = args as CreateCategoryPage;
         return _routeBuilder(CreateCategoryPage(
           isIncome: args.isIncome,
+          category: args.category,
+          isUpdate: args.isUpdate,
         ));
       case PageConst.transactionsPage:
         args = args as TransactionsPage;
@@ -95,9 +98,10 @@ class AppRoute {
         ));
       case PageConst.transferHistoryPage:
         return _routeBuilder(const TransferHistoryPage());
+      case PageConst.categoriesPage:
+        return _routeBuilder(const CategoriesPage());
       case PageConst.transferDetailPage:
         args = args as TransferDetailPage;
-
         return _routeBuilder(TransferDetailPage(transfer: args.transfer));
       default:
         return _routeBuilder(const NotFoundPage());

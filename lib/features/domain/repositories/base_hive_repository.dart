@@ -51,8 +51,8 @@ abstract class BaseHiveRepository {
   // Category
   Future<List<CategoryEntity>> getCategories();
   Future<void> createCategory(CategoryEntity categoryEntity);
-  Future<void> updateCategory(int index, CategoryEntity categoryEntity);
-  Future<void> deleteCategory(String categoryId);
+  Future<void> updateCategory(CategoryEntity categoryEntity);
+  Future<void> deleteCategory(bool isIncome,String categoryId);
 
   // Currency
   Future<CurrencyEntity> getCurrency();

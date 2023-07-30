@@ -18,7 +18,7 @@ class ColorsPage extends StatelessWidget {
         leading: IconButton(
             onPressed: () {
               Navigator.pop(context);
-              context.read<SelectedColorCubit>().changeColor(null);
+              // context.read<SelectedColorCubit>().changeColor(null);
             },
             icon: const Icon(FontAwesomeIcons.arrowLeft)),
         title: const Text("Colors"),

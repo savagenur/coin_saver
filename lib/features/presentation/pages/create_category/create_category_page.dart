@@ -20,7 +20,14 @@ import '../../widgets/my_button_widget.dart';
 
 class CreateCategoryPage extends StatefulWidget {
   final bool isIncome;
-  const CreateCategoryPage({super.key, required this.isIncome});
+  final bool isUpdate;
+  final CategoryEntity? category;
+
+  const CreateCategoryPage(
+      {super.key,
+      required this.isIncome,
+      this.isUpdate = false,
+      this.category});
 
   @override
   State<CreateCategoryPage> createState() => CreateCategoryPageState();
@@ -40,12 +47,18 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
   late SelectedIconCubit selectedIconCubit;
   late SelectedColorCubit selectedColorCubit;
   CategoryEntity? _category;
+  late bool _isUpdate;
   @override
   void initState() {
     super.initState();
+    _category = widget.category;
+    _isUpdate = widget.isUpdate;
 
     selectedIconCubit = context.read<SelectedIconCubit>();
     selectedColorCubit = context.read<SelectedColorCubit>();
+    selectedIconCubit.changeIcon(widget.category?.iconData);
+    selectedColorCubit.changeColor(widget.category?.color);
+    _title = widget.category?.name ?? "";
     _isIncome = widget.isIncome;
     _selectedTransactionType = setTransactionType(widget.isIncome);
     _colorController = ScrollController();
@@ -105,8 +118,8 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                             children: [
                                               Flexible(
                                                 child: CircleAvatar(
-                                                  backgroundColor: _color ??
-                                                      secondaryColor,
+                                                  backgroundColor:
+                                                      _color ?? secondaryColor,
                                                   child: Icon(
                                                     _iconData ??
                                                         FontAwesomeIcons
@@ -119,6 +132,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                               sizeHor(10),
                                               Expanded(
                                                 child: TextFormField(
+                                                  initialValue: _title,
                                                   textCapitalization:
                                                       TextCapitalization
                                                           .sentences,
@@ -134,8 +148,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                   },
                                                   decoration:
                                                       const InputDecoration(
-                                                    hintText:
-                                                        "Category Name",
+                                                    hintText: "Category Name",
                                                   ),
                                                 ),
                                               ),
@@ -145,28 +158,50 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                         Expanded(
                                           child: Listener(
                                             onPointerDown: (_) {
-                                              FocusScope.of(context)
-                                                  .unfocus();
+                                              FocusScope.of(context).unfocus();
                                             },
                                             child: SingleChildScrollView(
                                               child: Padding(
                                                 padding:
-                                                    const EdgeInsets.all(
-                                                        10),
+                                                    const EdgeInsets.all(10),
                                                 child: Column(
                                                   crossAxisAlignment:
-                                                      CrossAxisAlignment
-                                                          .start,
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     const Divider(),
-                                                    _buildIsIncomeRadio(
-                                                        context),
+                                                    _isUpdate
+                                                        ? Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Text(
+                                                                "Type",
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .grey
+                                                                        .shade600),
+                                                              ),
+                                                              sizeVer(5),
+                                                              Text(
+                                                                _isIncome
+                                                                    ? "Income"
+                                                                    : "Expense",
+                                                                style: Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .titleMedium,
+                                                              ),
+                                                            ],
+                                                          )
+                                                        : _buildIsIncomeRadio(
+                                                            context),
                                                     const Divider(),
                                                     Text(
                                                       "Planned outlay",
                                                       style: TextStyle(
-                                                          color: Colors.grey
-                                                              .shade600),
+                                                          color: Colors
+                                                              .grey.shade600),
                                                     ),
                                                     sizeVer(10),
                                                     _buildPlannedOutlay(
@@ -177,8 +212,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                         Text(
                                                           "Icons",
                                                           style: TextStyle(
-                                                              color: Colors
-                                                                  .grey
+                                                              color: Colors.grey
                                                                   .shade600),
                                                         ),
                                                         sizeHor(10),
@@ -202,8 +236,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                         Text(
                                                           "Colors",
                                                           style: TextStyle(
-                                                              color: Colors
-                                                                  .grey
+                                                              color: Colors.grey
                                                                   .shade600),
                                                         ),
                                                         sizeHor(10),
@@ -244,8 +277,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                                 BorderRadius
                                                                     .circular(
                                                                         30),
-                                                            paddingVertical:
-                                                                15,
+                                                            paddingVertical: 15,
                                                             onTap:
                                                                 _buildCreateCategory),
                                                       ],
@@ -317,7 +349,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
         ),
         GestureDetector(
           onTap: () {
-            selectedColorCubit.changeColor(null);
+            // selectedColorCubit.changeColor(null);
             setState(() {
               _colorController.jumpTo(0);
             });
@@ -473,33 +505,42 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
     }
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
+      final id = widget.category?.id ?? sl<Uuid>().v1();
       _category = CategoryEntity(
-        id: sl<Uuid>().v1(),
+        id: id,
         name: _title,
         iconData: _iconData!,
         color: _color!,
         isIncome: _isIncome,
         dateTime: DateTime.now(),
       );
-      context.read<CategoryBloc>().add(
-            CreateCategory(category: _category!),
-          );
-      context.read<SelectedCategoryCubit>().changeCategory(_category);
-      Navigator.pop(context);
-      Navigator.popAndPushNamed(
-        context,
-        PageConst.addTransactionPage,
-        arguments: AddTransactionPage(
-          isIncome: _isIncome,
-          account: _account,
-          selectedDate: _selectedDate,
-          category: _category,
-        ),
-      );
+      if (_isUpdate) {
+        context.read<CategoryBloc>().add(
+              UpdateCategory(category: _category!),
+            );
+        Navigator.pop(context);
+        context.read<AccountBloc>().add(GetAccounts());
+      } else {
+        context.read<CategoryBloc>().add(
+              CreateCategory(category: _category!),
+            );
+        context.read<SelectedCategoryCubit>().changeCategory(_category);
+        Navigator.pop(context);
+        Navigator.popAndPushNamed(
+          context,
+          PageConst.addTransactionPage,
+          arguments: AddTransactionPage(
+            isIncome: _isIncome,
+            account: _account,
+            selectedDate: _selectedDate,
+            category: _category,
+          ),
+        );
+        context.read<SelectedCategoryCubit>().changeCategory(_category);
+      }
 
       selectedIconCubit.changeIcon(null);
       selectedColorCubit.changeColor(null);
-      context.read<SelectedCategoryCubit>().changeCategory(_category);
     }
   }
 }

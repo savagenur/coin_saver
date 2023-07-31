@@ -1,6 +1,5 @@
 
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/features/domain/usecases/hive/init_hive_usecase.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
@@ -8,7 +7,6 @@ import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.
 import 'package:coin_saver/features/presentation/bloc/cubit/transaction_period/transaction_period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/currency/currency_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/reminder/reminder_bloc.dart';
-import 'package:coin_saver/features/presentation/pages/charts_page/charts/charts_page.dart';
 import 'package:coin_saver/routes.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +22,6 @@ import 'features/presentation/bloc/home_time_period/home_time_period_bloc.dart';
 import 'features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
 import 'features/presentation/pages/home/home_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'features/presentation/pages/reminders_chapter/reminders/reminders_page.dart';
 import 'features/services/notification_controller.dart';
 import 'injection_container.dart';
 import 'observer.dart';

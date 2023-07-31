@@ -1,6 +1,7 @@
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/category/category_entity.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
+import 'package:coin_saver/features/domain/entities/reminder/reminder_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 
 abstract class BaseHiveRepository {
@@ -52,7 +53,7 @@ abstract class BaseHiveRepository {
   Future<List<CategoryEntity>> getCategories();
   Future<void> createCategory(CategoryEntity categoryEntity);
   Future<void> updateCategory(CategoryEntity categoryEntity);
-  Future<void> deleteCategory(bool isIncome,String categoryId);
+  Future<void> deleteCategory(bool isIncome, String categoryId);
 
   // Currency
   Future<CurrencyEntity> getCurrency();
@@ -71,4 +72,10 @@ abstract class BaseHiveRepository {
       DateTime selectedDate, List<TransactionEntity> totalTransactions);
   List<TransactionEntity> fetchTransactionsForPeriod(DateTime selectedStart,
       DateTime selectedEnd, List<TransactionEntity> totalTransactions);
+
+  // Reminders
+  Future<void> createReminder({required ReminderEntity reminderEntity});
+  Future<void> updateReminder({required ReminderEntity reminderEntity});
+  Future<void> deleteReminder({required ReminderEntity reminderEntity});
+  List<ReminderEntity> getReminders();
 }

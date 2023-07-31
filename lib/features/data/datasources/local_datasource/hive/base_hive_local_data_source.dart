@@ -1,6 +1,7 @@
 import '../../../../domain/entities/account/account_entity.dart';
 import '../../../../domain/entities/category/category_entity.dart';
 import '../../../../domain/entities/currency/currency_entity.dart';
+import '../../../../domain/entities/reminder/reminder_entity.dart';
 import '../../../../domain/entities/transaction/transaction_entity.dart';
 
 abstract class BaseHiveLocalDataSource {
@@ -71,4 +72,10 @@ abstract class BaseHiveLocalDataSource {
       DateTime selectedDate, List<TransactionEntity> totalTransactions);
   List<TransactionEntity> fetchTransactionsForPeriod(DateTime selectedStart,
       DateTime selectedEnd, List<TransactionEntity> totalTransactions);
+
+  // Reminders
+  Future<void> createReminder({required ReminderEntity reminderEntity});
+  Future<void> updateReminder({required ReminderEntity reminderEntity});
+  Future<void> deleteReminder({required ReminderEntity reminderEntity});
+  List<ReminderEntity> getReminders();
 }

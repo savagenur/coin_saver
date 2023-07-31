@@ -1,10 +1,14 @@
+import 'dart:math';
+
 import 'package:coin_saver/features/data/models/category/category_model.dart';
 import 'package:coin_saver/features/data/models/transaction/transaction_model.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 import '../features/data/models/account/account_model.dart';
+import '../injection_container.dart';
 
 // print('Primary Color Hex Code: ${Theme.of(context).primaryColor.value.toRadixString(16).toUpperCase()}');
 
@@ -45,7 +49,7 @@ const List<String> kChartPeriodTitles = [
   "Period",
 ];
 
-const Color secondaryColor = Colors.black38;
+ const Color secondaryColor = Color.fromARGB(255, 111, 111, 111);
 
 // SizedBox
 Widget sizeVer(double height) {
@@ -77,6 +81,8 @@ class PageConst {
   static const String transferHistoryPage = "/transferHistoryPage";
   static const String transferDetailPage = "/transferDetailPage";
   static const String categoriesPage = "/categoriesPage";
+  static const String remindersPage = "/remindersPage";
+  static const String createReminderPage = "/createRemindersPage";
 }
 
 class BoxConst {
@@ -86,4 +92,13 @@ class BoxConst {
   static const String categories = "categories";
   static const String mainTransactions = "mainTransactions";
   static const String exchangeRates = "exchangeRates";
+  static const String reminders = "reminders";
+}
+
+int generateIntUniqueId() {
+  var random =
+      Random(); // keep this somewhere in a static variable. Just make sure to initialize only once.
+  int id = random.nextInt(1000000);
+
+  return id;
 }

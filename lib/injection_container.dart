@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:coin_saver/features/data/datasources/local_datasource/currency/base_currency_local_data_source.dart';
 import 'package:coin_saver/features/data/datasources/local_datasource/hive/base_hive_local_data_source.dart';
 import 'package:coin_saver/features/data/datasources/local_datasource/hive/hive_local_data_source.dart';
@@ -17,6 +18,7 @@ import 'package:coin_saver/features/domain/usecases/currency/get_currency_usecas
 import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_api_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_assets_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/hive/init_hive_usecase.dart';
+import 'package:coin_saver/features/domain/usecases/reminder/create_reminder_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/time_period/fetch_transactions_for_day_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/time_period/get_transactions_for_today_usecase.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
@@ -26,6 +28,7 @@ import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_icon/selected_icon_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/transaction_period/transaction_period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/currency/currency_bloc.dart';
+import 'package:coin_saver/features/presentation/bloc/reminder/reminder_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:uuid/uuid.dart';
 
@@ -40,6 +43,9 @@ import 'features/domain/usecases/category/get_categories_usecase.dart';
 import 'features/domain/usecases/category/update_category_usecase.dart';
 import 'features/domain/usecases/exchange_rates/convert_currency_usecase.dart';
 import 'features/domain/usecases/hive/init_hive_adapters_boxes_usecase.dart';
+import 'features/domain/usecases/reminder/delete_reminder_usecase.dart';
+import 'features/domain/usecases/reminder/get_reminders_usecase.dart';
+import 'features/domain/usecases/reminder/update_reminder_usecase.dart';
 import 'features/domain/usecases/time_period/fetch_transactions_for_month_usecase.dart';
 import 'features/domain/usecases/time_period/fetch_transactions_for_period_usecase.dart';
 import 'features/domain/usecases/time_period/fetch_transactions_for_week_usecase.dart';
@@ -85,6 +91,13 @@ Future<void> initGetIt() async {
   );
   sl.registerFactory(
     () => CurrencyBloc(getCurrencyUsecase: sl.call()),
+  );
+  sl.registerFactory(
+    () => ReminderBloc(
+        createReminderUsecase: sl.call(),
+        deleteReminderUsecase: sl.call(),
+        updateReminderUsecase: sl.call(),
+        getRemindersUsecase: sl.call()),
   );
 
   sl.registerFactory(
@@ -161,6 +174,12 @@ Future<void> initGetIt() async {
 
 // * Currency usecases
 
+// * Reminder usecases
+  sl.registerLazySingleton(() => CreateReminderUsecase(repository: sl.call()));
+  sl.registerLazySingleton(() => GetRemindersUsecase(repository: sl.call()));
+  sl.registerLazySingleton(() => UpdateReminderUsecase(repository: sl.call()));
+  sl.registerLazySingleton(() => DeleteReminderUsecase(repository: sl.call()));
+
 // * ExchangeRate usecases
   sl.registerLazySingleton(
       () => GetExchangeRatesFromAssetsUsecase(repository: sl.call()));
@@ -195,4 +214,5 @@ Future<void> initGetIt() async {
 
 // Externals
   sl.registerLazySingleton(() => const Uuid());
+  sl.registerLazySingleton(() => AwesomeNotifications());
 }

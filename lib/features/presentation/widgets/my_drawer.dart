@@ -3,6 +3,9 @@ import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../../injection_container.dart';
+import '../bloc/reminder/reminder_bloc.dart';
+
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
 
@@ -66,7 +69,12 @@ class MyDrawer extends StatelessWidget {
             leading: const Icon(FontAwesomeIcons.solidBell),
             title: const Text('Reminders'),
             onTap: () {
-              // Handle drawer item tap (navigate to settings screen, etc.).
+              // sl<ReminderBloc>().add(const GetReminders());
+              Navigator.pop(context);
+              Navigator.pushNamed(
+                context,
+                PageConst.remindersPage,
+              );
             },
           ),
           ListTile(

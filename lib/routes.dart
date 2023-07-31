@@ -9,6 +9,8 @@ import 'package:coin_saver/features/presentation/pages/categories_chapter/catego
 import 'package:coin_saver/features/presentation/pages/colors/colors_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
 import 'package:coin_saver/features/presentation/pages/main_transaction/main_transaction_page.dart';
+import 'package:coin_saver/features/presentation/pages/reminders_chapter/create_reminder/create_reminder_page.dart';
+import 'package:coin_saver/features/presentation/pages/reminders_chapter/reminders/reminders_page.dart';
 import 'package:coin_saver/features/presentation/pages/transaction_detail/transaction_detail_page.dart';
 import 'package:coin_saver/features/presentation/pages/transactions/transactions_page.dart';
 import 'package:flutter/material.dart';
@@ -103,6 +105,15 @@ class AppRoute {
       case PageConst.transferDetailPage:
         args = args as TransferDetailPage;
         return _routeBuilder(TransferDetailPage(transfer: args.transfer));
+      case PageConst.remindersPage:
+        return _routeBuilder(const RemindersPage());
+      case PageConst.createReminderPage:
+        args = args as CreateReminderPage;
+      
+        return _routeBuilder( CreateReminderPage(
+          reminder:args.reminder,
+          isUpdate: args.isUpdate,
+        ));
       default:
         return _routeBuilder(const NotFoundPage());
     }

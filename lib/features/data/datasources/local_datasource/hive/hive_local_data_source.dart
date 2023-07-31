@@ -1,6 +1,8 @@
 import 'dart:convert';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:coin_saver/features/data/datasources/local_datasource/currency/base_currency_local_data_source.dart';
+import 'package:coin_saver/features/domain/entities/reminder/reminder_entity.dart';
 import 'package:coin_saver/features/domain/usecases/exchange_rates/convert_currency_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_api_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_assets_usecase.dart';
@@ -32,14 +34,18 @@ import '../../../models/exchange_rate/rate_model.dart';
 import '../../../models/icon_data.dart';
 import '../../../models/ownership_type.dart';
 import '../../../models/payment_type.dart';
+import '../../../models/reminder/reminder_model.dart';
 
 class HiveLocalDataSource implements BaseHiveLocalDataSource {
   final Uuid uuid = sl<Uuid>();
+  final awesomeNotifications = sl<AwesomeNotifications>();
+
   late final Box<AccountModel> accountsBox;
   late final Box<CurrencyModel> currencyBox;
   late final Box<CategoryModel> categoriesBox;
   late final Box<Color> colorsBox;
   late final Box<ExchangeRateModel> exchangeRatesBox;
+  late final Box<ReminderModel> remindersBox;
   late final List<ExchangeRateModel> exchangeRates;
 
   // * Initialization Hive
@@ -53,6 +59,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     Hive.registerAdapter<AccountModel>(AccountModelAdapter());
     Hive.registerAdapter<ExchangeRateModel>(ExchangeRateModelAdapter());
     Hive.registerAdapter<RateModel>(RateModelAdapter());
+    Hive.registerAdapter<ReminderModel>(ReminderModelAdapter());
 
     Hive.registerAdapter<IconData>(IconDataAdapter());
     Hive.registerAdapter<Color>(ColorAdapter());
@@ -62,12 +69,28 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     currencyBox = await Hive.openBox<CurrencyModel>(BoxConst.currency);
     categoriesBox = await Hive.openBox<CategoryModel>(BoxConst.categories);
     colorsBox = await Hive.openBox<Color>(BoxConst.colors);
+    remindersBox = await Hive.openBox<ReminderModel>(BoxConst.reminders);
     exchangeRatesBox =
         await Hive.openBox<ExchangeRateModel>(BoxConst.exchangeRates);
   }
 
   @override
   Future<void> initHive() async {
+    await awesomeNotifications.initialize(
+    'resource://drawable/res_pig',
+    
+    [
+      NotificationChannel(
+        channelKey: "scheduled",
+        channelName: "Scheduled notifications",
+        channelDescription: "Notification channel for Coin Saver Reminders",
+        importance: NotificationImportance.High,
+
+
+      )
+    ],
+    debug: true,
+  );
     if (currencyBox.isEmpty) {
       await colorsBox.addAll(mainColors);
       if (exchangeRatesBox.isEmpty) {
@@ -759,7 +782,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
 
   // * Category
   @override
-  Future<void> createCategory( CategoryEntity categoryEntity) async {
+  Future<void> createCategory(CategoryEntity categoryEntity) async {
     CategoryModel categoryModel = CategoryModel(
       id: categoryEntity.id,
       name: categoryEntity.name,
@@ -772,16 +795,19 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
   }
 
   @override
-  Future<void> deleteCategory(bool isIncome,String categoryId) async {
+  Future<void> deleteCategory(bool isIncome, String categoryId) async {
     final accounts = accountsBox.values.cast<AccountModel>().toList();
-    CategoryModel categoryModel =isIncome?categoryIncomeOther:categoryExpenseOther ;
+    CategoryModel categoryModel =
+        isIncome ? categoryIncomeOther : categoryExpenseOther;
     await Future.wait(accounts.map((account) async {
       final List<TransactionModel> updatedTransactions = [];
       // Updating transaction list
       for (var transaction in account.transactionHistory) {
-        if (transaction.category.id == categoryId ) {
+        if (transaction.category.id == categoryId) {
           updatedTransactions.add(transaction.copyWith(
-              category: categoryModel,iconData: categoryModel.iconData,color: categoryModel.color));
+              category: categoryModel,
+              iconData: categoryModel.iconData,
+              color: categoryModel.color));
         } else {
           updatedTransactions.add(transaction);
         }
@@ -794,7 +820,6 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
           ));
     }));
 
-    
     await categoriesBox.delete(categoryId);
   }
 
@@ -815,8 +840,8 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       for (var transaction in account.transactionHistory) {
         if (transaction.category.id == categoryEntity.id &&
             transaction.category.isIncome == categoryEntity.isIncome) {
-          updatedTransactions.add(transaction.copyWith(
-              category: categoryModel));
+          updatedTransactions
+              .add(transaction.copyWith(category: categoryModel));
         } else {
           updatedTransactions.add(transaction);
         }
@@ -930,5 +955,73 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
           transactionDate.isBefore(selectedEnd.add(const Duration(days: 1)));
     }).toList();
     return periodTransactions;
+  }
+
+  // Reminders
+  @override
+  Future<void> createReminder({required ReminderEntity reminderEntity}) async {
+    await awesomeNotifications.createNotification(
+      content: NotificationContent(
+        id: reminderEntity.id,
+        channelKey: 'scheduled',
+        title: reminderEntity.title,
+        body: reminderEntity.body,
+      ),
+      schedule: NotificationCalendar(
+        day: reminderEntity.day,
+        month: reminderEntity.month,
+        year: reminderEntity.year,
+        hour: reminderEntity.hour,
+        minute: reminderEntity.minute,
+        weekday: reminderEntity.weekday,
+        second: 0,
+        timeZone: await awesomeNotifications.getLocalTimeZoneIdentifier(),
+      ),
+    );
+    await remindersBox.put(
+        reminderEntity.id, ReminderModel.fromEntity(reminderEntity));
+  }
+
+  @override
+  Future<void> deleteReminder({required ReminderEntity reminderEntity}) async {
+    await awesomeNotifications.cancel(reminderEntity.id);
+    await remindersBox.delete(
+      reminderEntity.id,
+    );
+  }
+
+  @override
+  List<ReminderEntity> getReminders() {
+    final List<ReminderEntity> reminders =
+        remindersBox.values.cast<ReminderModel>().toList();
+    return reminders;
+  }
+
+  @override
+  Future<void> updateReminder({required ReminderEntity reminderEntity}) async {
+    if (reminderEntity.isActive) {
+      await awesomeNotifications.createNotification(
+        content: NotificationContent(
+          id: reminderEntity.id,
+          channelKey: 'scheduled',
+          title: reminderEntity.title,
+          body: reminderEntity.body,
+        ),
+        schedule: NotificationCalendar(
+          day: reminderEntity.day,
+          month: reminderEntity.month,
+          year: reminderEntity.year,
+          hour: reminderEntity.hour,
+          minute: reminderEntity.minute,
+          weekday: reminderEntity.weekday,
+          second: 0,
+          timeZone: await awesomeNotifications.getLocalTimeZoneIdentifier(),
+        ),
+      );
+    } else {
+      await awesomeNotifications.cancel(reminderEntity.id);
+    }
+    await remindersBox.put(
+        reminderEntity.id, ReminderModel.fromEntity(reminderEntity));
   }
 }

@@ -15,6 +15,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../bloc/account/account_bloc.dart';
+import '../../../widgets/simple_calendar_widget.dart';
 
 class CreateTransferPage extends StatefulWidget {
   final DateTime? selectedDate;
@@ -180,10 +181,11 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
                             final firstDay = DateTime(2010);
 
                             return AlertDialog(
-                              content: TransferCalendarWidget(
+                              content: SimpleCalendarWidget(
                                 selectedDate: _selectedDate,
                                 firstDay: firstDay,
                                 setDate: _setDate,
+                                lastDay: DateTime.now(),
                               ),
                             );
                           },
@@ -479,37 +481,4 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
   }
 }
 
-class TransferCalendarWidget extends StatelessWidget {
-  final void Function(DateTime) setDate;
-  const TransferCalendarWidget({
-    super.key,
-    required this.selectedDate,
-    required this.firstDay,
-    required this.setDate,
-  });
 
-  final DateTime selectedDate;
-  final DateTime firstDay;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * .9,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TableCalendar(
-            focusedDay: selectedDate,
-            firstDay: firstDay,
-            lastDay: DateTime.now(),
-            selectedDayPredicate: (day) => isSameDay(day, selectedDate),
-            onDaySelected: (selectedDay, focusedDay) {
-              setDate(focusedDay);
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}

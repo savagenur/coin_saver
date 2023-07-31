@@ -2,6 +2,7 @@ import 'package:coin_saver/features/data/datasources/local_datasource/hive/base_
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/category/category_entity.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
+import 'package:coin_saver/features/domain/entities/reminder/reminder_entity.dart';
 import 'package:coin_saver/features/domain/repositories/base_hive_repository.dart';
 
 import '../../domain/entities/transaction/transaction_entity.dart';
@@ -121,16 +122,16 @@ class HiveRepository implements BaseHiveRepository {
       hiveLocalDataSource.createCategory(categoryEntity);
 
   @override
-  Future<void> deleteCategory(bool isIncome,String categoryId) async =>
-      hiveLocalDataSource.deleteCategory(isIncome,categoryId);
+  Future<void> deleteCategory(bool isIncome, String categoryId) async =>
+      hiveLocalDataSource.deleteCategory(isIncome, categoryId);
 
   @override
   Future<List<CategoryEntity>> getCategories() async =>
       hiveLocalDataSource.getCategories();
 
   @override
-  Future<void> updateCategory( CategoryEntity categoryEntity) async =>
-      hiveLocalDataSource.updateCategory( categoryEntity);
+  Future<void> updateCategory(CategoryEntity categoryEntity) async =>
+      hiveLocalDataSource.updateCategory(categoryEntity);
 
   // Selected Date Transactions
   @override
@@ -163,4 +164,19 @@ class HiveRepository implements BaseHiveRepository {
           DateTime selectedEnd, List<TransactionEntity> totalTransactions) =>
       hiveLocalDataSource.fetchTransactionsForPeriod(
           selectedStart, selectedEnd, totalTransactions);
+
+  // Reminders
+  @override
+  Future<void> createReminder({required ReminderEntity reminderEntity}) async =>
+      hiveLocalDataSource.createReminder(reminderEntity: reminderEntity);
+
+  @override
+  Future<void> deleteReminder({required ReminderEntity reminderEntity}) async =>
+      hiveLocalDataSource.deleteReminder(reminderEntity: reminderEntity);
+  @override
+  List<ReminderEntity> getReminders() => hiveLocalDataSource.getReminders();
+
+  @override
+  Future<void> updateReminder({required ReminderEntity reminderEntity}) async =>
+      hiveLocalDataSource.updateReminder(reminderEntity: reminderEntity);
 }

@@ -2,6 +2,7 @@ import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../injection_container.dart';
 import '../bloc/reminder/reminder_bloc.dart';
@@ -101,8 +102,9 @@ class MyDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(FontAwesomeIcons.shareNodes),
             title: const Text('Share with friends'),
-            onTap: () {
-              // Handle drawer item tap (navigate to settings screen, etc.).
+            onTap: () async {
+               Share.share(
+                  'https://play.google.com/store/apps/details?id=com.savagenur.coin_saver');
             },
           ),
           ListTile(

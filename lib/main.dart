@@ -118,7 +118,7 @@ class _MyAppState extends State<MyApp> {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
+        title: "Coin Saver",
         theme: FlexThemeData.light(scheme: FlexScheme.brandBlue),
         initialRoute: "/",
         routes: {

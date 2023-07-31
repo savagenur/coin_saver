@@ -6,6 +6,7 @@ import 'package:coin_saver/features/presentation/pages/add_category/add_category
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:coin_saver/features/presentation/pages/catalog_icons/catalog_icons_page.dart';
 import 'package:coin_saver/features/presentation/pages/categories_chapter/categories/categories_page.dart';
+import 'package:coin_saver/features/presentation/pages/charts_chapter/charts/charts_page.dart';
 import 'package:coin_saver/features/presentation/pages/colors/colors_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
 import 'package:coin_saver/features/presentation/pages/main_transaction/main_transaction_page.dart';
@@ -109,11 +110,13 @@ class AppRoute {
         return _routeBuilder(const RemindersPage());
       case PageConst.createReminderPage:
         args = args as CreateReminderPage;
-      
-        return _routeBuilder( CreateReminderPage(
-          reminder:args.reminder,
+
+        return _routeBuilder(CreateReminderPage(
+          reminder: args.reminder,
           isUpdate: args.isUpdate,
         ));
+      case PageConst.chartsPage:
+        return _routeBuilder(ChartsPage());
       default:
         return _routeBuilder(const NotFoundPage());
     }

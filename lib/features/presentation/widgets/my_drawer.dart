@@ -45,7 +45,11 @@ class MyDrawer extends StatelessWidget {
             leading: const Icon(FontAwesomeIcons.chartSimple),
             title: const Text('Charts'),
             onTap: () {
-              // Handle drawer item tap (navigate to home screen, etc.).
+              Navigator.pop(context);
+              Navigator.pushNamed(
+                context,
+                PageConst.chartsPage,
+              );
             },
           ),
           ListTile(
@@ -103,8 +107,12 @@ class MyDrawer extends StatelessWidget {
             leading: const Icon(FontAwesomeIcons.shareNodes),
             title: const Text('Share with friends'),
             onTap: () async {
-               Share.share(
-                  'https://play.google.com/store/apps/details?id=com.savagenur.coin_saver');
+              Share.share(
+                """
+I'm been using Coin Saver app and I really like it. You should try it, too!
+Google Play https://play.google.com/store/apps/details?id=com.savagenur.coin_saver
+""",
+              );
             },
           ),
           ListTile(

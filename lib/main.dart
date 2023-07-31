@@ -1,5 +1,7 @@
-
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:coin_saver/constants/constants.dart';
+import 'package:coin_saver/features/data/models/currency/currency_model.dart';
+import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:coin_saver/features/domain/usecases/hive/init_hive_usecase.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
@@ -7,6 +9,7 @@ import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.
 import 'package:coin_saver/features/presentation/bloc/cubit/transaction_period/transaction_period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/currency/currency_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/reminder/reminder_bloc.dart';
+import 'package:coin_saver/features/presentation/pages/welcome_chapter/welcome/welcome_page.dart';
 import 'package:coin_saver/routes.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
@@ -27,8 +30,6 @@ import 'injection_container.dart';
 import 'observer.dart';
 
 void main() async {
-  
-
   await Hive.initFlutter();
   await initGetIt();
 
@@ -72,6 +73,7 @@ class _MyAppState extends State<MyApp> {
             NotificationController.onDismissActionReceivedMethod);
   }
 
+  final bool _isFirstInit = Hive.box<CurrencyModel>(BoxConst.currency).isEmpty;
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -122,7 +124,7 @@ class _MyAppState extends State<MyApp> {
         theme: FlexThemeData.light(scheme: FlexScheme.brandBlue),
         initialRoute: "/",
         routes: {
-          "/": (context) => const HomePage(),
+          "/": (context) => _isFirstInit ? WelcomePage() : const HomePage(),
         },
         onGenerateRoute: AppRoute().onGenerateRoute,
       ),

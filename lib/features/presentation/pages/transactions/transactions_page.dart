@@ -129,7 +129,7 @@ class TransactionsPageState extends State<TransactionsPage>
                                 var allTransactions = timePeriodState
                                     .transactions
                                     .where((transaction) =>
-                                        transaction.isIncome == _isIncome&&!transaction.isTransfer!)
+                                        transaction.isIncome == _isIncome&&transaction.isTransfer==null)
                                     .toList()
                                   ..sort(
                                     (a, b) => _selectedFilter == Filter.byDate

@@ -43,6 +43,7 @@ class RemindersPageState extends State<RemindersPage> {
           if (reminderState is ReminderLoaded) {
             _reminders = reminderState.reminders;
             return Scaffold(
+              backgroundColor: Colors.grey.shade100,
               key: _scaffoldKey,
               drawer: const MyDrawer(),
               appBar: AppBar(
@@ -59,6 +60,11 @@ class RemindersPageState extends State<RemindersPage> {
                     ...List.generate(_reminders.length, (index) {
                       final reminder = _reminders[index];
                       return ListTile(
+                        shape: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide.none
+                        ),
+                        tileColor: Colors.white,
                         onTap: () {
                           Navigator.pushNamed(
                               context, PageConst.createReminderPage,

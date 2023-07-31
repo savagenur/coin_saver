@@ -83,6 +83,7 @@ class PageConst {
   static const String categoriesPage = "/categoriesPage";
   static const String remindersPage = "/remindersPage";
   static const String createReminderPage = "/createRemindersPage";
+  static const String chartsPage = "/chartsPage";
 }
 
 class BoxConst {

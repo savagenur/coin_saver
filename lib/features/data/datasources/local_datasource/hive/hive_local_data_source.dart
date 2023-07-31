@@ -77,22 +77,20 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
   @override
   Future<void> initHive() async {
     await awesomeNotifications.initialize(
-    'resource://drawable/res_pig',
-    
-    [
-      NotificationChannel(
-        channelKey: "scheduled",
-        channelName: "Scheduled notifications",
-        channelDescription: "Notification channel for Coin Saver Reminders",
-        importance: NotificationImportance.High,
-
-
-      )
-    ],
-    debug: true,
-  );
-    if (currencyBox.isEmpty) {
-      await colorsBox.addAll(mainColors);
+      'resource://drawable/res_pig',
+      [
+        NotificationChannel(
+          channelKey: "scheduled",
+          channelName: "Scheduled notifications",
+          channelDescription: "Notification channel for Coin Saver Reminders",
+          importance: NotificationImportance.High,
+        )
+      ],
+    );
+    // 
+    // 
+    // 
+     await colorsBox.addAll(mainColors);
       if (exchangeRatesBox.isEmpty) {
         exchangeRates = await sl<GetExchangeRatesFromAssetsUsecase>().call();
         final Map<String, ExchangeRateModel> exchangeRatesMap = {};
@@ -102,62 +100,67 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         await exchangeRatesBox.putAll(exchangeRatesMap);
       }
 
-      await currencyBox
-          .add(currencies.firstWhere((element) => element.code == "USD"));
+      // await currencyBox
+      //     .add(currencies.firstWhere((element) => element.code == "USD"));
 
-      await currencyBox
-          .add(currencies.firstWhere((element) => element.code == "EUR"));
+      // await currencyBox
+      //     .add(currencies.firstWhere((element) => element.code == "EUR"));
       // MainCategories
       Map<String, CategoryModel> categoryMap = {};
       for (var category in mainCategories) {
         categoryMap[category.id] = category;
       }
       await categoriesBox.putAll(categoryMap);
+// 
+// 
+// 
 
-      // Accounts
-      await accountsBox.put(
-          "total",
-          AccountModel(
-              id: "total",
-              name: "Total",
-              iconData: FontAwesomeIcons.sackDollar,
-              type: AccountType.cash,
-              color: Colors.blue.shade800,
-              balance: 0,
-              currency: currencyBox.getAt(0)!,
-              isPrimary: false,
-              isActive: true,
-              ownershipType: OwnershipType.joint,
-              openingDate: DateTime.now(),
-              transactionHistory: const []));
-      await accountsBox.put(
-          "main",
-          AccountModel(
-              id: "main",
-              name: "Main",
-              iconData: FontAwesomeIcons.coins,
-              type: AccountType.cash,
-              color: Colors.blue.shade800,
-              balance: 0,
-              currency: currencyBox.getAt(1)!,
-              isPrimary: true,
-              isActive: true,
-              ownershipType: OwnershipType.individual,
-              openingDate: DateTime.now(),
-              transactionHistory: const []));
-    } else {
-      try {
-        exchangeRates = await sl<GetExchangeRatesFromApiUsecase>().call();
+    // if (currencyBox.isEmpty) {
+     
+    //   // Accounts
+    //   await accountsBox.put(
+    //       "total",
+    //       AccountModel(
+    //           id: "total",
+    //           name: "Total",
+    //           iconData: FontAwesomeIcons.sackDollar,
+    //           type: AccountType.cash,
+    //           color: Colors.blue.shade800,
+    //           balance: 0,
+    //           currency: currencyBox.getAt(0)!,
+    //           isPrimary: false,
+    //           isActive: true,
+    //           ownershipType: OwnershipType.joint,
+    //           openingDate: DateTime(2000),
+    //           transactionHistory: const []));
+    //   await accountsBox.put(
+    //       "main",
+    //       AccountModel(
+    //           id: "main",
+    //           name: "Main",
+    //           iconData: FontAwesomeIcons.coins,
+    //           type: AccountType.cash,
+    //           color: Colors.blue.shade800,
+    //           balance: 0,
+    //           currency: currencyBox.getAt(1)!,
+    //           isPrimary: true,
+    //           isActive: true,
+    //           ownershipType: OwnershipType.individual,
+    //           openingDate: DateTime.now(),
+    //           transactionHistory: const []));
+    // } else {
+    //   try {
+    //     exchangeRates = await sl<GetExchangeRatesFromApiUsecase>().call();
 
-        final Map<String, ExchangeRateModel> exchangeRatesMap = {};
-        for (ExchangeRateModel exchangeRate in exchangeRates) {
-          exchangeRatesMap[exchangeRate.base] = exchangeRate;
-        }
-        await exchangeRatesBox.putAll(exchangeRatesMap);
-      } catch (e) {
-        print("Error: $e");
-      }
-    }
+    //     final Map<String, ExchangeRateModel> exchangeRatesMap = {};
+    //     for (ExchangeRateModel exchangeRate in exchangeRates) {
+    //       exchangeRatesMap[exchangeRate.base] = exchangeRate;
+    //     }
+    //     await exchangeRatesBox.putAll(exchangeRatesMap);
+    //   } catch (e) {
+    //     print("Error: $e");
+    //   }
+    // }
   }
 
   // * Account
@@ -1002,11 +1005,11 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     if (reminderEntity.isActive) {
       await awesomeNotifications.createNotification(
         content: NotificationContent(
-          id: reminderEntity.id,
-          channelKey: 'scheduled',
-          title: reminderEntity.title,
-          body: reminderEntity.body,
-        ),
+            id: reminderEntity.id,
+            channelKey: 'scheduled',
+            title: reminderEntity.title,
+            body: reminderEntity.body,
+            largeIcon: 'resource://drawable/res_pig_logo'),
         schedule: NotificationCalendar(
           day: reminderEntity.day,
           month: reminderEntity.month,

@@ -21,7 +21,7 @@ class AccountModel extends AccountEntity {
   @HiveField(3)
   final double balance;
   @HiveField(4)
-  final CurrencyEntity currency;
+  final CurrencyModel currency;
   @HiveField(5)
   final bool isPrimary;
   @HiveField(6)

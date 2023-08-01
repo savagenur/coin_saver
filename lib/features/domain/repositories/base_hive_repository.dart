@@ -8,6 +8,7 @@ abstract class BaseHiveRepository {
   // Hive
   Future<void> initHiveAdaptersBoxes();
   Future<void> initHive();
+  Future<void> firstInitUser(CurrencyEntity currencyEntity);
   // Account
   Future<List<AccountEntity>> getAccounts();
   Future<void> putAccounts(List<AccountEntity> accounts);

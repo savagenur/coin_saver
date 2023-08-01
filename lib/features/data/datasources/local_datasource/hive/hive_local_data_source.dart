@@ -46,11 +46,14 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
   late final Box<Color> colorsBox;
   late final Box<ExchangeRateModel> exchangeRatesBox;
   late final Box<ReminderModel> remindersBox;
-  late final List<ExchangeRateModel> exchangeRates;
+  late List<ExchangeRateModel> exchangeRates;
 
   // * Initialization Hive
   @override
-  Future<void> initHiveAdaptersBoxes() async {
+  Future<void> initHiveAdaptersBoxes() async {}
+
+  @override
+  Future<void> initHive() async {
     Hive.registerAdapter<AccountType>(AccountTypeAdapter());
     Hive.registerAdapter<OwnershipType>(OwnershipTypeAdapter());
     Hive.registerAdapter<PaymentType>(PaymentTypeAdapter());
@@ -65,6 +68,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     Hive.registerAdapter<Color>(ColorAdapter());
     Hive.registerAdapter<TransactionModel>(TransactionModelAdapter());
 
+    // Hive boxes
     accountsBox = await Hive.openBox<AccountModel>(BoxConst.accounts);
     currencyBox = await Hive.openBox<CurrencyModel>(BoxConst.currency);
     categoriesBox = await Hive.openBox<CategoryModel>(BoxConst.categories);
@@ -72,10 +76,8 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     remindersBox = await Hive.openBox<ReminderModel>(BoxConst.reminders);
     exchangeRatesBox =
         await Hive.openBox<ExchangeRateModel>(BoxConst.exchangeRates);
-  }
 
-  @override
-  Future<void> initHive() async {
+    // AwesomeNotifications
     await awesomeNotifications.initialize(
       'resource://drawable/res_pig',
       [
@@ -87,80 +89,88 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         )
       ],
     );
-    // 
-    // 
-    // 
-     await colorsBox.addAll(mainColors);
-      if (exchangeRatesBox.isEmpty) {
-        exchangeRates = await sl<GetExchangeRatesFromAssetsUsecase>().call();
-        final Map<String, ExchangeRateModel> exchangeRatesMap = {};
-        for (ExchangeRateModel exchangeRate in exchangeRates) {
-          exchangeRatesMap[exchangeRate.base] = exchangeRate;
-        }
-        await exchangeRatesBox.putAll(exchangeRatesMap);
-      }
+    // Colors
+    if (colorsBox.isEmpty) {
+      await colorsBox.addAll(mainColors);
+    }
 
-      // await currencyBox
-      //     .add(currencies.firstWhere((element) => element.code == "USD"));
-
-      // await currencyBox
-      //     .add(currencies.firstWhere((element) => element.code == "EUR"));
-      // MainCategories
+    // Categories
+    if (categoriesBox.isEmpty) {
       Map<String, CategoryModel> categoryMap = {};
       for (var category in mainCategories) {
         categoryMap[category.id] = category;
       }
       await categoriesBox.putAll(categoryMap);
-// 
-// 
-// 
+    }
 
-    // if (currencyBox.isEmpty) {
-     
-    //   // Accounts
-    //   await accountsBox.put(
-    //       "total",
-    //       AccountModel(
-    //           id: "total",
-    //           name: "Total",
-    //           iconData: FontAwesomeIcons.sackDollar,
-    //           type: AccountType.cash,
-    //           color: Colors.blue.shade800,
-    //           balance: 0,
-    //           currency: currencyBox.getAt(0)!,
-    //           isPrimary: false,
-    //           isActive: true,
-    //           ownershipType: OwnershipType.joint,
-    //           openingDate: DateTime(2000),
-    //           transactionHistory: const []));
-    //   await accountsBox.put(
-    //       "main",
-    //       AccountModel(
-    //           id: "main",
-    //           name: "Main",
-    //           iconData: FontAwesomeIcons.coins,
-    //           type: AccountType.cash,
-    //           color: Colors.blue.shade800,
-    //           balance: 0,
-    //           currency: currencyBox.getAt(1)!,
-    //           isPrimary: true,
-    //           isActive: true,
-    //           ownershipType: OwnershipType.individual,
-    //           openingDate: DateTime.now(),
-    //           transactionHistory: const []));
-    // } else {
-    //   try {
-    //     exchangeRates = await sl<GetExchangeRatesFromApiUsecase>().call();
+    // Exchange rates
+    try {
+      exchangeRates = await sl<GetExchangeRatesFromApiUsecase>().call();
 
-    //     final Map<String, ExchangeRateModel> exchangeRatesMap = {};
-    //     for (ExchangeRateModel exchangeRate in exchangeRates) {
-    //       exchangeRatesMap[exchangeRate.base] = exchangeRate;
-    //     }
-    //     await exchangeRatesBox.putAll(exchangeRatesMap);
-    //   } catch (e) {
-    //     print("Error: $e");
-    //   }
-    // }
+      final Map<String, ExchangeRateModel> exchangeRatesMap = {};
+      for (ExchangeRateModel exchangeRate in exchangeRates) {
+        exchangeRatesMap[exchangeRate.base] = exchangeRate;
+      }
+      await exchangeRatesBox.putAll(exchangeRatesMap);
+    } catch (e) {
+      print("Error: $e");
+    }
+    if (exchangeRatesBox.isEmpty) {
+      exchangeRates = await sl<GetExchangeRatesFromAssetsUsecase>().call();
+      final Map<String, ExchangeRateModel> exchangeRatesMap = {};
+      for (ExchangeRateModel exchangeRate in exchangeRates) {
+        exchangeRatesMap[exchangeRate.base] = exchangeRate;
+      }
+      await exchangeRatesBox.putAll(exchangeRatesMap);
+    }
+  }
+
+  @override
+  Future<void> firstInitUser(CurrencyEntity currencyEntity) async {
+    await currencyBox.put(
+        currencyEntity.code, CurrencyModel.fromEntity(currencyEntity));
+
+    await accountsBox.put(
+        "total",
+        AccountModel(
+            id: "total",
+            name: "Total",
+            iconData: FontAwesomeIcons.sackDollar,
+            type: AccountType.cash,
+            color: Colors.blue.shade800,
+            balance: 0,
+            currency: CurrencyModel.fromEntity(currencyEntity),
+            isPrimary: false,
+            isActive: true,
+            ownershipType: OwnershipType.joint,
+            openingDate: DateTime(2000),
+            transactionHistory: const []));
+    await accountsBox.put(
+        "main",
+        AccountModel(
+            id: "main",
+            name: "Main",
+            iconData: FontAwesomeIcons.coins,
+            type: AccountType.cash,
+            color: Colors.blue.shade800,
+            balance: 0,
+            currency: CurrencyModel.fromEntity(currencyEntity),
+            isPrimary: true,
+            isActive: true,
+            ownershipType: OwnershipType.individual,
+            openingDate: DateTime.now(),
+            transactionHistory: const []));
+    // Reminder
+    const ReminderEntity reminder =  ReminderEntity(
+        id: 1,
+        title: "Reminder",
+        body: "Don't forget to record your expenses!",
+        hour: 20,
+        minute: 00,
+        isActive: true,
+        repeats: true,
+        );
+    await createReminder(reminderEntity: reminder);
   }
 
   // * Account
@@ -402,7 +412,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         type: accountFrom.type,
         color: accountFrom.color,
         balance: accountFrom.balance - transactionEntity.amountFrom!,
-        currency: accountFrom.currency,
+        currency: CurrencyModel.fromEntity(accountFrom.currency),
         isPrimary: accountFrom.isPrimary,
         isActive: accountFrom.isActive,
         ownershipType: accountFrom.ownershipType,
@@ -418,7 +428,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         type: accountTo.type,
         color: accountTo.color,
         balance: accountTo.balance + transactionEntity.amountTo!,
-        currency: accountTo.currency,
+        currency: CurrencyModel.fromEntity(accountFrom.currency),
         isPrimary: accountTo.isPrimary,
         isActive: accountTo.isActive,
         ownershipType: accountTo.ownershipType,
@@ -464,7 +474,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
           type: oldAccountFrom.type,
           color: oldAccountFrom.color,
           balance: oldAccountFrom.balance + oldTransfer.amountFrom!,
-          currency: oldAccountFrom.currency,
+          currency: CurrencyModel.fromEntity(oldAccountFrom.currency),
           isPrimary: oldAccountFrom.isPrimary,
           isActive: oldAccountFrom.isActive,
           ownershipType: oldAccountFrom.ownershipType,
@@ -480,7 +490,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
           type: oldAccountTo.type,
           color: oldAccountTo.color,
           balance: oldAccountTo.balance - oldTransfer.amountTo!,
-          currency: oldAccountTo.currency,
+          currency: CurrencyModel.fromEntity(oldAccountFrom.currency),
           isPrimary: oldAccountTo.isPrimary,
           isActive: oldAccountTo.isActive,
           ownershipType: oldAccountTo.ownershipType,
@@ -559,7 +569,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         type: accountFrom.type,
         color: accountFrom.color,
         balance: accountFrom.balance + transactionEntity.amountFrom!,
-        currency: accountFrom.currency,
+        currency: CurrencyModel.fromEntity(accountFrom.currency),
         isPrimary: accountFrom.isPrimary,
         isActive: accountFrom.isActive,
         ownershipType: accountFrom.ownershipType,
@@ -575,7 +585,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         type: accountTo.type,
         color: accountTo.color,
         balance: accountTo.balance - transactionEntity.amountTo!,
-        currency: accountTo.currency,
+        currency: CurrencyModel.fromEntity(accountTo.currency),
         isPrimary: accountTo.isPrimary,
         isActive: accountTo.isActive,
         ownershipType: accountTo.ownershipType,

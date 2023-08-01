@@ -1,3 +1,4 @@
+import 'package:coin_saver/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:introduction_screen/introduction_screen.dart';
@@ -60,7 +61,10 @@ class WelcomePageState extends State<WelcomePage> {
         back: const Icon(FontAwesomeIcons.arrowLeft),
         skip: const Text("Skip"),
         done: const Text("Done"),
-        onDone: () {},
+        onDone: () {
+          Navigator.pushNamedAndRemoveUntil(
+              context, PageConst.chooseDefaultCurrencyPage, (route) => false);
+        },
         onSkip: () {
           _introKey.currentState?.next();
         },

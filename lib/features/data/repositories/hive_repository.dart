@@ -19,7 +19,8 @@ class HiveRepository implements BaseHiveRepository {
       hiveLocalDataSource.initHiveAdaptersBoxes();
   @override
   Future<void> initHive() async => hiveLocalDataSource.initHive();
-
+  @override
+  Future<void> firstInitUser(CurrencyEntity currencyEntity)async => hiveLocalDataSource.firstInitUser(currencyEntity);
   // Account
   @override
   Future<void> createAccount(AccountEntity accountEntity) async =>

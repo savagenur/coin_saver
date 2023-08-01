@@ -17,6 +17,7 @@ import 'package:coin_saver/features/domain/usecases/account/update_account_useca
 import 'package:coin_saver/features/domain/usecases/currency/get_currency_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_api_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_assets_usecase.dart';
+import 'package:coin_saver/features/domain/usecases/hive/first_init_user_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/hive/init_hive_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/reminder/create_reminder_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/time_period/fetch_transactions_for_day_usecase.dart';
@@ -142,6 +143,8 @@ Future<void> initGetIt() async {
   sl.registerLazySingleton(() => InitHiveUsecase(repository: sl.call()));
   sl.registerLazySingleton(
       () => InitHiveAdaptersBoxesUsecase(repository: sl.call()));
+  sl.registerLazySingleton(
+      () => FirstInitUserUsecase(repository: sl.call()));
 // * Account usecases
   sl.registerLazySingleton(() => CreateAccountUsecase(repository: sl.call()));
   sl.registerLazySingleton(() => GetAccountsUsecase(repository: sl.call()));

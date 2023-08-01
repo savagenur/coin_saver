@@ -14,6 +14,7 @@ import 'package:coin_saver/features/presentation/pages/reminders_chapter/create_
 import 'package:coin_saver/features/presentation/pages/reminders_chapter/reminders/reminders_page.dart';
 import 'package:coin_saver/features/presentation/pages/transaction_detail/transaction_detail_page.dart';
 import 'package:coin_saver/features/presentation/pages/transactions/transactions_page.dart';
+import 'package:coin_saver/features/presentation/pages/welcome_chapter/choose_default_currency/choose_default_currency_page.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -117,6 +118,8 @@ class AppRoute {
         ));
       case PageConst.chartsPage:
         return _routeBuilder(ChartsPage());
+      case PageConst.chooseDefaultCurrencyPage:
+        return _routeBuilder(ChooseDefaultCurrencyPage());
       default:
         return _routeBuilder(const NotFoundPage());
     }

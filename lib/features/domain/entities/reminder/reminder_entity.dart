@@ -4,9 +4,9 @@ class ReminderEntity extends Equatable {
   final int id;
   final String title;
   final String body;
-  final int day;
-  final int month;
-  final int year;
+  final int? day;
+  final int? month;
+  final int? year;
   final int hour;
   final int minute;
   final bool? repeats;
@@ -16,9 +16,9 @@ class ReminderEntity extends Equatable {
     required this.id,
     required this.title,
     required this.body,
-    required this.day,
-    required this.month,
-    required this.year,
+     this.day,
+     this.month,
+     this.year,
     required this.hour,
     required this.minute,
     this.repeats,

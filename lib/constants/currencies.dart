@@ -1,6 +1,8 @@
 import '../features/data/models/currency/currency_model.dart';
 
 List<CurrencyModel> currencies = const [
+  CurrencyModel(code: 'USD', name: 'United States Dollar', symbol: '\$'),
+
   // CurrencyModel(
   //     code: 'AED', name: 'United Arab Emirates Dirham', symbol: 'د.إ'),
   // CurrencyModel(code: 'AFN', name: 'Afghan Afghani', symbol: '؋'),
@@ -154,7 +156,6 @@ List<CurrencyModel> currencies = const [
   // CurrencyModel(code: 'TZS', name: 'Tanzanian Shilling', symbol: 'TSh'),
   // CurrencyModel(code: 'UAH', name: 'Ukrainian Hryvnia', symbol: '₴'),
   // CurrencyModel(code: 'UGX', name: 'Ugandan Shilling', symbol: 'USh'),
-  CurrencyModel(code: 'USD', name: 'United States Dollar', symbol: '\$'),
   // CurrencyModel(code: 'UYU', name: 'Uruguayan Peso', symbol: '\$U'),
   // CurrencyModel(code: 'UZS', name: 'Uzbekistan Som', symbol: 'лв'),
   // CurrencyModel(code: 'VEF', name: 'Venezuelan Bolívar', symbol: 'Bs'),

@@ -48,13 +48,7 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
     _timeOfDay = _isUpdate
         ? TimeOfDay(hour: _reminder!.hour, minute: _reminder!.minute)
         : TimeOfDay.now();
-    _selectedDate = _isUpdate
-        ? DateTime(
-            _reminder!.year,
-            _reminder!.month,
-            _reminder!.day,
-          )
-        : DateTime.now();
+    _selectedDate = getDateTime();
     _commentController = TextEditingController(text: _reminder?.body ?? "");
   }
 
@@ -62,6 +56,21 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
     setState(() {
       _selectedDate = newDate;
     });
+  }
+
+  DateTime getDateTime() {
+    if (_isUpdate) {
+      if (_reminder!.year != null &&
+          _reminder!.month != null &&
+          _reminder!.day != null) {
+        return DateTime(
+          _reminder!.year!,
+          _reminder!.month!,
+          _reminder!.day!,
+        );
+      }
+    }
+    return DateTime.now();
   }
 
   @override
@@ -149,9 +158,9 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
                           selectedDate: _selectedDate,
                           firstDay: _isUpdate
                               ? DateTime(
-                                  _reminder!.year,
-                                  _reminder!.month,
-                                  _reminder!.day,
+                                  _reminder!.year??DateTime.now().year,
+                                  _reminder!.month??DateTime.now().month,
+                                  _reminder!.day??DateTime.now().day,
                                 )
                               : DateTime.now(),
                           setDate: setDate,
@@ -236,13 +245,25 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     final id = _reminder?.id ?? generateIntUniqueId();
+                    final day = _frequency == Frequency.onceAWeek ||
+                            _frequency == Frequency.daily
+                        ? null
+                        : _selectedDate.day;
+                    final month = _frequency == Frequency.onceAWeek ||
+                            _frequency == Frequency.daily
+                        ? null
+                        : _selectedDate.month;
+                    final year = _frequency == Frequency.onceAWeek ||
+                            _frequency == Frequency.daily
+                        ? null
+                        : _selectedDate.year;
                     final ReminderEntity reminder = ReminderEntity(
                       id: id,
                       title: _name,
                       body: _commentController.text,
-                      day: _selectedDate.day,
-                      month: _selectedDate.month,
-                      year: _selectedDate.year,
+                      day: day,
+                      month: month,
+                      year: year,
                       hour: _timeOfDay!.hour,
                       minute: _timeOfDay!.minute,
                       isActive: true,

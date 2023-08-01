@@ -45,7 +45,7 @@ void main() async {
     await appDocumentDir.delete(recursive: true);
   }
 
-  await sl<InitHiveAdaptersBoxesUsecase>().call();
+  // await sl<InitHiveAdaptersBoxesUsecase>().call();
   await sl<InitHiveUsecase>().call();
   // await removeHive();
 
@@ -124,7 +124,7 @@ class _MyAppState extends State<MyApp> {
         theme: FlexThemeData.light(scheme: FlexScheme.brandBlue),
         initialRoute: "/",
         routes: {
-          "/": (context) => _isFirstInit ? WelcomePage() : const HomePage(),
+          "/": (context) => _isFirstInit ? const WelcomePage() : const HomePage(),
         },
         onGenerateRoute: AppRoute().onGenerateRoute,
       ),

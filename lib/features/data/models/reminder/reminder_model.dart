@@ -11,11 +11,11 @@ class ReminderModel extends ReminderEntity {
   @HiveField(2)
   final String body;
   @HiveField(3)
-  final int day;
+  final int? day;
   @HiveField(4)
-  final int month;
+  final int? month;
   @HiveField(5)
-  final int year;
+  final int? year;
   @HiveField(6)
   final int hour;
   @HiveField(7)
@@ -30,9 +30,9 @@ class ReminderModel extends ReminderEntity {
     required this.id,
     required this.title,
     required this.body,
-    required this.day,
-    required this.month,
-    required this.year,
+     this.day,
+     this.month,
+     this.year,
     required this.hour,
     required this.minute,
     required this.isActive,

@@ -1,14 +1,12 @@
 import 'dart:math';
 
 import 'package:coin_saver/features/data/models/category/category_model.dart';
+import 'package:coin_saver/features/data/models/currency/currency_model.dart';
 import 'package:coin_saver/features/data/models/transaction/transaction_model.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
-import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 
 import '../features/data/models/account/account_model.dart';
-import '../injection_container.dart';
 
 // print('Primary Color Hex Code: ${Theme.of(context).primaryColor.value.toRadixString(16).toUpperCase()}');
 
@@ -20,7 +18,7 @@ AccountModel accountError = AccountModel(
     type: AccountType.cash,
     balance: 0,
     currency:
-        const CurrencyEntity(code: "code", name: "name", symbol: "symbol"),
+        const CurrencyModel(code: "code", name: "name", symbol: "symbol"),
     isPrimary: false,
     isActive: true,
     ownershipType: OwnershipType.business,
@@ -84,6 +82,7 @@ class PageConst {
   static const String remindersPage = "/remindersPage";
   static const String createReminderPage = "/createRemindersPage";
   static const String chartsPage = "/chartsPage";
+  static const String chooseDefaultCurrencyPage = "/chooseDefaultCurrencyPage";
 }
 
 class BoxConst {

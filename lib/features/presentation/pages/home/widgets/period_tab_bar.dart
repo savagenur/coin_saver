@@ -44,7 +44,7 @@ class PeriodTabBar extends StatelessWidget {
             selectedDateEnd: selectedDateEnd,
             transactions: transactions);
       },
-      tabs: kChartPeriodTitles
+      tabs: kTransactionPeriodTitles
           .map(
             (e) => Tab(
               child: Text(

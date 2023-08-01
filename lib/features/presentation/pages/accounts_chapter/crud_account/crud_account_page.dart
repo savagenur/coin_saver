@@ -241,8 +241,11 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                                                       currency;
                                                                 });
                                                               },
-                                                              title: currency
-                                                                  .code))
+                                                              selected: _currency==currency,
+                                                              
+                                                              title: "${currency
+                                                                  .name} (${currency
+                                                                  .code})"))
                                                   .toList();
                                             },
                                             buttonBuilder: (context, showMenu) {

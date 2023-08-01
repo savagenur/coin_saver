@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _initialIndexTab = getKeyByValue(periodValues, widget.period)!;
+    _initialIndexTab = getPeriodKeyByValue(periodValues, widget.period)!;
     _tabController =
         TabController(length: 5, vsync: this, initialIndex: _initialIndexTab);
     _isIncome = widget.isIncome;
@@ -93,7 +93,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         List<TransactionEntity> transactions = timePeriodState
                             .transactions
                             .where((transaction) =>
-                                transaction.isIncome == _isIncome &&transaction.isTransfer==null )
+                                transaction.isIncome == _isIncome &&
+                                transaction.isTransfer == null)
                             .toList()
                           ..sort(
                             (a, b) => b.amount.compareTo(a.amount),

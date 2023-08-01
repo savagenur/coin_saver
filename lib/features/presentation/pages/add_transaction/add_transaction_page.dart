@@ -365,7 +365,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
             },
             selected: accounts[index] == _account,
             title: accounts[index].name,
-            subtitle: "\$${accounts[index].balance}",
+            subtitle: NumberFormat.compactCurrency(symbol: accounts[index].currency.symbol).format(accounts[index].balance),
             icon: accounts[index].iconData,
           ),
         );

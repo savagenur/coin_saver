@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../../../domain/entities/account/account_entity.dart';
+import '../../../../domain/entities/category/category_entity.dart';
 import '../../../../domain/entities/main_transaction/main_transaction_entity.dart';
 import '../../../../domain/entities/transaction/transaction_entity.dart';
 
@@ -30,9 +31,7 @@ class CircularChartWidget extends StatelessWidget {
     return Stack(
       alignment: Alignment.center,
       children: [
-        transactions.isEmpty
-            ? EmptySfCircularChart(selectedDate: _selectedDate)
-            : HomeSfCircularChart(
+         HomeSfCircularChart(
                 tooltipBehavior: _tooltipBehavior, transactions: transactions),
         SizedBox(
           width: MediaQuery.of(context).size.width * .35,
@@ -52,47 +51,6 @@ class CircularChartWidget extends StatelessWidget {
   }
 }
 
-class EmptySfCircularChart extends StatelessWidget {
-  const EmptySfCircularChart({
-    super.key,
-    required DateTime selectedDate,
-  }) : _selectedDate = selectedDate;
-
-  final DateTime _selectedDate;
-
-  @override
-  Widget build(BuildContext context) {
-    return SfCircularChart(
-      series: [
-        DoughnutSeries<MainTransactionEntity, String>(
-          animationDuration: 0,
-          strokeColor: Colors.white,
-          strokeWidth: 2,
-          innerRadius: "70",
-          opacity: 1,
-          dataSource: [
-            MainTransactionEntity(
-                id: "id",
-                accountId: "accountId",
-                name: "name",
-                iconData: Icons.data_array,
-                color: Colors.grey,
-                isIncome: false,
-                totalAmount: 1,
-                dateTime: _selectedDate)
-          ],
-          xValueMapper: (MainTransactionEntity data, index) {
-            return data.name;
-          },
-          pointColorMapper: (datum, index) {
-            return Colors.grey;
-          },
-          yValueMapper: (MainTransactionEntity data, index) => 1,
-        )
-      ],
-    );
-  }
-}
 
 class HomeSfCircularChart extends StatelessWidget {
   const HomeSfCircularChart({
@@ -110,14 +68,30 @@ class HomeSfCircularChart extends StatelessWidget {
       tooltipBehavior: _tooltipBehavior,
       series: [
         DoughnutSeries<TransactionEntity, String>(
-          animationDelay: 0,
-          animationDuration: 0,
+          // animationDelay: 0,
+          // animationDuration: 0,
           explode: true,
           strokeColor: Colors.white,
           strokeWidth: 2,
           innerRadius: "70",
           opacity: 1,
-          dataSource: transactions,
+          dataSource: transactions.isEmpty?[
+            TransactionEntity(
+                id: "id",
+                date: DateTime(2023),
+                amount: 1,
+                category: CategoryEntity(
+                    id: "id",
+                    name: "name",
+                    iconData: Icons.abc,
+                    color: Colors.grey,
+                    isIncome: false,
+                    dateTime: DateTime(2023)),
+                iconData: Icons.abc,
+                accountId: "accountId",
+                isIncome: false,
+                color: Colors.grey)
+          ]: transactions,
           xValueMapper: (TransactionEntity data, index) {
             return data.category.name;
           },

@@ -16,12 +16,14 @@ class MyDrawer extends StatelessWidget {
       child: ListView(
         children: [
           const UserAccountsDrawerHeader(
-            accountName: Text('John Doe'),
-            accountEmail: Text('johndoe@example.com'),
+
+            accountName: Text("Sign up"),
+            accountEmail: Text(""),
             currentAccountPicture: CircleAvatar(
               child: Icon(Icons.person),
             ),
           ),
+          
           ListTile(
             leading: const Icon(FontAwesomeIcons.house),
             title: const Text('Home'),
@@ -63,13 +65,13 @@ class MyDrawer extends StatelessWidget {
               );
             },
           ),
-          ListTile(
-            leading: const Icon(FontAwesomeIcons.rotate),
-            title: const Text('Regular Payments'),
-            onTap: () {
-              // Handle drawer item tap (navigate to home screen, etc.).
-            },
-          ),
+          // ListTile(
+          //   leading: const Icon(FontAwesomeIcons.rotate),
+          //   title: const Text('Regular Payments'),
+          //   onTap: () {
+          //     // Handle drawer item tap (navigate to home screen, etc.).
+          //   },
+          // ),
           ListTile(
             leading: const Icon(FontAwesomeIcons.solidBell),
             title: const Text('Reminders'),
@@ -82,13 +84,13 @@ class MyDrawer extends StatelessWidget {
               );
             },
           ),
-          ListTile(
-            leading: const Icon(FontAwesomeIcons.dollarSign),
-            title: const Text('Currency'),
-            onTap: () {
-              // Handle drawer item tap (navigate to settings screen, etc.).
-            },
-          ),
+          // ListTile(
+          //   leading: const Icon(FontAwesomeIcons.dollarSign),
+          //   title: const Text('Currency'),
+          //   onTap: () {
+          //     // Handle drawer item tap (navigate to settings screen, etc.).
+          //   },
+          // ),
           ListTile(
             leading: const Icon(FontAwesomeIcons.gears),
             title: const Text('Settings'),
@@ -96,12 +98,10 @@ class MyDrawer extends StatelessWidget {
               // Handle drawer item tap (navigate to settings screen, etc.).
             },
           ),
-          ListTile(
-            leading: const Icon(FontAwesomeIcons.rectangleAd),
-            title: const Text('Turn off ads'),
-            onTap: () {
-              // Handle drawer item tap (navigate to settings screen, etc.).
-            },
+          const ListTile(
+            leading: Icon(FontAwesomeIcons.rectangleAd),
+            title: Text('Turn off ads'),
+            onTap: null,
           ),
           ListTile(
             leading: const Icon(FontAwesomeIcons.shareNodes),

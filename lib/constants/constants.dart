@@ -17,8 +17,7 @@ AccountModel accountError = AccountModel(
     color: Colors.green,
     type: AccountType.cash,
     balance: 0,
-    currency:
-        const CurrencyModel(code: "code", name: "name", symbol: "symbol"),
+    currency: const CurrencyModel(code: "code", name: "name", symbol: "symbol"),
     isPrimary: false,
     isActive: true,
     ownershipType: OwnershipType.business,
@@ -39,15 +38,21 @@ TransactionModel transactionError = TransactionModel(
     accountId: "accountId",
     isIncome: false,
     color: Colors.black);
-const List<String> kChartPeriodTitles = [
+const List<String> kTransactionPeriodTitles = [
   "Day",
   "Week",
   "Month",
   "Year",
   "Period",
 ];
+const List<String> kChartPeriodTitles = [
+  "by year",
+  "by month",
+  "by week",
+  "by day",
+];
 
- const Color secondaryColor = Color.fromARGB(255, 111, 111, 111);
+const Color secondaryColor = Color.fromARGB(255, 111, 111, 111);
 
 // SizedBox
 Widget sizeVer(double height) {

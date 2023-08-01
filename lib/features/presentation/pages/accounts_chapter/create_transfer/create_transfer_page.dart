@@ -339,7 +339,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
             textAlign: TextAlign.center,
             showCursor: true,
             inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,4}'))
+              FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))
             ],
             decoration: InputDecoration(
               errorStyle: TextStyle(color: Colors.red.shade900),
@@ -402,7 +402,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
             textAlign: TextAlign.center,
             showCursor: true,
             inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,4}'))
+              FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))
             ],
             decoration: const InputDecoration(
               counterText: "",

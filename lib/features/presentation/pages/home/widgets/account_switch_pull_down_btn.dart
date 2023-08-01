@@ -29,11 +29,16 @@ class AccountSwitchPullDownBtn extends StatelessWidget {
                   },
                   selected: accountItem.isPrimary,
                   title: accountItem.name,
+                  itemTheme:accountItem.id!="total"?null:  const PullDownMenuItemTheme(
+                    
+                      textStyle: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic)),
                   subtitle:
                       NumberFormat.currency(symbol: accountItem.currency.symbol)
                           .format(accountItem.balance),
                   icon: accountItem.iconData,
-                  iconColor: Theme.of(context).primaryColor,
+                  iconColor:accountItem.id=="total"?null:  Theme.of(context).primaryColor,
                 ))
             .toList();
       },

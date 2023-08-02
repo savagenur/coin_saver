@@ -192,46 +192,41 @@ class _TransferHistoryPageState extends State<TransferHistoryPage>
 
   PullDownButton _buildPullDwnBtn() {
     return PullDownButton(
-                                itemBuilder: (context) {
-                                  return _accounts!
-                                      .map(
-                                        (account) =>
-                                            PullDownMenuItem.selectable(
-                                          onTap: () {
-                                            context.read<AccountBloc>().add(
-                                                SetPrimaryAccount(
-                                                    accountId: account.id));
-                                          },
-                                          selected: account.isPrimary,
-                                          title: account.name,
-                                          icon: account.iconData,
-                                          iconColor:
-                                              Theme.of(context).primaryColor,
-                                        ),
-                                      )
-                                      .toList();
-                                },
-                                buttonBuilder: (context, showMenu) {
-                                  return TextButton(
-                                      onPressed: showMenu,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            _account!.iconData,
-                                          ),
-                                          sizeHor(5),
-                                          Text(
-                                            _account!.name,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleLarge,
-                                          ),
-                                        ],
-                                      ));
-                                },
-                              );
+      itemBuilder: (context) {
+        return _accounts!
+            .map(
+              (account) => PullDownMenuItem.selectable(
+                onTap: () {
+                  context
+                      .read<AccountBloc>()
+                      .add(SetPrimaryAccount(accountId: account.id));
+                },
+                selected: account.isPrimary,
+                title: account.name,
+                icon: account.iconData,
+                iconColor: Theme.of(context).primaryColor,
+              ),
+            )
+            .toList();
+      },
+      buttonBuilder: (context, showMenu) {
+        return TextButton(
+            onPressed: showMenu,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  _account!.iconData,
+                ),
+                sizeHor(5),
+                Text(
+                  _account!.name,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ],
+            ));
+      },
+    );
   }
 
   AppBar _buildAppBar(BuildContext context) {

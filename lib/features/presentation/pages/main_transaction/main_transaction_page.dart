@@ -236,17 +236,18 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                           (element) => element.id == transaction.accountId,
                           orElse: () => accountError)
                       .name;
-
+                  final account = accountState.accounts.firstWhere(
+                      (element) => element.id == transaction.accountId,
+                      orElse: () => accountError);
+                  final transactionDetail = account.transactionHistory
+                      .firstWhere((element) => transaction.id == element.id,orElse: () => transactionError,);
                   return ListTile(
                     onTap: () {
                       Navigator.pushNamed(
                           context, PageConst.transactionDetailPage,
                           arguments: TransactionDetailPage(
-                            transaction: transaction,
-                            account: accountState.accounts.firstWhere(
-                                (element) =>
-                                    element.id == transaction.accountId,
-                                orElse: () => accountError),
+                            transaction: transactionDetail,
+                            account: account,
                           ));
                     },
                     contentPadding: EdgeInsets.zero,
@@ -352,7 +353,6 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
           ),
         ],
       ),
-      
     );
   }
 }

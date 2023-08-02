@@ -3,10 +3,12 @@ import 'package:coin_saver/features/domain/entities/account/account_entity.dart'
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 import 'package:coin_saver/features/presentation/bloc/home_time_period/home_time_period_bloc.dart';
 import 'package:coin_saver/features/presentation/widgets/shadowed_container_widget.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../../../../constants/chart_period_enum.dart';
@@ -33,8 +35,8 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
   List<TransactionEntity> _transactions = [];
   List<TimeGroupModel> _timeGroupModels = [];
   DateFormat _dateFormat = DateFormat.yMMM();
-  DateTimeIntervalType _intervalType = DateTimeIntervalType.months;
-  bool? _isIncome ;
+  late NumberFormat _currencyFormat;
+  bool? _isIncome;
   @override
   void initState() {
     super.initState();
@@ -53,6 +55,8 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
         if (accountState is AccountLoaded) {
           _accounts = accountState.accounts;
           _account = _accounts.firstWhere((element) => element.isPrimary);
+          _currencyFormat =
+              NumberFormat.compactCurrency(symbol: _account!.currency.symbol);
           return BlocBuilder<HomeTimePeriodBloc, HomeTimePeriodState>(
             builder: (context, homeTimePeriodState) {
               if (homeTimePeriodState is HomeTimePeriodLoaded) {
@@ -66,90 +70,76 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
                   drawer: const MyDrawer(),
                   body: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: ShadowedContainerWidget(
-                          height: MediaQuery.of(context).size.height * .8,
-                          borderRadius: BorderRadius.circular(20),
-                          child: Column(
-                            children: [
-                              TabBar(
-                                controller: _tabController,
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 40),
-                                labelPadding:
-                                    const EdgeInsets.symmetric(horizontal: 5),
-                                indicatorColor: Theme.of(context).primaryColor,
-                                indicatorSize: TabBarIndicatorSize.label,
-                                labelStyle: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).primaryColor),
-                                unselectedLabelColor:
-                                    Theme.of(context).primaryColor,
-                                onTap: (value) {
-                                  setState(() {
-                                    _timeGroupType =
-                                        chartTimeGroupTypeValues[value]!;
-                                    print(_timeGroupType);
-                                    _timeGroupModels = groupTransactionsByTime(
-                                        _transactions, _timeGroupType);
-                                    setDateTimeIntervalType();
-                                  });
-                                },
-                                tabs: kChartPeriodTitles
-                                    .map(
-                                      (e) => Tab(
-                                        child: Text(
-                                          e,
-                                          style: const TextStyle(
-                                              color: Colors.black),
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
+                      TabBar(
+                        controller: _tabController,
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
+                        labelPadding:
+                            const EdgeInsets.symmetric(horizontal: 5),
+                        indicatorColor: Theme.of(context).primaryColor,
+                        indicatorSize: TabBarIndicatorSize.label,
+                        labelStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor),
+                        unselectedLabelColor:
+                            Theme.of(context).primaryColor,
+                        onTap: (value) {
+                          setState(() {
+                            _timeGroupType =
+                                chartTimeGroupTypeValues[value]!;
+                            print(_timeGroupType);
+                            _timeGroupModels = groupTransactionsByTime(
+                                _transactions, _timeGroupType);
+                            setDateTimeIntervalType();
+                          });
+                        },
+                        tabs: kChartPeriodTitles
+                            .map(
+                              (e) => Tab(
+                                child: Text(
+                                  e,
+                                  style:
+                                      const TextStyle(color: Colors.black),
+                                ),
                               ),
-                              Expanded(
-                                child: _transactions.isEmpty
-                                    ? Container()
-                                    : SfCartesianChart(
-                                      tooltipBehavior:
-                                                    TooltipBehavior(
-                                                  animationDuration: 1,
-                                                  enable: true,
-                                                  textStyle: const TextStyle(
-                                                      fontSize: 16),
-                                                  format:
-                                                      'point.x - ${_account!.currency.symbol}point.y',
-                                                ),
-                                        enableSideBySideSeriesPlacement: true,
-                                        primaryXAxis: DateTimeAxis(
-                                          intervalType: _intervalType,
-                                          title: AxisTitle(
-                                              ),
-                                          dateFormat: _dateFormat,
-                                          // Set the number of days between each interval (1 for daily)
-                                        ),
-                                        primaryYAxis: NumericAxis(
-                                          opposedPosition: true,
-                                          
-                                        ),
-                                        
-                                        zoomPanBehavior: ZoomPanBehavior(
-                                          enablePanning: true,
-                                          enableSelectionZooming: true,
-                                          enableDoubleTapZooming: true,
-                                          enablePinching: true,
-                                        ),
-                                        legend: const Legend(
-                                          isVisible: true,
-                                        ),
-                                        series: setSeries(),
-                                      ),
-                              ),
-                            ],
-                          ),
-                        ),
+                            )
+                            .toList(),
                       ),
+                      _transactions.isEmpty
+                          ? Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Text(
+                                    "There is no transaction yet!",
+                                    textAlign: TextAlign.center,
+                                    
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .displaySmall!.copyWith(fontStyle: FontStyle.italic),
+                                  ),
+                                  const Icon(FontAwesomeIcons.folderOpen,size: 100,color: secondaryColor,),
+                            
+                            
+                                ],
+                              ),
+                          )
+                          : Expanded(
+                            child: Column(
+                                children: [
+                                  Expanded(
+                                    child: SingleChildScrollView(
+                                      clipBehavior: Clip.none,
+                                      scrollDirection: Axis.horizontal,
+                                      reverse: true,
+                                      child: _buildBarChart(context),
+                                    ),
+                                  ),
+                                  _buildLegends()
+                                ],
+                              ),
+                          ),
+                      sizeVer(50)
                     ],
                   ),
                 );
@@ -163,105 +153,234 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
     ));
   }
 
-  setSeries() {
-    if (_isIncome == null) {
-      return [
-        ColumnSeries(
-          spacing: 5,
-            width: 1,
-            dataSource: _timeGroupModels,
-            xValueMapper: (TimeGroupModel timeGroupModel, index) {
-              return timeGroupModel.start;
-            },
-            yValueMapper: (TimeGroupModel timeGroupModel, index) =>
-                timeGroupModel.income,
-            name: "income"),
-        ColumnSeries(
-          // spacing: 5,
-
-            dataSource: _timeGroupModels,
-            xValueMapper: (TimeGroupModel timeGroupModel, index) {
-              return timeGroupModel.start;
-            },
-            width: 1,
-            yValueMapper: (TimeGroupModel timeGroupModel, index) =>
-                timeGroupModel.expense,
-            name: "expenses"),
-        ColumnSeries(
-            width: 1,
-            dataSource: _timeGroupModels,
-            xValueMapper: (TimeGroupModel timeGroupModel, index) {
-              return timeGroupModel.start;
-            },
-            yValueMapper: (TimeGroupModel timeGroupModel, index) =>
-                timeGroupModel.profit,
-            name: "profit"),
-        ColumnSeries(
-            width: 1,
-            dataSource: _timeGroupModels,
-            xValueMapper: (TimeGroupModel timeGroupModel, index) {
-              return timeGroupModel.start;
-            },
-            yValueMapper: (TimeGroupModel timeGroupModel, index) =>
-                timeGroupModel.loss,
-            name: "loss"),
-      ];
-    } else if (_isIncome == true) {
-      return [
-        ColumnSeries(
-            width: 1,
-            dataSource: _timeGroupModels,
-            xValueMapper: (TimeGroupModel timeGroupModel, index) {
-              return timeGroupModel.start;
-            },
-            yValueMapper: (TimeGroupModel timeGroupModel, index) =>
-                timeGroupModel.income,
-            name: "income"),
-      ];
-    } else {
-      return [
-        ColumnSeries(
-            dataSource: _timeGroupModels,
-            xValueMapper: (TimeGroupModel timeGroupModel, index) {
-              return timeGroupModel.start;
-            },
-            width: 1,
-            yValueMapper: (TimeGroupModel timeGroupModel, index) =>
-                timeGroupModel.expense,
-            name: "expenses"),
-      ];
-    }
+  Row _buildLegends() {
+    List<String> titles = [
+      "Expense",
+      "Income",
+      "Loss",
+      "Profit",
+    ];
+    List<Color> colors = [
+      Colors.orange,
+      Colors.blue,
+      Colors.red.shade900,
+      Colors.green,
+    ];
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: List.generate(
+          titles.length,
+          (index) => Row(
+                children: [
+                  Icon(
+                    Icons.square,
+                    color: colors[index],
+                  ),
+                  sizeHor(5),
+                  Text(titles[index],style: const TextStyle(fontStyle: FontStyle.italic),),
+                ],
+              )),
+    );
   }
 
+  Container _buildBarChart(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.only(top: 50, bottom: 5),
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      color: Colors.grey.shade100,
+      width: (_timeGroupModels.length) ~/ 3 == 0 || _timeGroupModels.isEmpty
+          ? MediaQuery.of(context).size.width
+          : (_timeGroupModels.length * 120),
+      child: BarChart(
+        BarChartData(
+          barTouchData: BarTouchData(touchTooltipData: BarTouchTooltipData(
+            getTooltipItem: (group, groupIndex, rod, rodIndex) {
+              return _buildBarToolTipItem(rod, rodIndex, groupIndex, group);
+            },
+          )),
+          titlesData: FlTitlesData(
+            topTitles:
+                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            leftTitles:
+                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles:
+                const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            show: true,
+            bottomTitles: AxisTitles(
+              axisNameWidget: Container(),
+              sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: _buildGetTitlesWidget,
+              ),
+            ),
+          ),
+          gridData: const FlGridData(
+            show: false,
+          ),
+          borderData: FlBorderData(
+              show: true, border: const Border(bottom: BorderSide())),
+          barGroups: _timeGroupModels.map(
+            (timeGroupModel) {
+              return BarChartGroupData(
+                // barsSpace: 10,
+
+                x: int.parse(
+                    "${timeGroupModel.start.year}${timeGroupModel.start.month.toString().padLeft(2, "0")}${timeGroupModel.start.day.toString().padLeft(2, "0")}"),
+
+                barRods: _setBarRods(timeGroupModel),
+              );
+            },
+          ).toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGetTitlesWidget(value, meta) {
+    final year = int.parse(value.toString().substring(0, 4));
+    final month = int.parse(value.toString().substring(4, 6));
+    final day = int.parse(value.toString().substring(6, 8));
+    final date = DateTime(year, month, day);
+    final dateString = _timeGroupType == TimeGroupType.week
+        ? "Week: ${weekNumber(date)}, ${DateFormat.y().format(date)}"
+        : _dateFormat.format(date);
+
+    return SideTitleWidget(axisSide: AxisSide.bottom, child: Text(dateString));
+  }
+
+  int weekNumber(DateTime date) {
+    int dayOfYear = int.parse(DateFormat("D").format(date));
+    return ((dayOfYear - date.weekday + 10) / 7).floor();
+  }
+
+  BarTooltipItem _buildBarToolTipItem(BarChartRodData rod, int rodIndex,
+      int groupIndex, BarChartGroupData group) {
+    final title;
+    final date;
+    final dateFormat;
+    final amount;
+
+    switch (rodIndex) {
+      case 0:
+        title = "Expense";
+        amount = _timeGroupModels[groupIndex].expense;
+
+        date = _timeGroupModels[groupIndex].start;
+        dateFormat = DateFormat.yMMMEd().format(date);
+        break;
+      case 1:
+        title = "Income";
+        amount = _timeGroupModels[groupIndex].income;
+        date = _timeGroupModels[groupIndex].start;
+        dateFormat = DateFormat.yMMMEd().format(date);
+        break;
+      case 2:
+        title = "Loss";
+        amount = _timeGroupModels[groupIndex].loss;
+        date = _timeGroupModels[groupIndex].start;
+        dateFormat = DateFormat.yMMMEd().format(date);
+        break;
+      case 3:
+        title = "Profit";
+        amount = _timeGroupModels[groupIndex].profit;
+        date = _timeGroupModels[groupIndex].start;
+        dateFormat = DateFormat.yMMMEd().format(date);
+        break;
+      default:
+        title = "";
+        amount = 0;
+        date = _timeGroupModels[groupIndex].start;
+        dateFormat = DateFormat.yMMMEd().format(date);
+    }
+    return BarTooltipItem(
+        title,
+        const TextStyle(
+          color: Colors.white,
+        ),
+        children: [
+          TextSpan(text: "\n${_currencyFormat.format(amount)}"),
+          TextSpan(text: "\n$dateFormat"),
+        ]);
+  }
+
+  List<BarChartRodData> _setBarRods(TimeGroupModel timeGroupModel) {
+    return [
+      BarChartRodData(
+        borderRadius: BorderRadius.circular(5),
+        width: 20,
+        color: Colors.orange,
+        toY: _isIncome == false || _isIncome == null
+            ? timeGroupModel.expense
+            : 0,
+      ),
+      BarChartRodData(
+          borderRadius: BorderRadius.circular(5),
+          width: 20,
+          color: Colors.blue,
+          toY: _isIncome == true || _isIncome == null
+              ? timeGroupModel.income
+              : 0),
+      BarChartRodData(
+          borderRadius: BorderRadius.circular(5),
+          width: 20,
+          color: Colors.red.shade800,
+          toY: _isIncome != null ? 0 : timeGroupModel.loss),
+      BarChartRodData(
+          borderRadius: BorderRadius.circular(5),
+          width: 20,
+          color: Colors.green,
+          toY: _isIncome != null ? 0 : timeGroupModel.profit),
+    ];
+  }
+
+  
   void setDateTimeIntervalType() {
     switch (_timeGroupType) {
       case TimeGroupType.day:
-        _intervalType = DateTimeIntervalType.days;
-        _dateFormat = DateFormat.MEd();
+        _dateFormat = DateFormat.MMMEd();
         break;
 
       case TimeGroupType.week:
-        _intervalType = DateTimeIntervalType.auto;
-        _dateFormat = DateFormat.MEd();
+        _dateFormat = DateFormat('w');
         break;
 
       case TimeGroupType.month:
-        _intervalType = DateTimeIntervalType.months;
         _dateFormat = DateFormat.yMMM();
         break;
 
       case TimeGroupType.year:
-        _intervalType = DateTimeIntervalType.years;
         _dateFormat = DateFormat.y();
         break;
 
       default:
-        _intervalType = DateTimeIntervalType.months;
         _dateFormat = DateFormat.yMMM();
         break;
     }
   }
-
+PullDownButton _buildPullDwnBtn() {
+    return PullDownButton(
+      itemBuilder: (context) {
+        return _accounts
+            .map(
+              (account) => PullDownMenuItem.selectable(
+                onTap: () {
+                  context
+                      .read<AccountBloc>()
+                      .add(SetPrimaryAccount(accountId: account.id));
+                },
+                selected: account.isPrimary,
+                title: account.name,
+                icon: account.iconData,
+                iconColor: Theme.of(context).primaryColor,
+              ),
+            )
+            .toList();
+      },
+      buttonBuilder: (context, showMenu) {
+        return IconButton(onPressed: showMenu, icon: const Icon(FontAwesomeIcons.wallet));
+      },
+    );
+  }
   AppBar _buildAppBar() {
     return AppBar(
       leading: IconButton(
@@ -269,6 +388,9 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
           icon: const Icon(FontAwesomeIcons.bars)),
       centerTitle: true,
       title: const Text("Charts"),
+      actions: [
+        _buildPullDwnBtn(),
+      ],
       bottom: TabBar(
         controller: _defaultTabController,
         onTap: (value) {
@@ -319,6 +441,11 @@ List<TimeGroupModel> groupTransactionsByTime(
 
     if (groupType == TimeGroupType.month) {
       timeKey = '${transaction.date.year}-${transaction.date.month}';
+    } else if (groupType == TimeGroupType.year) {
+      timeKey = "${transaction.date.year}";
+    } else if (groupType == TimeGroupType.day) {
+      timeKey =
+          '${transaction.date.year}-${transaction.date.month}-${transaction.date.day}';
     } else {
       // Calculate the start and end dates for the week
       DateTime weekStart = transaction.date
@@ -349,10 +476,13 @@ List<TimeGroupModel> groupTransactionsByTime(
       start = DateTime(dateParts[0], dateParts[1]);
       end =
           DateTime(dateParts[0], dateParts[1] + 1).subtract(Duration(days: 1));
+    } else if (groupType == TimeGroupType.year) {
+      start = DateTime(int.parse(key));
+      end = DateTime(int.parse(key));
     } else {
       List<int> dateParts = key.split('-').map(int.parse).toList();
       start = DateTime(dateParts[0], dateParts[1], dateParts[2]);
-      end = start.add(Duration(days: 6));
+      end = start.add(const Duration(days: 6));
     }
 
     // Calculate income, expense, profit, and loss

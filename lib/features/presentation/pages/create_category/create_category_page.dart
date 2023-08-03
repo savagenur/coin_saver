@@ -10,6 +10,7 @@ import 'package:coin_saver/features/presentation/bloc/cubit/selected_date/select
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_icon/selected_icon_cubit.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:coin_saver/injection_container.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -81,7 +82,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
               selectedColorCubit.changeColor(null);
             },
             icon: const Icon(FontAwesomeIcons.arrowLeft)),
-        title: const Text("Create Category"),
+        title:  Text(AppLocalizations.of(context)!.createCategory),
       ),
       body: Form(
         key: _formKey,
@@ -139,7 +140,8 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                   validator: (value) {
                                                     if (value == null ||
                                                         value.isEmpty) {
-                                                      return "Please enter category";
+                                                      return AppLocalizations.of(context)!.pleaseEnterCategory
+                                                      ;
                                                     }
                                                     return null;
                                                   },
@@ -147,8 +149,8 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                     _title = newValue!;
                                                   },
                                                   decoration:
-                                                      const InputDecoration(
-                                                    hintText: "Category Name",
+                                                       InputDecoration(
+                                                    hintText: AppLocalizations.of(context)!.categoryName,
                                                   ),
                                                 ),
                                               ),
@@ -176,7 +178,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                                     .start,
                                                             children: [
                                                               Text(
-                                                                "Type",
+                                                                AppLocalizations.of(context)!.type,
                                                                 style: TextStyle(
                                                                     color: Colors
                                                                         .grey
@@ -185,8 +187,8 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                               sizeVer(5),
                                                               Text(
                                                                 _isIncome
-                                                                    ? "Income"
-                                                                    : "Expense",
+                                                                    ? AppLocalizations.of(context)!.income
+                                                                    : AppLocalizations.of(context)!.expense,
                                                                 style: Theme.of(
                                                                         context)
                                                                     .textTheme
@@ -197,20 +199,20 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                         : _buildIsIncomeRadio(
                                                             context),
                                                     const Divider(),
-                                                    Text(
-                                                      "Planned outlay",
-                                                      style: TextStyle(
-                                                          color: Colors
-                                                              .grey.shade600),
-                                                    ),
-                                                    sizeVer(10),
-                                                    _buildPlannedOutlay(
-                                                        context),
-                                                    sizeVer(20),
+                                                    // Text(
+                                                    //   "Planned outlay",
+                                                    //   style: TextStyle(
+                                                    //       color: Colors
+                                                    //           .grey.shade600),
+                                                    // ),
+                                                    // sizeVer(10),
+                                                    // _buildPlannedOutlay(
+                                                    //     context),
+                                                    // sizeVer(20),
                                                     Row(
                                                       children: [
                                                         Text(
-                                                          "Icons",
+                                                          AppLocalizations.of(context)!.icons,
                                                           style: TextStyle(
                                                               color: Colors.grey
                                                                   .shade600),
@@ -218,7 +220,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                         sizeHor(10),
                                                         isErrorIcon
                                                             ? Text(
-                                                                "Please select icon.",
+                                                                AppLocalizations.of(context)!.pleaseSelectIcon,
                                                                 style: TextStyle(
                                                                     color: Colors
                                                                         .red
@@ -234,7 +236,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                     Row(
                                                       children: [
                                                         Text(
-                                                          "Colors",
+                                                          AppLocalizations.of(context)!.colors,
                                                           style: TextStyle(
                                                               color: Colors.grey
                                                                   .shade600),
@@ -242,7 +244,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                         sizeHor(10),
                                                         isErrorColor
                                                             ? Text(
-                                                                "Please select icon.",
+                                                                AppLocalizations.of(context)!.pleaseSelectIcon,
                                                                 style: TextStyle(
                                                                     color: Colors
                                                                         .red
@@ -267,7 +269,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                               .center,
                                                       children: [
                                                         MyButtonWidget(
-                                                            title: 'Add',
+                                                            title: AppLocalizations.of(context)!.add,
                                                             width: MediaQuery.of(
                                                                         context)
                                                                     .size
@@ -349,7 +351,6 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
         ),
         GestureDetector(
           onTap: () {
-            // selectedColorCubit.changeColor(null);
             setState(() {
               _colorController.jumpTo(0);
             });
@@ -436,9 +437,9 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
         Flexible(
           child: SizedBox(
             width: MediaQuery.of(context).size.width * .3,
-            child: const TextField(
+            child:  TextField(
               enabled: false,
-              decoration: InputDecoration(hintText: "Not selected"),
+              decoration: InputDecoration(hintText: AppLocalizations.of(context)!.notSelected),
             ),
           ),
         ),
@@ -467,7 +468,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
               });
             },
             title: Text(
-              "Expense",
+              AppLocalizations.of(context)!.expense,
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
@@ -483,7 +484,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
               });
             },
             title: Text(
-              "Income",
+              AppLocalizations.of(context)!.income,
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),

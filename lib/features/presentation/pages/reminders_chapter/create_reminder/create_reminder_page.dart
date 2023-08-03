@@ -1,3 +1,4 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/features/presentation/bloc/reminder/reminder_bloc.dart';
 import 'package:coin_saver/features/presentation/widgets/simple_calendar_widget.dart';
@@ -74,6 +75,12 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
   }
 
   @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
@@ -84,15 +91,17 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
                 Navigator.pop(context);
               },
               icon: const Icon(FontAwesomeIcons.arrowLeft)),
-          title: Text(_isUpdate ? "Update Reminder" : "Create Reminder"),
+          title: Text(_isUpdate
+              ? AppLocalizations.of(context)!.updateReminder
+              : AppLocalizations.of(context)!.createReminder),
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                "Reminder name",
+              Text(
+                AppLocalizations.of(context)!.reminderName,
                 style: TextStyle(color: secondaryColor),
               ),
               sizeVer(5),
@@ -100,20 +109,20 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
                 initialValue: _name,
                 validator: (value) {
                   if ((value == null || value == "")) {
-                    return "Please enter valid name";
+                    return AppLocalizations.of(context)!.pleaseEnterValidName;
                   }
                   return null;
                 },
                 onSaved: (newValue) {
                   _name = newValue!;
                 },
-                decoration: const InputDecoration(
-                  hintText: "Name",
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context)!.name,
                 ),
               ),
               sizeVer(30),
-              const Text(
-                "Reminder frequency",
+              Text(
+                AppLocalizations.of(context)!.reminderFrequency,
                 style: TextStyle(color: secondaryColor),
               ),
               sizeVer(5),
@@ -143,8 +152,8 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
                 },
               ),
               sizeVer(20),
-              const Text(
-                "Day",
+              Text(
+                AppLocalizations.of(context)!.day,
                 style: TextStyle(color: secondaryColor),
               ),
               sizeVer(5),
@@ -158,9 +167,9 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
                           selectedDate: _selectedDate,
                           firstDay: _isUpdate
                               ? DateTime(
-                                  _reminder!.year??DateTime.now().year,
-                                  _reminder!.month??DateTime.now().month,
-                                  _reminder!.day??DateTime.now().day,
+                                  _reminder!.year ?? DateTime.now().year,
+                                  _reminder!.month ?? DateTime.now().month,
+                                  _reminder!.day ?? DateTime.now().day,
                                 )
                               : DateTime.now(),
                           setDate: setDate,
@@ -179,8 +188,8 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
                 ),
               ),
               sizeVer(30),
-              const Text(
-                "Time",
+              Text(
+                AppLocalizations.of(context)!.time,
                 style: TextStyle(color: secondaryColor),
               ),
               sizeVer(5),
@@ -203,15 +212,15 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
                 ),
               ),
               sizeVer(30),
-              const Text(
-                "Comment",
+              Text(
+                AppLocalizations.of(context)!.comment,
                 style: TextStyle(color: secondaryColor),
               ),
               sizeVer(5),
               TextField(
                 controller: _commentController,
-                decoration: const InputDecoration(
-                  hintText: "Comment",
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context)!.comment,
                 ),
               ),
               sizeVer(20),
@@ -225,7 +234,7 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
                         color: Colors.red.shade900,
                       ),
                       label: Text(
-                        "Delete",
+                        AppLocalizations.of(context)!.delete,
                         style: Theme.of(context)
                             .textTheme
                             .titleLarge!
@@ -239,7 +248,9 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
         floatingActionButton: MediaQuery.of(context).viewInsets.bottom != 0
             ? null
             : MyButtonWidget(
-                title: _isUpdate ? "Save" : "Create",
+                title: _isUpdate
+                    ? AppLocalizations.of(context)!.save
+                    : AppLocalizations.of(context)!.create,
                 width: MediaQuery.of(context).size.width * .9,
                 onTap: () {
                   if (_formKey.currentState!.validate()) {
@@ -292,7 +303,7 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Are you sure you want to delete?"),
+          title: Text(AppLocalizations.of(context)!.areYouSureYouWantToDelete),
           actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: [
             Row(
@@ -306,15 +317,15 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
                         Navigator.pop(context);
                         Navigator.pop(context);
                       },
-                      child: const Text(
-                        "Yes",
+                      child: Text(
+                        AppLocalizations.of(context)!.yes,
                       )),
                 ),
                 Expanded(
                   child: TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text(
-                        "No",
+                      child: Text(
+                        AppLocalizations.of(context)!.no,
                       )),
                 ),
               ],
@@ -331,15 +342,15 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
       case Frequency.once:
         _repeats = false;
         _weekday = null;
-        return "Once";
+        return AppLocalizations.of(context)!.once;
       case Frequency.daily:
         _repeats = true;
         _weekday = null;
-        return "Daily";
+        return AppLocalizations.of(context)!.daily;
       case Frequency.onceAWeek:
         _repeats = true;
         _weekday = _selectedDate.weekday;
-        return "Once a week";
+        return AppLocalizations.of(context)!.onceAWeek;
       default:
         return '';
     }

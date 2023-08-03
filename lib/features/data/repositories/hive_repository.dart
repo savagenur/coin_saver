@@ -5,6 +5,7 @@ import 'package:coin_saver/features/domain/entities/currency/currency_entity.dar
 import 'package:coin_saver/features/domain/entities/reminder/reminder_entity.dart';
 import 'package:coin_saver/features/domain/repositories/base_hive_repository.dart';
 
+import '../../domain/entities/settings/settings_entity.dart';
 import '../../domain/entities/transaction/transaction_entity.dart';
 
 class HiveRepository implements BaseHiveRepository {
@@ -20,7 +21,8 @@ class HiveRepository implements BaseHiveRepository {
   @override
   Future<void> initHive() async => hiveLocalDataSource.initHive();
   @override
-  Future<void> firstInitUser(CurrencyEntity currencyEntity)async => hiveLocalDataSource.firstInitUser(currencyEntity);
+  Future<void> firstInitUser(CurrencyEntity currencyEntity) async =>
+      hiveLocalDataSource.firstInitUser(currencyEntity);
   // Account
   @override
   Future<void> createAccount(AccountEntity accountEntity) async =>
@@ -180,4 +182,18 @@ class HiveRepository implements BaseHiveRepository {
   @override
   Future<void> updateReminder({required ReminderEntity reminderEntity}) async =>
       hiveLocalDataSource.updateReminder(reminderEntity: reminderEntity);
+
+  // Settings
+  @override
+  Future<void> updateLanguage(String language) async =>
+      hiveLocalDataSource.updateLanguage(language);
+  @override
+  Future<void> updateTheme(bool isDarkTheme) async =>
+      hiveLocalDataSource.updateTheme(isDarkTheme);
+  @override
+  Future<SettingsEntity> getSettings() async => hiveLocalDataSource.getSettings();
+
+  // Delete all data
+  @override
+  Future<void> deleteAllData() async => hiveLocalDataSource.deleteAllData();
 }

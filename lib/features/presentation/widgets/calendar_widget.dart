@@ -1,3 +1,4 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/features/presentation/widgets/my_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -71,7 +72,7 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       ),
       actions: [
         MyButtonWidget(
-          title: "Done",
+          title: AppLocalizations.of(context)!.done,
           onTap: () {
             if (_selectedDayConverted != null) {
               context

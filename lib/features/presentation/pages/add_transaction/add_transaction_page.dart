@@ -10,8 +10,10 @@ import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dar
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_category/selected_category_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/pages/add_category/add_category_page.dart';
+import 'package:coin_saver/features/presentation/pages/add_transaction/widget/calculator_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
 import 'package:coin_saver/features/presentation/pages/main_transaction/main_transaction_page.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/features/presentation/pages/transactions/transactions_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -63,6 +65,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
   int _selectedDay = 0;
   late double _amount;
   late final TextEditingController _descriptionController;
+  late final TextEditingController _amountController;
 
   // DateTime vars
   DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
@@ -108,7 +111,8 @@ class AddTransactionPageState extends State<AddTransactionPage>
     selectedDateCubit = context.read<SelectedDateCubit>();
     // First init
     _amount = widget.transaction?.amount ?? 0;
-
+    _amountController = TextEditingController(
+        text: _amount == 0 ? "" : _amount.round().toString());
     _descriptionController =
         TextEditingController(text: widget.transaction?.description);
     selectedCategoryCubit.changeCategory(widget.category);
@@ -131,7 +135,16 @@ class AddTransactionPageState extends State<AddTransactionPage>
   @override
   void dispose() {
     _tabController.dispose();
+    _descriptionController.dispose();
+    _amountController.dispose();
     super.dispose();
+  }
+
+  void setAmount(double newValue) {
+    setState(() {
+      _amount = newValue;
+      _amountController.text = newValue.toString();
+    });
   }
 
   @override
@@ -180,27 +193,30 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                   length: 2,
                                   child: Scaffold(
                                     appBar: _buildAppBar(),
-                                    body: Listener(
-                                      onPointerDown: (_) {
-                                        FocusScope.of(context).unfocus();
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(10),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            _buildInputAmount(context),
-                                            const Divider(),
-                                            Expanded(
+                                    body: Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          _buildInputAmount(context),
+                                          const Divider(),
+                                          Expanded(
+                                            child: Listener(
+                                              onPointerDown: (_) {
+                                                FocusScope.of(context)
+                                                    .unfocus();
+                                              },
                                               child: SingleChildScrollView(
                                                 child: Column(
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   children: [
                                                     sizeVer(10),
-                                                    const Text(
-                                                      "Account:",
+                                                    Text(
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .account,
                                                       style: TextStyle(
                                                           color: Colors.grey),
                                                     ),
@@ -210,15 +226,19 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                                     sizeVer(10),
                                                     Row(
                                                       children: [
-                                                        const Text(
-                                                          "Categories:",
+                                                        Text(
+                                                          AppLocalizations.of(
+                                                                  context)!
+                                                              .categories,
                                                           style: TextStyle(
                                                               color:
                                                                   Colors.grey),
                                                         ),
                                                         Text(
                                                           isErrorCategory
-                                                              ? " Please Select Category"
+                                                              ? AppLocalizations
+                                                                      .of(context)!
+                                                                  .pleaseSelectCategory
                                                               : "",
                                                           style: TextStyle(
                                                               color: Colors.red
@@ -233,8 +253,10 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                                     _buildSelectDay(
                                                         context, _selectedDay),
                                                     sizeVer(20),
-                                                    const Text(
-                                                      "Comment:",
+                                                    Text(
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .comment,
                                                       style: TextStyle(
                                                           color: Colors.grey),
                                                     ),
@@ -249,8 +271,11 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                                       minLines: 1,
                                                       maxLines: 6,
                                                       decoration:
-                                                          const InputDecoration(
-                                                        hintText: "Comment...",
+                                                          InputDecoration(
+                                                        hintText:
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .comment,
                                                       ),
                                                     ),
                                                     sizeVer(30),
@@ -258,8 +283,8 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                                 ),
                                               ),
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                     floatingActionButtonLocation:
@@ -271,7 +296,8 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                             0
                                         ? null
                                         : MyButtonWidget(
-                                            title: 'Add',
+                                            title: AppLocalizations.of(context)!
+                                                .add,
                                             width: MediaQuery.of(context)
                                                     .size
                                                     .width *
@@ -365,7 +391,9 @@ class AddTransactionPageState extends State<AddTransactionPage>
             },
             selected: accounts[index] == _account,
             title: accounts[index].name,
-            subtitle: NumberFormat.compactCurrency(symbol: accounts[index].currency.symbol).format(accounts[index].balance),
+            subtitle: NumberFormat.compactCurrency(
+                    symbol: accounts[index].currency.symbol)
+                .format(accounts[index].balance),
             icon: accounts[index].iconData,
           ),
         );
@@ -383,7 +411,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
               ),
               sizeHor(5),
               Text(
-                _account?.name ?? "Not selected!",
+                _account?.name ?? AppLocalizations.of(context)!.notSelected,
                 style: Theme.of(context)
                     .textTheme
                     .titleMedium!
@@ -409,17 +437,17 @@ class AddTransactionPageState extends State<AddTransactionPage>
           child: SizedBox(
             width: MediaQuery.of(context).size.width * .3,
             child: TextFormField(
-              initialValue: _amount == 0 ? null : _amount.round().toString(),
+              controller: _amountController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return "Please enter\nvalid amount.";
+                  return AppLocalizations.of(context)!.pleaseEnterValidAmount;
                 }
                 return null;
               },
               onSaved: (newValue) {
                 _amount = double.parse(newValue!);
               },
-              maxLength: 12,
+              maxLength: 14,
               autofocus: true,
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
@@ -457,7 +485,16 @@ class AddTransactionPageState extends State<AddTransactionPage>
                     .copyWith(color: Theme.of(context).primaryColor),
               ),
               IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    FocusScope.of(context).unfocus();
+                    Navigator.pushNamed(context, PageConst.calculatorPage,
+                        arguments: CalculatorPage(
+                          setAmount: setAmount,
+                          currentValue: _amountController.text == ""
+                              ? 0
+                              : double.parse(_amountController.text),
+                        ));
+                  },
                   icon: const Icon(FontAwesomeIcons.calculator)),
             ],
           ),
@@ -567,14 +604,19 @@ class AddTransactionPageState extends State<AddTransactionPage>
 
   Padding _buildSelectDay(BuildContext context, int selectedDay) {
     final List<DateEntity> days = [
-      DateEntity(name: "today", dateTime: today),
-      DateEntity(name: "yesterday", dateTime: yesterday),
+      DateEntity(name: AppLocalizations.of(context)!.today, dateTime: today),
+      DateEntity(
+          name: AppLocalizations.of(context)!.yesterday, dateTime: yesterday),
       // Checks two days ago or selected day
       formattedDate(twoDaysAgo) == formattedDate(_selectedDate) ||
               formattedDate(yesterday) == formattedDate(_selectedDate) ||
               formattedDate(today) == formattedDate(_selectedDate)
-          ? DateEntity(name: "two days ago", dateTime: twoDaysAgo)
-          : DateEntity(name: "selected day", dateTime: _selectedDate),
+          ? DateEntity(
+              name: AppLocalizations.of(context)!.twoDaysAgo,
+              dateTime: twoDaysAgo)
+          : DateEntity(
+              name: AppLocalizations.of(context)!.selectedDay,
+              dateTime: _selectedDate),
     ];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -667,7 +709,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
                     isIncome: _isIncome,
                   ));
             },
-            child: const Column(
+            child: Column(
               children: [
                 CircleAvatar(
                   backgroundColor: secondaryColor,
@@ -678,7 +720,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
                   ),
                 ),
                 Text(
-                  "More",
+                  AppLocalizations.of(context)!.more,
                   maxLines: 1,
                 ),
               ],
@@ -754,7 +796,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
             selectedCategoryCubit.changeCategory(null);
           },
           icon: const Icon(FontAwesomeIcons.arrowLeft)),
-      title: const Text("Add Transactions"),
+      title: Text(AppLocalizations.of(context)!.addTransactions),
       bottom: TabBar(
         controller: _tabController,
         onTap: (value) {
@@ -776,11 +818,11 @@ class AddTransactionPageState extends State<AddTransactionPage>
         padding: const EdgeInsets.symmetric(horizontal: 20),
         indicatorPadding: const EdgeInsets.only(bottom: 5),
         labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-        tabs: const [
+        tabs: [
           Tab(
-            child: Text("EXPENSES"),
+            child: Text(AppLocalizations.of(context)!.expensesUpperCase),
           ),
-          Tab(child: Text("INCOME")),
+          Tab(child: Text(AppLocalizations.of(context)!.incomeUpperCase)),
         ],
       ),
     );

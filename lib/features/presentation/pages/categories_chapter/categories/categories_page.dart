@@ -8,6 +8,7 @@ import 'package:pull_down_button/pull_down_button.dart';
 import '../../../../../constants/constants.dart';
 import '../../../bloc/category/category_bloc.dart';
 import '../../../widgets/my_drawer.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../create_category/create_category_page.dart';
 
 class CategoriesPage extends StatefulWidget {
@@ -64,7 +65,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                   isIncome: _isIncome,
                                 ));
                           },
-                          child: const Column(
+                          child:   Column(
                             children: [
                               CircleAvatar(
                                 backgroundColor: secondaryColor,
@@ -75,7 +76,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                 ),
                               ),
                               Text(
-                                "Create",
+                                AppLocalizations.of(context)!.create,
                                 maxLines: 1,
                               ),
                             ],
@@ -92,9 +93,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                   showDialog(
                                     context: context,
                                     builder: (context) => AlertDialog(
-                                      title: const Text("Delete category?"),
-                                      content: const Text(
-                                          "All operations it contains will be moved to the Other category."),
+                                      title:  Text(AppLocalizations.of(context)!.deleteCategory),
+                                      content:  Text(
+                                          AppLocalizations.of(context)!.allOperationsItContainsWillBe),
                                       actionsAlignment:
                                           MainAxisAlignment.spaceEvenly,
                                       actions: [
@@ -102,7 +103,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                             onPressed: () {
                                               Navigator.pop(context);
                                             },
-                                            child: const Text("NO")),
+                                            child:   Text(AppLocalizations.of(context)!.no)),
                                         TextButton(
                                             onPressed: () {
                                               context.read<CategoryBloc>().add(
@@ -114,12 +115,12 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                                   .add(GetAccounts());
                                               Navigator.pop(context);
                                             },
-                                            child: const Text("YES"))
+                                            child:   Text(AppLocalizations.of(context)!.yes))
                                       ],
                                     ),
                                   );
                                 },
-                                title: "Delete",
+                                title: AppLocalizations.of(context)!.delete,
                                 icon: FontAwesomeIcons.trash,
                                 iconColor: Colors.red.shade900,
                               ),
@@ -136,11 +137,11 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                     category.id == "otherExpense") {
                                   showDialog(
                                     context: context,
-                                    builder: (context) => const Dialog(
+                                    builder: (context) =>   Dialog(
                                       child: Padding(
                                         padding: EdgeInsets.all(30),
                                         child: Text(
-                                          "This is a service category and cannot be edited.",
+                                          AppLocalizations.of(context)!.thisIsAServiceCategoryAnd,
                                           textAlign: TextAlign.center,
                                         ),
                                       ),
@@ -196,7 +197,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
             onPressed: () => _scaffoldKey.currentState?.openDrawer(),
             icon: const Icon(FontAwesomeIcons.bars)),
         centerTitle: true,
-        title: const Text("Categories"),
+        title:   Text(AppLocalizations.of(context)!.categories),
         bottom: TabBar(
           onTap: (value) {
             switch (value) {
@@ -216,11 +217,11 @@ class _CategoriesPageState extends State<CategoriesPage> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           indicatorPadding: const EdgeInsets.only(bottom: 5),
           labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-          tabs: const [
+          tabs:   [
             Tab(
-              child: Text("EXPENSES"),
+              child: Text(AppLocalizations.of(context)!.expensesUpperCase),
             ),
-            Tab(child: Text("INCOME")),
+            Tab(child: Text(AppLocalizations.of(context)!.incomeUpperCase)),
           ],
         ));
   }

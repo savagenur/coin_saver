@@ -2,6 +2,8 @@ import 'package:coin_saver/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -17,9 +19,8 @@ class WelcomePageState extends State<WelcomePage> {
   Widget build(BuildContext context) {
     List<PageViewModel> pageViewModels = [
       PageViewModel(
-        title: "Welcome to Coin Saver - Your Financial Companion!",
-        body:
-            "Welcome to Coin Saver, your ultimate financial companion. Powered by Flutter, our app provides a seamless and user-friendly experience for managing your finances effortlessly.",
+        title: AppLocalizations.of(context)!.welcomePageTitle1,
+        body: AppLocalizations.of(context)!.welcomePageBody1,
         image: Image.asset(
           "assets/page1.jpg",
           fit: BoxFit.cover,
@@ -27,9 +28,8 @@ class WelcomePageState extends State<WelcomePage> {
         ),
       ),
       PageViewModel(
-        title: "Financial Freedom Made Simple",
-        body:
-            "Experience financial freedom with Coin Saver. Track expenses, set goals, and watch your savings grow. Our intuitive interface caters to users of all levels of financial expertise.",
+        title: AppLocalizations.of(context)!.welcomePageTitle2,
+        body: AppLocalizations.of(context)!.welcomePageBody2,
         image: SizedBox(
           child: Image.asset(
             "assets/page2.jpg",
@@ -40,9 +40,8 @@ class WelcomePageState extends State<WelcomePage> {
         decoration: const PageDecoration(),
       ),
       PageViewModel(
-        title: "Security at Its Best",
-        body:
-            "Your security is our priority. With robust encryption technology, Coin Saver keeps your financial data safe and confidential. Trust us to safeguard your privacy as you focus on your financial journey.",
+        title: AppLocalizations.of(context)!.welcomePageTitle3,
+        body: AppLocalizations.of(context)!.welcomePageBody3,
         image: SizedBox(
           width: MediaQuery.of(context).size.width,
           child: Image.asset(
@@ -59,8 +58,8 @@ class WelcomePageState extends State<WelcomePage> {
         showNextButton: false,
         showSkipButton: true,
         back: const Icon(FontAwesomeIcons.arrowLeft),
-        skip: const Text("Skip"),
-        done: const Text("Done"),
+        skip:  Text(AppLocalizations.of(context)!.skip),
+        done:  Text(AppLocalizations.of(context)!.done),
         onDone: () {
           Navigator.pushNamedAndRemoveUntil(
               context, PageConst.chooseDefaultCurrencyPage, (route) => false);

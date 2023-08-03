@@ -1,3 +1,4 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_icon/selected_icon_cubit.dart';
 import 'package:coin_saver/features/presentation/widgets/my_button_widget.dart';
@@ -20,7 +21,7 @@ class CatalogIconsPage extends StatelessWidget {
             },
             icon: const Icon(FontAwesomeIcons.arrowLeft)),
         centerTitle: true,
-        title: const Text("Icon Catalog"),
+        title:  Text(AppLocalizations.of(context)!.iconCatalog),
       ),
       body: BlocBuilder<SelectedIconCubit, IconData?>(
         builder: (context, selectedIcon) {
@@ -97,7 +98,7 @@ class CatalogIconsPage extends StatelessWidget {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: MyButtonWidget(
-        title: "Select",
+        title: AppLocalizations.of(context)!.select,
         borderRadius: BorderRadius.circular(50),
         onTap: () {
           Navigator.pop(context);

@@ -1,8 +1,8 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/widgets/account_switch_pull_down_btn.dart';
 import 'package:coin_saver/features/presentation/pages/home/widgets/period_tab_bar.dart';
-import 'package:coin_saver/features/presentation/pages/transactions/widgets/custom_search_widget.dart';
 import 'package:coin_saver/features/presentation/pages/transactions/widgets/list_date_transactions_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -94,6 +94,12 @@ class TransactionsPageState extends State<TransactionsPage>
       _isSearching = false;
       _searchQuery = "";
     });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -297,7 +303,7 @@ class TransactionsPageState extends State<TransactionsPage>
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          "Total: ${NumberFormat.currency(symbol: _account.currency.symbol).format(_totalExpense)}",
+          "${AppLocalizations.of(context)!.total}: ${NumberFormat.currency(symbol: _account.currency.symbol).format(_totalExpense)}",
           style: Theme.of(context)
               .textTheme
               .titleMedium!
@@ -314,17 +320,19 @@ class TransactionsPageState extends State<TransactionsPage>
                 PopupMenuItem(
                     value: Filter.byDate,
                     onTap: () {},
-                    child: const Text("By date")),
+                    child: Text(AppLocalizations.of(context)!.byDate)),
                 PopupMenuItem(
                     value: Filter.byAmount,
                     onTap: () {},
-                    child: const Text("By amount")),
+                    child: Text(AppLocalizations.of(context)!.byAmount)),
               ];
             },
             child: Row(
               children: [
                 Text(
-                  _selectedFilter == Filter.byDate ? "By date" : "By amount",
+                  _selectedFilter == Filter.byDate
+                      ? AppLocalizations.of(context)!.byDate
+                      : AppLocalizations.of(context)!.byAmount,
                   style: const TextStyle(decoration: TextDecoration.underline),
                 ),
                 const Icon(Icons.arrow_drop_down)
@@ -351,9 +359,9 @@ class TransactionsPageState extends State<TransactionsPage>
           autofocus: true,
           cursorColor: Colors.white,
           style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintStyle: TextStyle(color: Colors.white),
-            hintText: 'Search...',
+            hintText: '${AppLocalizations.of(context)!.search}...',
             border: InputBorder.none,
           ),
         ),
@@ -392,11 +400,11 @@ class TransactionsPageState extends State<TransactionsPage>
           padding: const EdgeInsets.symmetric(horizontal: 20),
           indicatorPadding: const EdgeInsets.only(bottom: 5),
           labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-          tabs: const [
+          tabs: [
             Tab(
-              child: Text("EXPENSES"),
+              child: Text(AppLocalizations.of(context)!.expensesUpperCase),
             ),
-            Tab(child: Text("INCOME")),
+            Tab(child: Text(AppLocalizations.of(context)!.incomeUpperCase)),
           ],
         ),
         actions: [

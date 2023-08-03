@@ -1,0 +1,466 @@
+{
+  "save": "Save",
+  "@save": {
+    "description": "Button title"
+  },
+  "skip": "Skip",
+  "@skip": {
+    "description": "Skip"
+  },
+  "next": "Next",
+  "@next": {
+    "description": "next"
+  },
+  "done": "Done",
+  "@done": {
+    "description": "Done"
+  },
+  "search": "Search",
+  "@search": {
+    "description": "search"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings"
+  },
+  "language": "English",
+  "@language": {
+    "description": "The current language"
+  },
+  "languageTitle": "Language",
+  "@languageTitle": {
+    "description": "The current languageTitle"
+  },
+  "lightTheme": "Light Theme",
+  "@lightTheme": {
+    "description": "The current lightTheme"
+  },
+  "darkTheme": "Dark Theme",
+  "@darkTheme": {
+    "description": "The current darkTheme"
+  },
+  "themeTitle": "Theme",
+  "@themeTitle": {
+    "description": "The current themeTitle"
+  },
+  "deleteAllTheData": "Delete all the data",
+  "@deleteAllTheData": {
+    "description": "The current deleteAllTheData"
+  },
+  "welcomePageTitle1": "Welcome to Coin Saver - Your Financial Companion!",
+  "@welcomePageTitle1": {
+    "description": "Welcome page title 1"
+  },
+  "welcomePageTitle2": "Financial Freedom Made Simple",
+  "@welcomePageTitle2": {
+    "description": "Welcome page title 2"
+  },
+  "welcomePageTitle3": "Security at Its Best",
+  "@welcomePageTitle3": {
+    "description": "Welcome page title 3"
+  },
+  "welcomePageBody1": "Welcome to Coin Saver, your ultimate financial companion. Powered by Flutter, our app provides a seamless and user-friendly experience for managing your finances effortlessly.",
+  "@welcomePageBody1": {
+    "description": "welcomePageBody1"
+  },
+  "welcomePageBody2": "Experience financial freedom with Coin Saver. Track expenses, set goals, and watch your savings grow. Our intuitive interface caters to users of all levels of financial expertise.",
+  "@welcomePageBody2": {
+    "description": "welcomePageBody2"
+  },
+  "chooseYourDefaultCurrency": "Choose your default currency",
+  "@chooseYourDefaultCurrency": {
+    "description": "Button chooseYourDefaultCurrency"
+  },
+  "expensesUpperCase": "EXPENSES",
+  "@expensesUpperCase": {
+    "description": "Button expensesUpperCase"
+  },
+  "incomeUpperCase": "INCOME",
+  "@incomeUpperCase": {
+    "description": "Button incomeUpperCase"
+  },
+  "generalUpperCase": "GENERAL",
+  "@generalUpperCase": {
+    "description": "Button generalUpperCase"
+  },
+  "thereIsNoTransactionYet": "There is no transaction yet!",
+  "@thereIsNoTransactionYet": {
+    "description": "Button thereIsNoTransactionYet"
+  },
+  "charts": "Charts",
+  "@charts": {
+    "description": "Button charts"
+  },
+  "day": "Day",
+  "@day": {
+    "description": "Button day"
+  },
+  "week": "Week",
+  "@week": {
+    "description": "Button week"
+  },
+  "month": "Month",
+  "@month": {
+    "description": "Button month"
+  },
+  "year": "Year",
+  "@year": {
+    "description": "Button year"
+  },
+  "period": "Period",
+  "@period": {
+    "description": "Button period"
+  },
+  "today": "Today",
+  "@today": {
+    "description": "Button today"
+  },
+  "yesterday": "Yesterday",
+  "@yesterday": {
+    "description": "Button yesterday"
+  },
+  "expense": "Expense",
+  "@expense": {
+    "description": "Expense"
+  },
+  "income": "Income",
+  "@income": {
+    "description": "Income"
+  },
+  "loss": "Loss",
+  "@loss": {
+    "description": "Loss"
+  },
+  "addCategory": "Add Category",
+  "@addCategory": {
+    "description": "addCategory"
+  },
+  "create": "Create",
+  "@create": {
+    "description": "create"
+  },
+  "account": "Account",
+  "@account": {
+    "description": "account"
+  },
+  "pleaseSelectCategory": " Please select category",
+  "@pleaseSelectCategory": {
+    "description": "pleaseSelectCategory"
+  },
+  "twoDaysAgo": "Two days ago",
+  "@twoDaysAgo": {
+    "description": "twoDaysAgo"
+  },
+  "selectedDay": "Selected day",
+  "@selectedDay": {
+    "description": "selectedDay"
+  },
+
+
+  "more": "More",
+  "@more": {
+    "description": "more"
+  },
+  "iconCatalog": "Icon Catalog",
+  "@iconCatalog": {
+    "description": "iconCatalog"
+  },
+  "select": "Select",
+  "@select": {
+    "description": "select"
+  },
+  "deleteCategory": "Delete category?",
+  "@deleteCategory": {
+    "description": "deleteCategory"
+  },
+  "allOperationsItContainsWillBe": "All operations it contains will be moved to the Other category.",
+  "@allOperationsItContainsWillBe": {
+    "description": "allOperationsItContainsWillBe"
+  },
+  "thisIsAServiceCategoryAnd": "This is a service category and cannot be edited.",
+  "@thisIsAServiceCategoryAnd": {
+    "description": "thisIsAServiceCategoryAnd"
+  },
+  "selectedColor": "Selected color",
+  "@selectedColor": {
+    "description": "selectedColor"
+  },
+  "addColor": "Add color",
+  "@addColor": {
+    "description": "addColor"
+  },
+  "createCategory": "Create Category",
+  "@createCategory": {
+    "description": "createCategory"
+  },
+  "pleaseEnterCategory": "Please enter category",
+  "@pleaseEnterCategory": {
+    "description": "pleaseEnterCategory"
+  },
+  "categoryName": "Category Name",
+  "@categoryName": {
+    "description": "categoryName"
+  },
+  "type": "Type",
+  "@type": {
+    "description": "type"
+  },
+  "colors": "Colors",
+  "@colors": {
+    "description": "colors"
+  },
+
+
+
+  "reminderName": "Reminder name",
+  "@reminderName": {
+    "description": "reminderName"
+  },
+  "pleaseEnterValidName": "Please enter valid name",
+  "@pleaseEnterValidName": {
+    "description": "pleaseEnterValidName"
+  },
+  "name": "Name",
+  "@name": {
+    "description": "name"
+  },
+  "reminderFrequency": "Reminder frequency",
+  "@reminderFrequency": {
+    "description": "reminderFrequency"
+  },
+  "time": "Time",
+  "@time": {
+    "description": "time"
+  },
+  "once": "Once",
+  "@once": {
+    "description": "once"
+  },
+  "daily": "Daily",
+  "@daily": {
+    "description": "daily"
+  },
+  "onceAWeek": "Once a week",
+  "@onceAWeek": {
+    "description": "onceAWeek"
+  },
+
+
+  "createReminder": "Create Reminder",
+  "@createReminder": {
+    "description": "createReminder"
+  },
+  "updateReminder": "Update Reminder",
+  "@updateReminder": {
+    "description": "updateReminder"
+  },
+  "transactionDetails": "Transaction Details",
+  "@transactionDetails": {
+    "description": "transactionDetails"
+  },
+  "amount": "Amount",
+  "@amount": {
+    "description": "amount"
+  },
+  "category": "Category",
+  "@category": {
+    "description": "category"
+  },
+  
+
+
+
+
+  "addTransactions": "Add Transactions",
+  "@addTransactions": {
+    "description": "addTransactions"
+  },
+  "transferDetail": "Transfer Details",
+  "@transferDetail": {
+    "description": "transferDetail"
+  },
+  "transfers": "Transfers",
+  "@transfers": {
+    "description": "transfers"
+  },
+  "addAccount": "Add account",
+  "@addAccount": {
+    "description": "addAccount"
+  },
+  "updateAccount": "Update account",
+  "@updateAccount": {
+    "description": "updateAccount"
+  },
+  "accountName": "Account name",
+  "@accountName": {
+    "description": "accountName"
+  },
+  "pleaseEnterAccountName": " Please enter account name",
+  "@pleaseEnterAccountName": {
+    "description": "pleaseEnterAccountName"
+  },
+  "enterAccountName": "Enter account name",
+  "@enterAccountName": {
+    "description": "enterAccountName"
+  },
+  "icons": "Icons",
+  "@icons": {
+    "description": "icons"
+  },
+  "pleaseSelectIcon": " Please select icon",
+  "@pleaseSelectIcon": {
+    "description": "pleaseSelectIcon"
+  },
+  "color": "Color",
+  "@color": {
+    "description": "color"
+  },
+  "pleaseSelectColor": " Please select color",
+  "@pleaseSelectColor": {
+    "description": "pleaseSelectColor"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "delete"
+  },
+  "selectCurrency": "Select currency",
+  "@selectCurrency": {
+    "description": "selectCurrency"
+  },
+  "areYouSureYouWantToDelete": "Are you sure you want to delete?",
+  "@areYouSureYouWantToDelete": {
+    "description": "areYouSureYouWantToDelete"
+  },
+  "yes": "Yes",
+  "@yes": {
+    "description": "yes"
+  },
+  "no": "No",
+  "@no": {
+    "description": "no"
+  },
+  "transferFromAccount": "Transfer from account",
+  "@transferFromAccount": {
+    "description": "transferFromAccount"
+  },
+  "transferToAccount": "Transfer to account",
+  "@transferToAccount": {
+    "description": "transferToAccount"
+  },
+  "transferAmount": "Transfer amount",
+  "@transferAmount": {
+    "description": "transferAmount"
+  },
+  "comment": "Comment",
+  "@comment": {
+    "description": "comment"
+  },
+  "update": "Update",
+  "@update": {
+    "description": "update"
+  },
+  "add": "Add",
+  "@add": {
+    "description": "add"
+  },
+  "pleaseEnterValidAmount": "Please enter\nvalid amount.",
+  "@pleaseEnterValidAmount": {
+    "description": "pleaseEnterValidAmount"
+  },
+  "notSelected": "Not selected",
+  "@notSelected": {
+    "description": "notSelected"
+  },
+  "createTransfer": "Create transfer",
+  "@createTransfer": {
+    "description": "createTransfer"
+  },
+  "updateTransfer": "Update transfer",
+  "@updateTransfer": {
+    "description": "updateTransfer"
+  },
+  "transferHistory": "Transfer history",
+  "@transferHistory": {
+    "description": "transferHistory"
+  },
+  "newTransfer": "New transfer",
+  "@newTransfer": {
+    "description": "newTransfer"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "home"
+  },
+  "accounts": "Accounts",
+  "@accounts": {
+    "description": "accounts"
+  },
+  "categories": "Categories",
+  "@categories": {
+    "description": "categories"
+  },
+  "reminders": "Reminders",
+  "@reminders": {
+    "description": "reminders"
+  },
+  "turnOffAds": "Turn off Ads",
+  "@turnOffAds": {
+    "description": "turnOffAds"
+  },
+  "shareWithFriends": "Share with friends",
+  "@shareWithFriends": {
+    "description": "shareWithFriends"
+  },
+  "rateTheApp": "Rate the app",
+  "@rateTheApp": {
+    "description": "rateTheApp"
+  },
+  "total": "Total",
+  "@total": {
+    "description": "total"
+  },
+  "signUp": "Sign up",
+  "@signUp": {
+    "description": "signUp"
+  },
+  "allTime": "All time",
+  "@allTime": {
+    "description": "allTime"
+  },
+  "byDate": "by Date",
+  "@byDate": {
+    "description": "byDate"
+  },
+  "byAmount": "by Amount",
+  "@byAmount": {
+    "description": "byAmount"
+  },
+  "profit": "Profit",
+  "@profit": {
+    "description": "Profit"
+  },
+  "byYear": "by Year",
+  "@byYear": {
+    "description": "Button byYear"
+  },
+  "byMonth": "by Month",
+  "@byMonth": {
+    "description": "Button byMonth"
+  },
+  "byWeek": "by Week",
+  "@byWeek": {
+    "description": "Button byWeek"
+  },
+  "byDay": "by Day",
+  "@byDay": {
+    "description": "Button byDay"
+  },
+  "shareLinkAnApp": "I'm been using Coin Saver app and I really like it. You should try it, too!\nGoogle Play https://play.google.com/store/apps/details?id=com.savagenur.coin_saver",
+  "@shareLinkAnApp": {
+    "description": "Button shareLinkOfApp"
+  },
+  "welcomePageBody3": "Your security is our priority. With robust encryption technology, Coin Saver keeps your financial data safe and confidential. Trust us to safeguard your privacy as you focus on your financial journey.",
+  "@welcomePageBody3": {
+    "description": "welcomePageBody3"
+  }
+}

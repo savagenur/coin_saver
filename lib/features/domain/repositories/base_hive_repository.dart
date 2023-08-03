@@ -4,6 +4,8 @@ import 'package:coin_saver/features/domain/entities/currency/currency_entity.dar
 import 'package:coin_saver/features/domain/entities/reminder/reminder_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 
+import '../entities/settings/settings_entity.dart';
+
 abstract class BaseHiveRepository {
   // Hive
   Future<void> initHiveAdaptersBoxes();
@@ -79,4 +81,13 @@ abstract class BaseHiveRepository {
   Future<void> updateReminder({required ReminderEntity reminderEntity});
   Future<void> deleteReminder({required ReminderEntity reminderEntity});
   List<ReminderEntity> getReminders();
+
+  // Settings
+  Future<void> updateLanguage(String language);
+  Future<void> updateTheme(bool isDarkTheme);
+  Future<SettingsEntity> getSettings();
+
+  // Delete all data
+  Future<void> deleteAllData();
+
 }

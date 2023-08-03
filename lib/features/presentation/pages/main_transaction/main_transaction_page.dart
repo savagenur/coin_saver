@@ -1,3 +1,4 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
@@ -141,12 +142,12 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                                                     value: Filter.byDate,
                                                     onTap: () {},
                                                     child:
-                                                        const Text("By date")),
+                                                         Text(AppLocalizations.of(context)!.byDate)),
                                                 PopupMenuItem(
                                                     value: Filter.byAmount,
                                                     onTap: () {},
-                                                    child: const Text(
-                                                        "By amount")),
+                                                    child:  Text(
+                                                        AppLocalizations.of(context)!.byAmount)),
                                               ];
                                             },
                                             child: Row(
@@ -154,8 +155,8 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                                                 Text(
                                                   selectedFilter ==
                                                           Filter.byDate
-                                                      ? "By date"
-                                                      : "By amount",
+                                                      ? AppLocalizations.of(context)!.byDate
+                                                      : AppLocalizations.of(context)!.byAmount,
                                                   style: const TextStyle(
                                                       decoration: TextDecoration
                                                           .underline),

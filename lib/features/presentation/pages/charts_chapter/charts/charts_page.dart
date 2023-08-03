@@ -1,18 +1,15 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 import 'package:coin_saver/features/presentation/bloc/home_time_period/home_time_period_bloc.dart';
-import 'package:coin_saver/features/presentation/widgets/shadowed_container_widget.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_down_button/pull_down_button.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
-import '../../../../../constants/chart_period_enum.dart';
-import '../../../../../constants/period_enum.dart';
 import '../../../../../constants/time_group_type_enum.dart';
 import '../../../../data/models/time_group/time_group_model.dart';
 import '../../../bloc/account/account_bloc.dart';
@@ -46,7 +43,16 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
   }
 
   @override
+  void dispose() {
+    _tabController.dispose();
+    _defaultTabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final chartPeriodTitles = kGetChartPeriodTitles(context);
+
     return WillPopScope(onWillPop: () async {
       Navigator.popUntil(context, (route) => route.isFirst);
       return true;
@@ -72,33 +78,29 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
                     children: [
                       TabBar(
                         controller: _tabController,
-                        padding: const EdgeInsets.symmetric(horizontal: 40),
-                        labelPadding:
-                            const EdgeInsets.symmetric(horizontal: 5),
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        labelPadding: const EdgeInsets.symmetric(horizontal: 5),
                         indicatorColor: Theme.of(context).primaryColor,
                         indicatorSize: TabBarIndicatorSize.label,
                         labelStyle: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).primaryColor),
-                        unselectedLabelColor:
-                            Theme.of(context).primaryColor,
+                        unselectedLabelColor: Theme.of(context).primaryColor,
                         onTap: (value) {
                           setState(() {
-                            _timeGroupType =
-                                chartTimeGroupTypeValues[value]!;
+                            _timeGroupType = chartTimeGroupTypeValues[value]!;
                             print(_timeGroupType);
                             _timeGroupModels = groupTransactionsByTime(
                                 _transactions, _timeGroupType);
                             setDateTimeIntervalType();
                           });
                         },
-                        tabs: kChartPeriodTitles
+                        tabs: chartPeriodTitles
                             .map(
                               (e) => Tab(
                                 child: Text(
                                   e,
-                                  style:
-                                      const TextStyle(color: Colors.black),
+                                  style: const TextStyle(color: Colors.black),
                                 ),
                               ),
                             )
@@ -106,26 +108,29 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
                       ),
                       _transactions.isEmpty
                           ? Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.max,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
                                 children: [
                                   Text(
-                                    "There is no transaction yet!",
+                                    AppLocalizations.of(context)!
+                                        .thereIsNoTransactionYet,
                                     textAlign: TextAlign.center,
-                                    
                                     style: Theme.of(context)
                                         .textTheme
-                                        .displaySmall!.copyWith(fontStyle: FontStyle.italic),
+                                        .displaySmall!
+                                        .copyWith(fontStyle: FontStyle.italic),
                                   ),
-                                  const Icon(FontAwesomeIcons.folderOpen,size: 100,color: secondaryColor,),
-                            
-                            
+                                  const Icon(
+                                    FontAwesomeIcons.folderOpen,
+                                    size: 100,
+                                    color: secondaryColor,
+                                  ),
                                 ],
                               ),
-                          )
+                            )
                           : Expanded(
-                            child: Column(
+                              child: Column(
                                 children: [
                                   Expanded(
                                     child: SingleChildScrollView(
@@ -138,7 +143,7 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
                                   _buildLegends()
                                 ],
                               ),
-                          ),
+                            ),
                       sizeVer(50)
                     ],
                   ),
@@ -155,15 +160,15 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
 
   Row _buildLegends() {
     List<String> titles = [
-      "Expense",
-      "Income",
-      "Loss",
-      "Profit",
+      AppLocalizations.of(context)!.expense,
+      AppLocalizations.of(context)!.income,
+      AppLocalizations.of(context)!.loss,
+      AppLocalizations.of(context)!.profit,
     ];
     List<Color> colors = [
       Colors.orange,
       Colors.blue,
-      Colors.red.shade900,
+      Colors.red,
       Colors.green,
     ];
     return Row(
@@ -177,7 +182,10 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
                     color: colors[index],
                   ),
                   sizeHor(5),
-                  Text(titles[index],style: const TextStyle(fontStyle: FontStyle.italic),),
+                  Text(
+                    titles[index],
+                    style: const TextStyle(fontStyle: FontStyle.italic),
+                  ),
                 ],
               )),
     );
@@ -242,7 +250,7 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
     final day = int.parse(value.toString().substring(6, 8));
     final date = DateTime(year, month, day);
     final dateString = _timeGroupType == TimeGroupType.week
-        ? "Week: ${weekNumber(date)}, ${DateFormat.y().format(date)}"
+        ? "${AppLocalizations.of(context)!.week}: ${weekNumber(date)}, ${DateFormat.y().format(date)}"
         : _dateFormat.format(date);
 
     return SideTitleWidget(axisSide: AxisSide.bottom, child: Text(dateString));
@@ -262,26 +270,26 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
 
     switch (rodIndex) {
       case 0:
-        title = "Expense";
+        title = AppLocalizations.of(context)!.expense;
         amount = _timeGroupModels[groupIndex].expense;
 
         date = _timeGroupModels[groupIndex].start;
         dateFormat = DateFormat.yMMMEd().format(date);
         break;
       case 1:
-        title = "Income";
+        title = AppLocalizations.of(context)!.income;
         amount = _timeGroupModels[groupIndex].income;
         date = _timeGroupModels[groupIndex].start;
         dateFormat = DateFormat.yMMMEd().format(date);
         break;
       case 2:
-        title = "Loss";
+        title = AppLocalizations.of(context)!.loss;
         amount = _timeGroupModels[groupIndex].loss;
         date = _timeGroupModels[groupIndex].start;
         dateFormat = DateFormat.yMMMEd().format(date);
         break;
       case 3:
-        title = "Profit";
+        title = AppLocalizations.of(context)!.profit;
         amount = _timeGroupModels[groupIndex].profit;
         date = _timeGroupModels[groupIndex].start;
         dateFormat = DateFormat.yMMMEd().format(date);
@@ -323,7 +331,7 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
       BarChartRodData(
           borderRadius: BorderRadius.circular(5),
           width: 20,
-          color: Colors.red.shade800,
+          color: Colors.red,
           toY: _isIncome != null ? 0 : timeGroupModel.loss),
       BarChartRodData(
           borderRadius: BorderRadius.circular(5),
@@ -333,7 +341,6 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
     ];
   }
 
-  
   void setDateTimeIntervalType() {
     switch (_timeGroupType) {
       case TimeGroupType.day:
@@ -357,7 +364,8 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
         break;
     }
   }
-PullDownButton _buildPullDwnBtn() {
+
+  PullDownButton _buildPullDwnBtn() {
     return PullDownButton(
       itemBuilder: (context) {
         return _accounts
@@ -377,17 +385,19 @@ PullDownButton _buildPullDwnBtn() {
             .toList();
       },
       buttonBuilder: (context, showMenu) {
-        return IconButton(onPressed: showMenu, icon: const Icon(FontAwesomeIcons.wallet));
+        return IconButton(
+            onPressed: showMenu, icon: const Icon(FontAwesomeIcons.wallet));
       },
     );
   }
+
   AppBar _buildAppBar() {
     return AppBar(
       leading: IconButton(
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
           icon: const Icon(FontAwesomeIcons.bars)),
       centerTitle: true,
-      title: const Text("Charts"),
+      title: Text(AppLocalizations.of(context)!.charts),
       actions: [
         _buildPullDwnBtn(),
       ],
@@ -416,14 +426,14 @@ PullDownButton _buildPullDwnBtn() {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         indicatorPadding: const EdgeInsets.only(bottom: 5),
         labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-        tabs: const [
+        tabs: [
           Tab(
-            child: Text("GENERAL"),
+            child: Text(AppLocalizations.of(context)!.generalUpperCase),
           ),
           Tab(
-            child: Text("EXPENSES"),
+            child: Text(AppLocalizations.of(context)!.expensesUpperCase),
           ),
-          Tab(child: Text("INCOME")),
+          Tab(child: Text(AppLocalizations.of(context)!.incomeUpperCase)),
         ],
       ),
     );

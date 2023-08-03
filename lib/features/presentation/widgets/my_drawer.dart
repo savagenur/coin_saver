@@ -1,40 +1,38 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/constants/constants.dart';
-import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../../../injection_container.dart';
-import '../bloc/reminder/reminder_bloc.dart';
 
 class MyDrawer extends StatelessWidget {
-  const MyDrawer({super.key});
+   const MyDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         children: [
-          const UserAccountsDrawerHeader(
+           UserAccountsDrawerHeader(
 
-            accountName: Text("Sign up"),
-            accountEmail: Text(""),
-            currentAccountPicture: CircleAvatar(
+            accountName: Text(AppLocalizations.of(context)!.signUp),
+            accountEmail: const Text(""),
+            currentAccountPicture: const CircleAvatar(
               child: Icon(Icons.person),
             ),
           ),
           
           ListTile(
-            leading: const Icon(FontAwesomeIcons.house),
-            title: const Text('Home'),
+            leading:  const Icon(FontAwesomeIcons.house),
+            title:  Text(AppLocalizations.of(context)!.home),
             onTap: () {
               Navigator.pop(context);
               Navigator.popUntil(context, (route) => route.isFirst);
             },
           ),
           ListTile(
-            leading: const Icon(FontAwesomeIcons.wallet),
-            title: const Text('Accounts'),
+            leading:  const Icon(FontAwesomeIcons.wallet),
+            title:  Text(AppLocalizations.of(context)!.accounts),
             onTap: () {
               Navigator.pop(context);
               Navigator.pushNamed(
@@ -44,8 +42,8 @@ class MyDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(FontAwesomeIcons.chartSimple),
-            title: const Text('Charts'),
+            leading:  const Icon(FontAwesomeIcons.chartSimple),
+            title:  Text(AppLocalizations.of(context)!.charts),
             onTap: () {
               Navigator.pop(context);
               Navigator.pushNamed(
@@ -55,8 +53,8 @@ class MyDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(FontAwesomeIcons.quoteRight),
-            title: const Text('Categories'),
+            leading:  const Icon(FontAwesomeIcons.quoteRight),
+            title:  Text(AppLocalizations.of(context)!.categories),
             onTap: () {
               Navigator.pop(context);
               Navigator.pushNamed(
@@ -66,17 +64,16 @@ class MyDrawer extends StatelessWidget {
             },
           ),
           // ListTile(
-          //   leading: const Icon(FontAwesomeIcons.rotate),
-          //   title: const Text('Regular Payments'),
+          //   leading:  Icon(FontAwesomeIcons.rotate),
+          //   title:  Text('Regular Payments'),
           //   onTap: () {
           //     // Handle drawer item tap (navigate to home screen, etc.).
           //   },
           // ),
           ListTile(
-            leading: const Icon(FontAwesomeIcons.solidBell),
-            title: const Text('Reminders'),
+            leading:  const Icon(FontAwesomeIcons.solidBell),
+            title:  Text(AppLocalizations.of(context)!.reminders),
             onTap: () {
-              // sl<ReminderBloc>().add(const GetReminders());
               Navigator.pop(context);
               Navigator.pushNamed(
                 context,
@@ -85,39 +82,40 @@ class MyDrawer extends StatelessWidget {
             },
           ),
           // ListTile(
-          //   leading: const Icon(FontAwesomeIcons.dollarSign),
-          //   title: const Text('Currency'),
+          //   leading:  Icon(FontAwesomeIcons.dollarSign),
+          //   title:  Text('Currency'),
           //   onTap: () {
           //     // Handle drawer item tap (navigate to settings screen, etc.).
           //   },
           // ),
           ListTile(
-            leading: const Icon(FontAwesomeIcons.gears),
-            title: const Text('Settings'),
+            leading:  const Icon(FontAwesomeIcons.gears),
+            title:  Text(AppLocalizations.of(context)!.settings),
             onTap: () {
-              // Handle drawer item tap (navigate to settings screen, etc.).
+               Navigator.pop(context);
+              Navigator.pushNamed(
+                context,
+                PageConst.settingsPage,
+              );
             },
           ),
-          const ListTile(
-            leading: Icon(FontAwesomeIcons.rectangleAd),
-            title: Text('Turn off ads'),
+           ListTile(
+            leading: const Icon(FontAwesomeIcons.rectangleAd),
+            title: Text(AppLocalizations.of(context)!.turnOffAds),
             onTap: null,
           ),
           ListTile(
-            leading: const Icon(FontAwesomeIcons.shareNodes),
-            title: const Text('Share with friends'),
+            leading:  const Icon(FontAwesomeIcons.shareNodes),
+            title:  Text(AppLocalizations.of(context)!.shareWithFriends),
             onTap: () async {
               Share.share(
-                """
-I'm been using Coin Saver app and I really like it. You should try it, too!
-Google Play https://play.google.com/store/apps/details?id=com.savagenur.coin_saver
-""",
+                AppLocalizations.of(context)!.shareLinkAnApp,
               );
             },
           ),
           ListTile(
-            leading: const Icon(FontAwesomeIcons.star),
-            title: const Text('Rate the app'),
+            leading:  const Icon(FontAwesomeIcons.star),
+            title:  Text(AppLocalizations.of(context)!.rateTheApp),
             onTap: () {
               // Handle drawer item tap (navigate to settings screen, etc.).
             },

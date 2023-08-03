@@ -1,4 +1,5 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/features/domain/entities/reminder/reminder_entity.dart';
 import 'package:coin_saver/features/presentation/pages/reminders_chapter/create_reminder/create_reminder_page.dart';
@@ -51,7 +52,7 @@ class RemindersPageState extends State<RemindersPage> {
                     onPressed: () => _scaffoldKey.currentState?.openDrawer(),
                     icon: const Icon(FontAwesomeIcons.bars)),
                 centerTitle: true,
-                title: const Text("Reminders"),
+                title:   Text(AppLocalizations.of(context)!.reminders),
               ),
               body: SingleChildScrollView(
                 padding: const EdgeInsets.all(10),
@@ -59,27 +60,30 @@ class RemindersPageState extends State<RemindersPage> {
                   children: [
                     ...List.generate(_reminders.length, (index) {
                       final reminder = _reminders[index];
-                      return ListTile(
-                        shape: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                          borderSide: BorderSide.none
-                        ),
-                        tileColor: Colors.white,
-                        onTap: () {
-                          Navigator.pushNamed(
-                              context, PageConst.createReminderPage,
-                              arguments: CreateReminderPage(
-                                reminder: reminder,
-                                isUpdate:true,
-                              ));
-                        },
-                        title: Text(reminder.title),
-                        trailing: Switch(
-                          value: reminder.isActive,
-                          onChanged: (value) {
-                            context.read<ReminderBloc>().add(UpdateReminder(
-                                reminder: reminder.copyWith(isActive: value)));
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: ListTile(
+                          shape: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: BorderSide.none),
+                          tileColor: Colors.white,
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, PageConst.createReminderPage,
+                                arguments: CreateReminderPage(
+                                  reminder: reminder,
+                                  isUpdate: true,
+                                ));
                           },
+                          title: Text(reminder.title),
+                          trailing: Switch(
+                            value: reminder.isActive,
+                            onChanged: (value) {
+                              context.read<ReminderBloc>().add(UpdateReminder(
+                                  reminder:
+                                      reminder.copyWith(isActive: value)));
+                            },
+                          ),
                         ),
                       );
                     }),
@@ -90,7 +94,7 @@ class RemindersPageState extends State<RemindersPage> {
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.centerFloat,
               floatingActionButton: MyButtonWidget(
-                title: "+ Create",
+                title: "+ ${AppLocalizations.of(context)!.create}",
                 borderRadius: BorderRadius.circular(20),
                 onTap: () {
                   Navigator.pushNamed(

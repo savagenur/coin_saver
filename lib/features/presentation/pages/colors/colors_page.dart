@@ -1,3 +1,4 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/main_colors/main_colors_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_color/selected_color_cubit.dart';
@@ -21,7 +22,7 @@ class ColorsPage extends StatelessWidget {
               // context.read<SelectedColorCubit>().changeColor(null);
             },
             icon: const Icon(FontAwesomeIcons.arrowLeft)),
-        title: const Text("Colors"),
+        title:  Text(AppLocalizations.of(context)!.color),
       ),
       body: BlocBuilder<SelectedColorCubit, Color?>(
         builder: (context, selectedColor) {
@@ -35,7 +36,7 @@ class ColorsPage extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      "Selected Color:",
+                      AppLocalizations.of(context)!.selectedColor,
                       style: Theme.of(context)
                           .textTheme
                           .titleLarge!
@@ -86,9 +87,9 @@ class ColorsPage extends StatelessWidget {
                   ),
                 ),
               ),
-              Divider(),
+              const Divider(),
               MyButtonWidget(
-                title: "Add Color",
+                title: AppLocalizations.of(context)!.addColor,
                 borderRadius: BorderRadius.circular(20),
                 width: MediaQuery.of(context).size.width * .8,
                 onTap: selectedColor != null

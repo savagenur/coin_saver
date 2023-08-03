@@ -4,6 +4,7 @@ import 'package:coin_saver/features/presentation/pages/accounts_chapter/crud_acc
 import 'package:coin_saver/features/presentation/pages/accounts_chapter/transfer_history/transfer_history_page.dart';
 import 'package:coin_saver/features/presentation/pages/add_category/add_category_page.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
+import 'package:coin_saver/features/presentation/pages/add_transaction/widget/calculator_page.dart';
 import 'package:coin_saver/features/presentation/pages/catalog_icons/catalog_icons_page.dart';
 import 'package:coin_saver/features/presentation/pages/categories_chapter/categories/categories_page.dart';
 import 'package:coin_saver/features/presentation/pages/charts_chapter/charts/charts_page.dart';
@@ -12,6 +13,7 @@ import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
 import 'package:coin_saver/features/presentation/pages/main_transaction/main_transaction_page.dart';
 import 'package:coin_saver/features/presentation/pages/reminders_chapter/create_reminder/create_reminder_page.dart';
 import 'package:coin_saver/features/presentation/pages/reminders_chapter/reminders/reminders_page.dart';
+import 'package:coin_saver/features/presentation/pages/settings_chapter/settings/settings_page.dart';
 import 'package:coin_saver/features/presentation/pages/transaction_detail/transaction_detail_page.dart';
 import 'package:coin_saver/features/presentation/pages/transactions/transactions_page.dart';
 import 'package:coin_saver/features/presentation/pages/welcome_chapter/choose_default_currency/choose_default_currency_page.dart';
@@ -117,9 +119,20 @@ class AppRoute {
           isUpdate: args.isUpdate,
         ));
       case PageConst.chartsPage:
-        return _routeBuilder(ChartsPage());
+        return _routeBuilder(const ChartsPage());
       case PageConst.chooseDefaultCurrencyPage:
-        return _routeBuilder(ChooseDefaultCurrencyPage());
+        return _routeBuilder(const ChooseDefaultCurrencyPage());
+      case PageConst.settingsPage:
+        return _routeBuilder(const SettingsPage());
+      case PageConst.calculatorPage:
+        args = args as CalculatorPage;
+
+        return PageTransition(
+            child: CalculatorPage(
+              setAmount: args.setAmount,
+              currentValue: args.currentValue,
+            ),
+            type: PageTransitionType.rightToLeft);
       default:
         return _routeBuilder(const NotFoundPage());
     }

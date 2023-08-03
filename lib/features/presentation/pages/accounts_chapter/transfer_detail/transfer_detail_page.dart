@@ -1,6 +1,7 @@
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 import 'package:coin_saver/features/presentation/pages/accounts_chapter/create_transfer/create_transfer_page.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -42,7 +43,7 @@ class _TransferDetailPageState extends State<TransferDetailPage> {
               : "(${NumberFormat.currency(symbol: _accountTo!.currency.symbol).format(widget.transfer.amountTo)})";
           return Scaffold(
             appBar: AppBar(
-              title: const Text("Transfer Details"),
+              title:   Text(AppLocalizations.of(context)!.transferDetail),
               actions: [
                 IconButton(
                   onPressed: () {
@@ -69,8 +70,8 @@ class _TransferDetailPageState extends State<TransferDetailPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   sizeVer(10),
-                  const Text(
-                    "Transfer from account",
+                    Text(
+                    AppLocalizations.of(context)!.transferFromAccount,
                     style: TextStyle(
                       color: secondaryColor,
                     ),
@@ -97,8 +98,8 @@ class _TransferDetailPageState extends State<TransferDetailPage> {
                     ],
                   ),
                   sizeVer(20),
-                  const Text(
-                    "Transfer to account",
+                    Text(
+                    AppLocalizations.of(context)!.transferToAccount,
                     style: TextStyle(
                       color: secondaryColor,
                     ),
@@ -125,8 +126,8 @@ class _TransferDetailPageState extends State<TransferDetailPage> {
                     ],
                   ),
                   sizeVer(20),
-                  const Text(
-                    "Transfer amount",
+                    Text(
+                    AppLocalizations.of(context)!.transferAmount,
                     style: TextStyle(
                       color: secondaryColor,
                     ),
@@ -140,8 +141,8 @@ class _TransferDetailPageState extends State<TransferDetailPage> {
                         .copyWith(fontWeight: FontWeight.w500),
                   ),
                   sizeVer(20),
-                  const Text(
-                    "Day",
+                    Text(
+                    AppLocalizations.of(context)!.day,
                     style: TextStyle(
                       color: secondaryColor,
                     ),
@@ -164,7 +165,7 @@ class _TransferDetailPageState extends State<TransferDetailPage> {
                         color: Colors.red.shade900,
                       ),
                       label: Text(
-                        "Delete",
+                        AppLocalizations.of(context)!.delete,
                         style: Theme.of(context)
                             .textTheme
                             .titleLarge!
@@ -185,7 +186,7 @@ class _TransferDetailPageState extends State<TransferDetailPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Are you sure you want to delete?"),
+          title:   Text(AppLocalizations.of(context)!.areYouSureYouWantToDelete),
           actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: [
             Row(
@@ -206,7 +207,7 @@ class _TransferDetailPageState extends State<TransferDetailPage> {
                         Navigator.pop(context);
                       },
                       child: Text(
-                        "Yes",
+                        AppLocalizations.of(context)!.yes,
                         style: Theme.of(context)
                             .textTheme
                             .titleLarge!
@@ -217,7 +218,7 @@ class _TransferDetailPageState extends State<TransferDetailPage> {
                   child: TextButton(
                       onPressed: () => Navigator.pop(context),
                       child: Text(
-                        "No",
+                        AppLocalizations.of(context)!.no,
                         style: Theme.of(context)
                             .textTheme
                             .titleLarge!

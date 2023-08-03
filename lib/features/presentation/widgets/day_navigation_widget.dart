@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-
-import '../../domain/entities/transaction/transaction_entity.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../bloc/cubit/selected_date/selected_date_cubit.dart';
 import '../bloc/home_time_period/home_time_period_bloc.dart';
 import 'calendar_widget.dart';
@@ -53,11 +52,11 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
             .add(SetDayPeriod(selectedDate: selectedDate));
         return formatDateyMMMMd(selectedDate) ==
                 formatDateyMMMMd(DateTime.now())
-            ? "Today"
+            ? AppLocalizations.of(context)!.today
             : formatDateyMMMMd(selectedDate) ==
                     formatDateyMMMMd(
                         DateTime.now().subtract(const Duration(days: 1)))
-                ? "Yesterday"
+                ? AppLocalizations.of(context)!.yesterday
                 : formatDateyMMMMd(selectedDate);
       case Period.week:
         context

@@ -1,3 +1,4 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/category/category_entity.dart';
@@ -116,6 +117,14 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
   }
 
   @override
+  void dispose() {
+    _amountFromController.dispose();
+    _amountToController.dispose();
+    _commentController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<AccountBloc, AccountState>(
       builder: (context, accountState) {
@@ -131,7 +140,9 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
                   },
                   icon: const FaIcon(FontAwesomeIcons.arrowLeft),
                 ),
-                title: Text(_isUpdate ? "Update transfer" : "Create transfer"),
+                title: Text(_isUpdate
+                    ? AppLocalizations.of(context)!.updateTransfer
+                    : AppLocalizations.of(context)!.createTransfer),
               ),
               body: SingleChildScrollView(
                 padding: const EdgeInsets.all(10),
@@ -139,20 +150,20 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     sizeVer(10),
-                    const Text(
-                      "Transfer from account:",
+                    Text(
+                      AppLocalizations.of(context)!.transferFromAccount,
                       style: TextStyle(color: Colors.grey),
                     ),
                     _buildToPullDownBtn(),
                     sizeVer(10),
-                    const Text(
-                      "Transfer to account:",
+                    Text(
+                      AppLocalizations.of(context)!.transferToAccount,
                       style: TextStyle(color: Colors.grey),
                     ),
                     _buildFromPullDownBtn(),
                     sizeVer(10),
-                    const Text(
-                      "Transfer amount:",
+                    Text(
+                      AppLocalizations.of(context)!.transferAmount,
                       style: TextStyle(color: Colors.grey),
                     ),
                     sizeVer(10),
@@ -168,8 +179,8 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
                       ],
                     ),
                     sizeVer(20),
-                    const Text(
-                      "Day:",
+                    Text(
+                      AppLocalizations.of(context)!.day,
                       style: TextStyle(color: Colors.grey),
                     ),
                     sizeVer(5),
@@ -200,15 +211,15 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
                       ),
                     ),
                     sizeVer(20),
-                    const Text(
-                      "Comment:",
+                    Text(
+                      AppLocalizations.of(context)!.comment,
                       style: TextStyle(color: Colors.grey),
                     ),
                     sizeVer(5),
                     TextField(
                       controller: _commentController,
-                      decoration: const InputDecoration(
-                        hintText: "Comment",
+                      decoration: InputDecoration(
+                        hintText: AppLocalizations.of(context)!.comment,
                       ),
                     ),
                   ],
@@ -219,7 +230,9 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
               floatingActionButton: MyButtonWidget(
                 width: MediaQuery.of(context).size.width * .4,
                 borderRadius: BorderRadius.circular(20),
-                title: _isUpdate ? "Update" : "Add",
+                title: _isUpdate
+                    ? AppLocalizations.of(context)!.update
+                    : AppLocalizations.of(context)!.add,
                 onTap: _buildAddTransfer,
               ),
             ),
@@ -261,7 +274,9 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
                 ? _accountTo!.iconData
                 : FontAwesomeIcons.circleExclamation),
             label: Text(
-              _accountTo != null ? _accountTo!.name : "Not selected",
+              _accountTo != null
+                  ? _accountTo!.name
+                  : AppLocalizations.of(context)!.notSelected,
               style: Theme.of(context)
                   .textTheme
                   .titleMedium!
@@ -302,7 +317,9 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
                 ? _accountFrom!.iconData
                 : FontAwesomeIcons.circleExclamation),
             label: Text(
-              _accountFrom != null ? _accountFrom!.name : "Not selected",
+              _accountFrom != null
+                  ? _accountFrom!.name
+                  : AppLocalizations.of(context)!.notSelected,
               style: Theme.of(context)
                   .textTheme
                   .titleMedium!
@@ -324,7 +341,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
             controller: _amountFromController,
             validator: (value) {
               if (value == null || value.isEmpty || _amountFrom == 0) {
-                return "Please enter\nvalid amount.";
+                return AppLocalizations.of(context)!.pleaseEnterValidAmount;
               }
               return null;
             },
@@ -389,7 +406,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
             controller: _amountToController,
             validator: (value) {
               if (value == null || value.isEmpty || _amountTo == 0) {
-                return "Please enter\nvalid amount.";
+                return AppLocalizations.of(context)!.pleaseEnterValidAmount;
               }
               return null;
             },
@@ -459,12 +476,12 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
       if (_isUpdate) {
         context.read<AccountBloc>().add(
               UpdateTransfer(
-                  accountFrom: _accountFrom!,
-                  accountTo: _accountTo!,
-                  transactionEntity: transaction,
-                  oldAccountFrom:widget.accountFrom!,
-                  oldAccountTo:widget.accountTo!,
-                  ),
+                accountFrom: _accountFrom!,
+                accountTo: _accountTo!,
+                transactionEntity: transaction,
+                oldAccountFrom: widget.accountFrom!,
+                oldAccountTo: widget.accountTo!,
+              ),
             );
         Navigator.pop(context);
       } else {
@@ -480,5 +497,3 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
     }
   }
 }
-
-

@@ -14,6 +14,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_down_button/pull_down_button.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../../../constants/period_enum.dart';
 import '../../../bloc/account/account_bloc.dart';
@@ -40,6 +41,12 @@ class _TransferHistoryPageState extends State<TransferHistoryPage>
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
     context.read<PeriodCubit>().changePeriod(Period.day);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -237,7 +244,7 @@ class _TransferHistoryPageState extends State<TransferHistoryPage>
         },
         icon: const FaIcon(FontAwesomeIcons.arrowLeft),
       ),
-      title: const Text("Transfers"),
+      title: Text(AppLocalizations.of(context)!.transfers),
     );
   }
 }

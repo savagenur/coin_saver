@@ -5,6 +5,7 @@ import 'package:coin_saver/features/data/models/currency/currency_model.dart';
 import 'package:coin_saver/features/data/models/transaction/transaction_model.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../features/data/models/account/account_model.dart';
 
@@ -38,22 +39,31 @@ TransactionModel transactionError = TransactionModel(
     accountId: "accountId",
     isIncome: false,
     color: Colors.black);
-const List<String> kTransactionPeriodTitles = [
-  "Day",
-  "Week",
-  "Month",
-  "Year",
-  "Period",
-];
-const List<String> kChartPeriodTitles = [
-  "by year",
-  "by month",
-  "by week",
-  "by day",
-];
+List<String> kGetTransactionPeriodTitles(BuildContext context) {
+  List<String> transactionPeriodTitles = [
+    AppLocalizations.of(context)!.day,
+    AppLocalizations.of(context)!.week,
+    AppLocalizations.of(context)!.month,
+    AppLocalizations.of(context)!.year,
+    AppLocalizations.of(context)!.period,
+   
+  ];
+  return transactionPeriodTitles;
+}
+List<String> kGetChartPeriodTitles(BuildContext context) {
+  List<String> transactionPeriodTitles = [
+    AppLocalizations.of(context)!.byYear,
+    AppLocalizations.of(context)!.byMonth,
+    AppLocalizations.of(context)!.byWeek,
+    AppLocalizations.of(context)!.byDay,
+   
+  ];
+  return transactionPeriodTitles;
+}
+
+
 
 const Color secondaryColor = Color.fromARGB(255, 111, 111, 111);
-
 // SizedBox
 Widget sizeVer(double height) {
   return SizedBox(
@@ -69,6 +79,7 @@ Widget sizeHor(double width) {
 
 class PageConst {
   static const String homePage = "/homePage";
+  static const String calculatorPage = "/calculatorPage";
   static const String addTransactionPage = "/addTransactionPage";
   static const String catalogIconsPage = "/catalogIconsPage";
   static const String colorsPage = "/colorsPage";
@@ -87,6 +98,7 @@ class PageConst {
   static const String remindersPage = "/remindersPage";
   static const String createReminderPage = "/createRemindersPage";
   static const String chartsPage = "/chartsPage";
+  static const String settingsPage = "/settingsPage";
   static const String chooseDefaultCurrencyPage = "/chooseDefaultCurrencyPage";
 }
 
@@ -98,6 +110,13 @@ class BoxConst {
   static const String mainTransactions = "mainTransactions";
   static const String exchangeRates = "exchangeRates";
   static const String reminders = "reminders";
+  static const String settings = "settings";
+}
+
+class SettingsConst {
+  static const String language = "language";
+  static const String languageChanged = "languageChanged";
+  static const String isDarkTheme = "isDarkTheme";
 }
 
 int generateIntUniqueId() {

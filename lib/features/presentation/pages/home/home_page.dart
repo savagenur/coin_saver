@@ -23,6 +23,7 @@ import '../../bloc/account/account_bloc.dart';
 import '../../bloc/cubit/selected_date/selected_date_cubit.dart';
 import '../../bloc/home_time_period/home_time_period_bloc.dart';
 import '../../widgets/category_tile.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   final bool isIncome;
@@ -249,11 +250,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         indicatorPadding: const EdgeInsets.only(bottom: 5),
         labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-        tabs: const [
+        tabs: [
           Tab(
-            child: Text("EXPENSES"),
+            child: Text(AppLocalizations.of(context)!.expensesUpperCase),
           ),
-          Tab(child: Text("INCOME")),
+          Tab(child: Text(AppLocalizations.of(context)!.incomeUpperCase)),
         ],
       ),
       actions: [

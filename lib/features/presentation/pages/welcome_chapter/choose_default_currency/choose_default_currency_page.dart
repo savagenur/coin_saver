@@ -7,7 +7,7 @@ import 'package:coin_saver/features/presentation/widgets/my_button_widget.dart';
 import 'package:coin_saver/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class ChooseDefaultCurrencyPage extends StatefulWidget {
   const ChooseDefaultCurrencyPage({super.key});
 
@@ -46,15 +46,15 @@ class _ChooseDefaultCurrencyPageState extends State<ChooseDefaultCurrencyPage> {
           child: Column(
             children: [
               Text(
-                "Choose your default currency",
+                AppLocalizations.of(context)!.chooseYourDefaultCurrency,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               sizeVer(10),
               TextField(
                 onChanged: _searchCurrency,
-                decoration: const InputDecoration(
-                    hintText: "Search",
-                    suffixIcon: Icon(FontAwesomeIcons.magnifyingGlass)),
+                decoration:  InputDecoration(
+                    hintText: AppLocalizations.of(context)!.search,
+                    suffixIcon: const Icon(FontAwesomeIcons.magnifyingGlass)),
               ),
               sizeVer(20),
               Expanded(
@@ -77,7 +77,7 @@ class _ChooseDefaultCurrencyPageState extends State<ChooseDefaultCurrencyPage> {
               ),
               sizeVer(20),
               MyButtonWidget(
-                title: "Next",
+                title: AppLocalizations.of(context)!.next,
                 borderRadius: BorderRadius.circular(20),
                 onTap: () async {
                   await sl<FirstInitUserUsecase>().call(_currency);

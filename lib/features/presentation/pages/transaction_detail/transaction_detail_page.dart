@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../bloc/main_transaction/main_transaction_bloc.dart';
 
@@ -22,7 +23,7 @@ class TransactionDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Transaction Details"),
+        title:   Text(AppLocalizations.of(context)!.transactionDetails),
         actions: [
           IconButton(
             onPressed: () {
@@ -50,8 +51,8 @@ class TransactionDetailPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             sizeVer(10),
-            const Text(
-              "Amount",
+             Text(
+              AppLocalizations.of(context)!.amount,
               style: TextStyle(
                 color: secondaryColor,
               ),
@@ -66,8 +67,8 @@ class TransactionDetailPage extends StatelessWidget {
                   .copyWith(fontWeight: FontWeight.w500),
             ),
             sizeVer(20),
-            const Text(
-              "Account",
+              Text(
+              AppLocalizations.of(context)!.account,
               style: TextStyle(
                 color: secondaryColor,
               ),
@@ -94,8 +95,8 @@ class TransactionDetailPage extends StatelessWidget {
               ],
             ),
             sizeVer(20),
-            const Text(
-              "Category",
+              Text(
+              AppLocalizations.of(context)!.category,
               style: TextStyle(
                 color: secondaryColor,
               ),
@@ -122,8 +123,8 @@ class TransactionDetailPage extends StatelessWidget {
               ],
             ),
             sizeVer(20),
-            const Text(
-              "Day",
+              Text(
+              AppLocalizations.of(context)!.day,
               style: TextStyle(
                 color: secondaryColor,
               ),
@@ -146,7 +147,7 @@ class TransactionDetailPage extends StatelessWidget {
                   color: Colors.red.shade900,
                 ),
                 label: Text(
-                  "Delete",
+                  AppLocalizations.of(context)!.delete,
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge!
@@ -163,7 +164,7 @@ class TransactionDetailPage extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Are you sure you want to delete?"),
+          title:   Text(AppLocalizations.of(context)!.areYouSureYouWantToDelete),
           actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: [
             Row(
@@ -183,7 +184,7 @@ class TransactionDetailPage extends StatelessWidget {
                         Navigator.pop(context);
                       },
                       child: Text(
-                        "Yes",
+                        AppLocalizations.of(context)!.yes,
                         style: Theme.of(context)
                             .textTheme
                             .titleLarge!
@@ -194,7 +195,7 @@ class TransactionDetailPage extends StatelessWidget {
                   child: TextButton(
                       onPressed: () => Navigator.pop(context),
                       child: Text(
-                        "No",
+                        AppLocalizations.of(context)!.no,
                         style: Theme.of(context)
                             .textTheme
                             .titleLarge!

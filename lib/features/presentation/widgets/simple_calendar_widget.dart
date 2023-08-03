@@ -23,6 +23,9 @@ class SimpleCalendarWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           TableCalendar(
+            headerStyle: const HeaderStyle(
+              formatButtonVisible: false
+            ) ,
             calendarFormat: CalendarFormat.month,
             focusedDay: selectedDate,
             firstDay: firstDay,

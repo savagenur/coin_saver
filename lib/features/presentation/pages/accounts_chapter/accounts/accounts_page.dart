@@ -1,3 +1,4 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
@@ -10,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../../../constants/period_enum.dart';
 import '../../home/home_page.dart';
 
@@ -36,7 +37,7 @@ class AccountsPage extends StatelessWidget {
               onPressed: () => _scaffoldKey.currentState?.openDrawer(),
               icon: const Icon(FontAwesomeIcons.bars)),
           centerTitle: true,
-          title: const Text("Accounts"),
+          title:  Text(AppLocalizations.of(context)!.accounts),
         ),
         body: BlocBuilder<PeriodCubit, Period>(
           builder: (context, period) {
@@ -59,7 +60,7 @@ class AccountsPage extends StatelessWidget {
                           children: [
                             sizeVer(30),
                             Text(
-                              "Total:",
+                              "${AppLocalizations.of(context)!.total}:",
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
                             Text(
@@ -77,7 +78,7 @@ class AccountsPage extends StatelessWidget {
                               children: [
                                 _buildTransferButton(
                                   context: context,
-                                  title: "Transfer history",
+                                  title: AppLocalizations.of(context)!.transferHistory,
                                   iconData: FontAwesomeIcons.clockRotateLeft,
                                   onTap: () {
                                     Navigator.pushNamed(
@@ -86,7 +87,7 @@ class AccountsPage extends StatelessWidget {
                                 ),
                                 _buildTransferButton(
                                   context: context,
-                                  title: "New transfer",
+                                  title: AppLocalizations.of(context)!.newTransfer,
                                   iconData: FontAwesomeIcons.rightLeft,
                                   onTap: () {
                                     Navigator.pushNamed(

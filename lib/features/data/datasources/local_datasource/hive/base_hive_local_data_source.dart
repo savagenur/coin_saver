@@ -2,6 +2,7 @@ import '../../../../domain/entities/account/account_entity.dart';
 import '../../../../domain/entities/category/category_entity.dart';
 import '../../../../domain/entities/currency/currency_entity.dart';
 import '../../../../domain/entities/reminder/reminder_entity.dart';
+import '../../../../domain/entities/settings/settings_entity.dart';
 import '../../../../domain/entities/transaction/transaction_entity.dart';
 
 abstract class BaseHiveLocalDataSource {
@@ -79,4 +80,12 @@ abstract class BaseHiveLocalDataSource {
   Future<void> updateReminder({required ReminderEntity reminderEntity});
   Future<void> deleteReminder({required ReminderEntity reminderEntity});
   List<ReminderEntity> getReminders();
+
+   // Settings
+  Future<void> updateLanguage(String language);
+  Future<void> updateTheme(bool isDarkTheme);
+  Future<SettingsEntity> getSettings();
+
+  // Delete all data
+  Future<void> deleteAllData();
 }

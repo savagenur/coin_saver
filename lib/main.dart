@@ -9,13 +9,15 @@ import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.
 import 'package:coin_saver/features/presentation/bloc/cubit/transaction_period/transaction_period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/currency/currency_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/reminder/reminder_bloc.dart';
+import 'package:coin_saver/features/presentation/bloc/settings/settings_bloc.dart';
 import 'package:coin_saver/features/presentation/pages/welcome_chapter/welcome/welcome_page.dart';
 import 'package:coin_saver/routes.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'features/domain/usecases/hive/init_hive_adapters_boxes_usecase.dart';
 import 'features/presentation/bloc/cubit/main_colors/main_colors_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_category/selected_category_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_color/selected_color_cubit.dart';
@@ -25,11 +27,13 @@ import 'features/presentation/bloc/home_time_period/home_time_period_bloc.dart';
 import 'features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
 import 'features/presentation/pages/home/home_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'features/services/notification_controller.dart';
 import 'injection_container.dart';
+import 'l10n/l10n.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'observer.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await initGetIt();
 
@@ -52,28 +56,9 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-    AwesomeNotifications().setListeners(
-        onActionReceivedMethod: NotificationController.onActionReceivedMethod,
-        onNotificationCreatedMethod:
-            NotificationController.onNotificationCreatedMethod,
-        onNotificationDisplayedMethod:
-            NotificationController.onNotificationDisplayedMethod,
-        onDismissActionReceivedMethod:
-            NotificationController.onDismissActionReceivedMethod);
-  }
-
-  final bool _isFirstInit = Hive.box<CurrencyModel>(BoxConst.currency).isEmpty;
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -117,16 +102,40 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(
           create: (_) => sl<MainColorsCubit>()..getMainColors(),
         ),
+        BlocProvider(
+          create: (_) => sl<SettingsBloc>()..add(const GetSettings()),
+        ),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: "Coin Saver",
-        theme: FlexThemeData.light(scheme: FlexScheme.brandBlue),
-        initialRoute: "/",
-        routes: {
-          "/": (context) => _isFirstInit ? const WelcomePage() : const HomePage(),
+      child: BlocBuilder<SettingsBloc, SettingsState>(
+        builder: (context, settingsState) {
+          Intl.defaultLocale = settingsState.language;
+          final bool isFirstInit =
+              Hive.box<CurrencyModel>(BoxConst.currency).isEmpty;
+
+          return MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+            ],
+            locale: settingsState.language == null
+                ? null
+                : Locale(settingsState.language ?? "en"),
+            supportedLocales: L10n.all,
+            debugShowCheckedModeBanner: false,
+            title: "Coin Saver",
+            theme: settingsState.isDarkTheme
+                ? FlexThemeData.dark(scheme: FlexScheme.brandBlue)
+                : FlexThemeData.light(scheme: FlexScheme.brandBlue),
+            initialRoute: "/",
+            routes: {
+              "/": (context) =>
+                  isFirstInit ? const WelcomePage() : const HomePage(),
+            },
+            onGenerateRoute: AppRoute().onGenerateRoute,
+          );
         },
-        onGenerateRoute: AppRoute().onGenerateRoute,
       ),
     );
   }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../bloc/category/category_bloc.dart';
 import '../../bloc/cubit/selected_category/selected_category_cubit.dart';
 
@@ -45,7 +46,7 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
               Navigator.pop(context);
             },
             icon: const Icon(FontAwesomeIcons.arrowLeft)),
-        title: const Text("Add Category"),
+        title:  Text(AppLocalizations.of(context)!.addCategory),
       ),
       body: BlocBuilder<CategoryBloc, CategoryState>(
         builder: (context, categoryState) {
@@ -80,7 +81,7 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
                                   isIncome: _isIncome,
                                 ));
                           },
-                          child: const Column(
+                          child:  Column(
                             children: [
                               CircleAvatar(
                                 backgroundColor: secondaryColor,
@@ -91,7 +92,7 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
                                 ),
                               ),
                               Text(
-                                "Create",
+                                AppLocalizations.of(context)!.create,
                                 maxLines: 1,
                               ),
                             ],

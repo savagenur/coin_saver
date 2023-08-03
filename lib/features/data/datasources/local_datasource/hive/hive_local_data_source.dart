@@ -1,20 +1,17 @@
-import 'dart:convert';
-
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:coin_saver/features/data/datasources/local_datasource/currency/base_currency_local_data_source.dart';
+import 'package:coin_saver/features/domain/entities/main_transaction/main_transaction_entity.dart';
 import 'package:coin_saver/features/domain/entities/reminder/reminder_entity.dart';
+import 'package:coin_saver/features/domain/entities/settings/settings_entity.dart';
 import 'package:coin_saver/features/domain/usecases/exchange_rates/convert_currency_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_api_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_assets_usecase.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:coin_saver/constants/colors.dart';
 import 'package:coin_saver/constants/constants.dart';
-import 'package:coin_saver/constants/currencies.dart';
 import 'package:coin_saver/constants/main_categories.dart';
 import 'package:coin_saver/features/data/datasources/local_datasource/hive/base_hive_local_data_source.dart';
 import 'package:coin_saver/features/data/models/account/account_model.dart';
@@ -46,6 +43,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
   late final Box<Color> colorsBox;
   late final Box<ExchangeRateModel> exchangeRatesBox;
   late final Box<ReminderModel> remindersBox;
+  late final Box settingsBox;
   late List<ExchangeRateModel> exchangeRates;
 
   // * Initialization Hive
@@ -74,6 +72,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     categoriesBox = await Hive.openBox<CategoryModel>(BoxConst.categories);
     colorsBox = await Hive.openBox<Color>(BoxConst.colors);
     remindersBox = await Hive.openBox<ReminderModel>(BoxConst.reminders);
+    settingsBox = await Hive.openBox(BoxConst.settings);
     exchangeRatesBox =
         await Hive.openBox<ExchangeRateModel>(BoxConst.exchangeRates);
 
@@ -89,6 +88,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         )
       ],
     );
+
     // Colors
     if (colorsBox.isEmpty) {
       await colorsBox.addAll(mainColors);
@@ -124,7 +124,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       await exchangeRatesBox.putAll(exchangeRatesMap);
     }
   }
-
+ 
   @override
   Future<void> firstInitUser(CurrencyEntity currencyEntity) async {
     await currencyBox.put(
@@ -161,15 +161,15 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
             openingDate: DateTime.now(),
             transactionHistory: const []));
     // Reminder
-    const ReminderEntity reminder =  ReminderEntity(
-        id: 1,
-        title: "Reminder",
-        body: "Don't forget to record your expenses!",
-        hour: 20,
-        minute: 00,
-        isActive: true,
-        repeats: true,
-        );
+    const ReminderEntity reminder = ReminderEntity(
+      id: 1,
+      title: "Reminder",
+      body: "Don't forget to record your expenses!",
+      hour: 20,
+      minute: 00,
+      isActive: true,
+      repeats: true,
+    );
     await createReminder(reminderEntity: reminder);
   }
 
@@ -428,7 +428,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         type: accountTo.type,
         color: accountTo.color,
         balance: accountTo.balance + transactionEntity.amountTo!,
-        currency: CurrencyModel.fromEntity(accountFrom.currency),
+        currency: CurrencyModel.fromEntity(accountTo.currency),
         isPrimary: accountTo.isPrimary,
         isActive: accountTo.isActive,
         ownershipType: accountTo.ownershipType,
@@ -979,6 +979,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         channelKey: 'scheduled',
         title: reminderEntity.title,
         body: reminderEntity.body,
+        largeIcon: 'resource://drawable/res_pig_logo',
       ),
       schedule: NotificationCalendar(
         day: reminderEntity.day,
@@ -1036,5 +1037,40 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     }
     await remindersBox.put(
         reminderEntity.id, ReminderModel.fromEntity(reminderEntity));
+  }
+
+  // * Settings
+  @override
+  Future<void> deleteAllData() async{
+   final boxes = [
+      Hive.box<AccountModel>(BoxConst.accounts),
+      Hive.box<CategoryModel>(BoxConst.categories),
+      Hive.box<Color>(BoxConst.colors),
+      Hive.box<CurrencyModel>(BoxConst.currency),
+    ];
+    for (var box in boxes) {
+      await box.clear();
+    }
+  }
+
+  @override
+  Future<void> updateLanguage(String language) async {
+    await settingsBox.put(SettingsConst.language, language);
+    await settingsBox.put(SettingsConst.languageChanged, true);
+  }
+
+  @override
+  Future<void> updateTheme(bool isDarkTheme) async {
+    await settingsBox.put(SettingsConst.isDarkTheme, isDarkTheme);
+  }
+
+  @override
+  Future<SettingsEntity> getSettings() async {
+    final language = await settingsBox.get(SettingsConst.language);
+    final isDarkTheme = await settingsBox.get(SettingsConst.isDarkTheme);
+    return SettingsEntity(
+      language: language,
+      isDarkTheme: isDarkTheme ?? false,
+    );
   }
 }

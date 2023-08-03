@@ -26,9 +26,10 @@ class PeriodTabBar extends StatelessWidget {
   Widget build(BuildContext context) {
     // ignore: no_leading_underscores_for_local_identifiers
     Period _selectedPeriod = selectedPeriod;
+    List transactionPeriodTitles = kGetTransactionPeriodTitles(context);
     return TabBar(
       controller: tabController,
-      padding: const EdgeInsets.symmetric(horizontal: 40),
+      padding: const EdgeInsets.symmetric(horizontal: 15),
       labelPadding: const EdgeInsets.symmetric(horizontal: 5),
       indicatorColor: Theme.of(context).primaryColor,
       indicatorSize: TabBarIndicatorSize.label,
@@ -44,7 +45,7 @@ class PeriodTabBar extends StatelessWidget {
             selectedDateEnd: selectedDateEnd,
             transactions: transactions);
       },
-      tabs: kTransactionPeriodTitles
+      tabs: transactionPeriodTitles
           .map(
             (e) => Tab(
               child: Text(

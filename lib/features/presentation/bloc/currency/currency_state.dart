@@ -7,10 +7,6 @@ abstract class CurrencyState extends Equatable {
   List<Object> get props => [];
 }
 
-class CurrencyInitial extends CurrencyState {
-  @override
-  List<Object> get props => [];
-}
 
 class CurrencyLoading extends CurrencyState {
   @override
@@ -28,7 +24,4 @@ class CurrencyLoaded extends CurrencyState {
       ];
 }
 
-class CurrencyFailure extends CurrencyState {
-  @override
-  List<Object> get props => [];
-}
+

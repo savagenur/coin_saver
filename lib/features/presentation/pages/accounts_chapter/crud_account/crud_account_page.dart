@@ -171,7 +171,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                         ? Text(
                                             AppLocalizations.of(context)!.pleaseSelectIcon,
                                             style: TextStyle(
-                                                color: Colors.red.shade900),
+                                                color: Theme.of(context).colorScheme.error),
                                           )
                                         : Container(),
                                   ],
@@ -189,7 +189,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                         ? Text(
                                             AppLocalizations.of(context)!.pleaseSelectColor,
                                             style: TextStyle(
-                                                color: Colors.red.shade900),
+                                                color: Theme.of(context).colorScheme.error),
                                           )
                                         : Container(),
                                   ],
@@ -208,7 +208,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                         },
                                         icon: Icon(
                                           FontAwesomeIcons.trashCan,
-                                          color: Colors.red.shade900,
+                                          color: Theme.of(context).colorScheme.error,
                                         ),
                                         label: Text(
                                           AppLocalizations.of(context)!.delete,
@@ -216,7 +216,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                               .textTheme
                                               .titleLarge!
                                               .copyWith(
-                                                  color: Colors.red.shade900),
+                                                  color: Theme.of(context).colorScheme.error),
                                         ))
                                     : Container(),
                                 _isUpdatePage
@@ -318,7 +318,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                         style: Theme.of(context)
                             .textTheme
                             .titleLarge!
-                            .copyWith(color: Colors.red.shade900),
+                            .copyWith(color: Theme.of(context).colorScheme.error),
                       )),
                 ),
                 Expanded(

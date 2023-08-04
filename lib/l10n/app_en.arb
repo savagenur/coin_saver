@@ -91,6 +91,10 @@
   "@charts": {
     "description": "Button charts"
   },
+  "calculator": "Calculator",
+  "@calculator": {
+    "description": "Button calculator"
+  },
   "day": "Day",
   "@day": {
     "description": "Button day"
@@ -155,8 +159,6 @@
   "@selectedDay": {
     "description": "selectedDay"
   },
-
-
   "more": "More",
   "@more": {
     "description": "more"
@@ -209,9 +211,6 @@
   "@colors": {
     "description": "colors"
   },
-
-
-
   "reminderName": "Reminder name",
   "@reminderName": {
     "description": "reminderName"
@@ -244,8 +243,6 @@
   "@onceAWeek": {
     "description": "onceAWeek"
   },
-
-
   "createReminder": "Create Reminder",
   "@createReminder": {
     "description": "createReminder"
@@ -266,11 +263,6 @@
   "@category": {
     "description": "category"
   },
-  
-
-
-
-
   "addTransactions": "Add Transactions",
   "@addTransactions": {
     "description": "addTransactions"

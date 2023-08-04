@@ -100,7 +100,7 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
                               (e) => Tab(
                                 child: Text(
                                   e,
-                                  style: const TextStyle(color: Colors.black),
+                                  style:  TextStyle(color:Theme.of(context).primaryColor ),
                                 ),
                               ),
                             )
@@ -195,7 +195,7 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
     return Container(
       padding: const EdgeInsets.only(top: 50, bottom: 5),
       margin: const EdgeInsets.symmetric(vertical: 5),
-      color: Colors.grey.shade100,
+      color: Theme.of(context).highlightColor,
       width: (_timeGroupModels.length) ~/ 3 == 0 || _timeGroupModels.isEmpty
           ? MediaQuery.of(context).size.width
           : (_timeGroupModels.length * 120),

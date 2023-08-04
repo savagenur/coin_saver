@@ -31,15 +31,16 @@ class CircularChartWidget extends StatelessWidget {
     return Stack(
       alignment: Alignment.center,
       children: [
-         HomeSfCircularChart(
-                tooltipBehavior: _tooltipBehavior, transactions: transactions),
+        HomeSfCircularChart(
+            tooltipBehavior: _tooltipBehavior, transactions: transactions),
         SizedBox(
           width: MediaQuery.of(context).size.width * .35,
           child: AutoSizeText(
-            NumberFormat.currency(symbol: _account.currency.symbol,decimalDigits: 0, )
-                .format(_totalExpense),
+            NumberFormat.currency(
+              symbol: _account.currency.symbol,
+              decimalDigits: 0,
+            ).format(_totalExpense),
             textAlign: TextAlign.center,
-            
             minFontSize: 18,
             maxFontSize: 25,
             style: const TextStyle(fontSize: 24),
@@ -50,7 +51,6 @@ class CircularChartWidget extends StatelessWidget {
     );
   }
 }
-
 
 class HomeSfCircularChart extends StatelessWidget {
   const HomeSfCircularChart({
@@ -75,23 +75,25 @@ class HomeSfCircularChart extends StatelessWidget {
           strokeWidth: 2,
           innerRadius: "70",
           opacity: 1,
-          dataSource: transactions.isEmpty?[
-            TransactionEntity(
-                id: "id",
-                date: DateTime(2023),
-                amount: 1,
-                category: CategoryEntity(
-                    id: "id",
-                    name: "name",
-                    iconData: Icons.abc,
-                    color: Colors.grey,
-                    isIncome: false,
-                    dateTime: DateTime(2023)),
-                iconData: Icons.abc,
-                accountId: "accountId",
-                isIncome: false,
-                color: Colors.grey)
-          ]: transactions,
+          dataSource: transactions.isEmpty
+              ? [
+                  TransactionEntity(
+                      id: "id",
+                      date: DateTime(2023),
+                      amount: 1,
+                      category: CategoryEntity(
+                          id: "id",
+                          name: "null",
+                          iconData: Icons.abc,
+                          color: Colors.grey,
+                          isIncome: false,
+                          dateTime: DateTime(2023)),
+                      iconData: Icons.abc,
+                      accountId: "accountId",
+                      isIncome: false,
+                      color: Colors.grey)
+                ]
+              : transactions,
           xValueMapper: (TransactionEntity data, index) {
             return data.category.name;
           },

@@ -1,5 +1,4 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:coin_saver/features/domain/entities/main_transaction/main_transaction_entity.dart';
 import 'package:coin_saver/features/domain/entities/reminder/reminder_entity.dart';
 import 'package:coin_saver/features/domain/entities/settings/settings_entity.dart';
 import 'package:coin_saver/features/domain/usecases/exchange_rates/convert_currency_usecase.dart';
@@ -318,7 +317,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
 
       final totalAccount = accountsBox.get("total");
       if (totalAccount != null) {
-        final exchangeRate = await sl<ConvertCurrencyUsecase>()
+        final exchangeRate =  sl<ConvertCurrencyUsecase>()
             .call(existingAccount.currency.code, totalAccount.currency.code);
         final convertedAmount = exchangeRate * updatedAccountBalance;
         final updatedTotalAccount = totalAccount.copyWith(
@@ -490,7 +489,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
           type: oldAccountTo.type,
           color: oldAccountTo.color,
           balance: oldAccountTo.balance - oldTransfer.amountTo!,
-          currency: CurrencyModel.fromEntity(oldAccountFrom.currency),
+          currency: CurrencyModel.fromEntity(oldAccountTo.currency),
           isPrimary: oldAccountTo.isPrimary,
           isActive: oldAccountTo.isActive,
           ownershipType: oldAccountTo.ownershipType,
@@ -729,7 +728,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
 
       final totalAccount = accountsBox.get("total");
       if (totalAccount != null) {
-        final exchangeRate = await sl<ConvertCurrencyUsecase>()
+        final exchangeRate =  sl<ConvertCurrencyUsecase>()
             .call(existingAccount.currency.code, totalAccount.currency.code);
 
         final convertedAmount = amountDifference * exchangeRate;

@@ -137,7 +137,7 @@ class _PeriodCalendarWidgetState extends State<PeriodCalendarWidget> {
       ),
       actions: [
         MyButtonWidget(
-          title: "Done",
+          title: AppLocalizations.of(context)!.done,
           onTap: () {
             if (_selectedEnd != null) {
               context.read<SelectedDateCubit>().changeStartEnd(

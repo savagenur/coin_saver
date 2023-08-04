@@ -143,7 +143,7 @@ class _TransferDetailPageState extends State<TransferDetailPage> {
                   sizeVer(20),
                     Text(
                     AppLocalizations.of(context)!.day,
-                    style: TextStyle(
+                    style:  const TextStyle(
                       color: secondaryColor,
                     ),
                   ),
@@ -162,14 +162,14 @@ class _TransferDetailPageState extends State<TransferDetailPage> {
                       },
                       icon: Icon(
                         FontAwesomeIcons.trashCan,
-                        color: Colors.red.shade900,
+                        color: Theme.of(context).colorScheme.error,
                       ),
                       label: Text(
                         AppLocalizations.of(context)!.delete,
                         style: Theme.of(context)
                             .textTheme
                             .titleLarge!
-                            .copyWith(color: Colors.red.shade900),
+                            .copyWith(color: Theme.of(context).colorScheme.error),
                       ))
                 ],
               ),
@@ -211,7 +211,7 @@ class _TransferDetailPageState extends State<TransferDetailPage> {
                         style: Theme.of(context)
                             .textTheme
                             .titleLarge!
-                            .copyWith(color: Colors.red.shade900),
+                            .copyWith(color: Theme.of(context).colorScheme.error),
                       )),
                 ),
                 Expanded(

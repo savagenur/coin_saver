@@ -148,11 +148,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                   leading: Icon(
                     FontAwesomeIcons.trashCan,
-                    color: Colors.red.shade900,
+                    color: Theme.of(context).colorScheme.error,
                   ),
                   title: Text(
                     AppLocalizations.of(context)!.deleteAllTheData,
-                    style: TextStyle(color: Colors.red.shade900),
+                    style: TextStyle(color: Theme.of(context).colorScheme.error),
                   ),
                 ),
               ],

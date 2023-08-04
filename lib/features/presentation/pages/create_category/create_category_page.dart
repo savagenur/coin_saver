@@ -222,9 +222,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                             ? Text(
                                                                 AppLocalizations.of(context)!.pleaseSelectIcon,
                                                                 style: TextStyle(
-                                                                    color: Colors
-                                                                        .red
-                                                                        .shade900),
+                                                                    color: Theme.of(context).colorScheme.error),
                                                               )
                                                             : Container(),
                                                       ],
@@ -246,9 +244,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                             ? Text(
                                                                 AppLocalizations.of(context)!.pleaseSelectIcon,
                                                                 style: TextStyle(
-                                                                    color: Colors
-                                                                        .red
-                                                                        .shade900),
+                                                                    color: Theme.of(context).colorScheme.error),
                                                               )
                                                             : Container(),
                                                       ],

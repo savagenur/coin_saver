@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../constants/constants.dart';
-import '../../../../../constants/period_enum.dart';
-import '../../../../domain/entities/transaction/transaction_entity.dart';
-import '../../../bloc/cubit/period/period_cubit.dart';
-import '../../../bloc/home_time_period/home_time_period_bloc.dart';
-import '../../../widgets/period_calendar_widget.dart';
+import '../../../constants/constants.dart';
+import '../../../constants/period_enum.dart';
+import '../../domain/entities/transaction/transaction_entity.dart';
+import '../bloc/cubit/period/period_cubit.dart';
+import '../bloc/home_time_period/home_time_period_bloc.dart';
+import 'period_calendar_widget.dart';
 
 class PeriodTabBar extends StatelessWidget {
   final TabController tabController;
@@ -36,6 +36,7 @@ class PeriodTabBar extends StatelessWidget {
       labelStyle: TextStyle(
           fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor),
       unselectedLabelColor: Theme.of(context).primaryColor,
+      
       onTap: (value) {
         _selectedPeriod = periodValues[value]!;
         switchTransactionsTimePeriod(
@@ -48,9 +49,10 @@ class PeriodTabBar extends StatelessWidget {
       tabs: transactionPeriodTitles
           .map(
             (e) => Tab(
+              
               child: Text(
                 e,
-                style: const TextStyle(color: Colors.black),
+               style: TextStyle(color: Theme.of(context).primaryColor),
               ),
             ),
           )

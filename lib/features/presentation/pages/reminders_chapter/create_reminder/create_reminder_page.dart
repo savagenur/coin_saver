@@ -231,14 +231,14 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
                       },
                       icon: Icon(
                         FontAwesomeIcons.trashCan,
-                        color: Colors.red.shade900,
+                        color: Theme.of(context).colorScheme.error,
                       ),
                       label: Text(
                         AppLocalizations.of(context)!.delete,
                         style: Theme.of(context)
                             .textTheme
                             .titleLarge!
-                            .copyWith(color: Colors.red.shade900),
+                            .copyWith(color: Theme.of(context).colorScheme.error),
                       ))
                   : Container(),
             ],

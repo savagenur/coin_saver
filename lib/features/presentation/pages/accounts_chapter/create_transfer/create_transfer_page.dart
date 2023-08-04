@@ -12,7 +12,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_down_button/pull_down_button.dart';
-import 'package:table_calendar/table_calendar.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../bloc/account/account_bloc.dart';
@@ -80,8 +79,6 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
       _convertCurrency();
     });
     _amountToController.addListener(() {
-      print(_amountFrom);
-      print(_amountTo);
       _convertCurrency();
     });
   }
@@ -152,19 +149,19 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
                     sizeVer(10),
                     Text(
                       AppLocalizations.of(context)!.transferFromAccount,
-                      style: TextStyle(color: Colors.grey),
+                      style: const TextStyle(color: Colors.grey),
                     ),
                     _buildToPullDownBtn(),
                     sizeVer(10),
                     Text(
                       AppLocalizations.of(context)!.transferToAccount,
-                      style: TextStyle(color: Colors.grey),
+                      style: const TextStyle(color: Colors.grey),
                     ),
                     _buildFromPullDownBtn(),
                     sizeVer(10),
                     Text(
                       AppLocalizations.of(context)!.transferAmount,
-                      style: TextStyle(color: Colors.grey),
+                      style: const TextStyle(color: Colors.grey),
                     ),
                     sizeVer(10),
                     Row(
@@ -181,7 +178,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
                     sizeVer(20),
                     Text(
                       AppLocalizations.of(context)!.day,
-                      style: TextStyle(color: Colors.grey),
+                      style: const TextStyle(color: Colors.grey),
                     ),
                     sizeVer(5),
                     InkWell(
@@ -213,7 +210,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
                     sizeVer(20),
                     Text(
                       AppLocalizations.of(context)!.comment,
-                      style: TextStyle(color: Colors.grey),
+                      style: const TextStyle(color: Colors.grey),
                     ),
                     sizeVer(5),
                     TextField(
@@ -359,7 +356,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
               FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))
             ],
             decoration: InputDecoration(
-              errorStyle: TextStyle(color: Colors.red.shade900),
+              errorStyle: TextStyle(color: Theme.of(context).colorScheme.error),
               counterText: "",
               hintText: "0",
             ),

@@ -6,7 +6,6 @@ import 'package:coin_saver/features/data/models/currency/currency_model.dart';
 import 'package:coin_saver/features/data/models/exchange_rate/exchange_rate_model.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
-import 'package:http/http.dart' as http;
 
 class CurrencyLocalDataSource implements BaseCurrencyLocalDataSource {
   final Box<ExchangeRateModel> exchangeRatesBox =
@@ -61,13 +60,17 @@ class CurrencyLocalDataSource implements BaseCurrencyLocalDataSource {
   }
 
   @override
-  double convertCurrency(String base, String desired)  {
-    var exchangeRates =
-        exchangeRatesBox.values.cast<ExchangeRateModel>().toList();
-    var exchangeRate =
-        exchangeRates.firstWhere((element) => element.base == base);
-    var rateModel =
-        exchangeRate.rates.firstWhere((element) => element.rateName == desired);
-    return rateModel.rate;
+  double convertCurrency(String base, String desired) {
+    if (base == desired) {
+      return 1;
+    } else {
+      var exchangeRates =
+          exchangeRatesBox.values.cast<ExchangeRateModel>().toList();
+      var exchangeRate =
+          exchangeRates.firstWhere((element) => element.base == base);
+      var rateModel = exchangeRate.rates
+          .firstWhere((element) => element.rateName == desired);
+      return rateModel.rate;
+    }
   }
 }

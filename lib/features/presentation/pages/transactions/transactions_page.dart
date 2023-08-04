@@ -2,7 +2,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/widgets/account_switch_pull_down_btn.dart';
-import 'package:coin_saver/features/presentation/pages/home/widgets/period_tab_bar.dart';
+import 'package:coin_saver/features/presentation/widgets/period_tab_bar.dart';
 import 'package:coin_saver/features/presentation/pages/transactions/widgets/list_date_transactions_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

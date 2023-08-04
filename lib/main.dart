@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:coin_saver/constants/constants.dart';
+import 'package:coin_saver/constants/theme.dart';
 import 'package:coin_saver/features/data/models/currency/currency_model.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:coin_saver/features/domain/usecases/hive/init_hive_usecase.dart';
@@ -108,9 +111,9 @@ class MyApp extends StatelessWidget {
       ],
       child: BlocBuilder<SettingsBloc, SettingsState>(
         builder: (context, settingsState) {
-          Intl.defaultLocale = settingsState.language;
           final bool isFirstInit =
               Hive.box<CurrencyModel>(BoxConst.currency).isEmpty;
+          Intl.defaultLocale = settingsState.language??Platform.localeName;
 
           return MaterialApp(
             localizationsDelegates: const [
@@ -121,13 +124,13 @@ class MyApp extends StatelessWidget {
             ],
             locale: settingsState.language == null
                 ? null
-                : Locale(settingsState.language ?? "en"),
+                : Locale(settingsState.language!),
             supportedLocales: L10n.all,
             debugShowCheckedModeBanner: false,
             title: "Coin Saver",
             theme: settingsState.isDarkTheme
-                ? FlexThemeData.dark(scheme: FlexScheme.brandBlue)
-                : FlexThemeData.light(scheme: FlexScheme.brandBlue),
+                ? MyAppTheme.darkTheme
+                : MyAppTheme.lightTheme,
             initialRoute: "/",
             routes: {
               "/": (context) =>

@@ -122,7 +122,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                 },
                                 title: AppLocalizations.of(context)!.delete,
                                 icon: FontAwesomeIcons.trash,
-                                iconColor: Colors.red.shade900,
+                                iconColor: Theme.of(context).colorScheme.error,
                               ),
                             ];
                           },

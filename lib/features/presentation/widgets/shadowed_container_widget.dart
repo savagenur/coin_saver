@@ -9,16 +9,20 @@ class ShadowedContainerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      decoration: BoxDecoration(
-        boxShadow: const [
-          BoxShadow(blurRadius: 1, spreadRadius: .001),
-        ],
+    return Card(
+      elevation: 4  ,
+      shape: OutlineInputBorder(
         borderRadius: borderRadius,
-        color: Colors.white,
+        borderSide: BorderSide.none
       ),
-      child: child,
+      child: Container(
+        height: height,
+        decoration: BoxDecoration(
+         borderRadius: borderRadius,
+          color: Theme.of(context).listTileTheme.tileColor,
+        ),
+        child: child,
+      ),
     );
   }
 }

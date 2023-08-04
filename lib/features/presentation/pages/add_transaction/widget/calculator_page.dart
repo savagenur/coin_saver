@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CalculatorPage extends StatefulWidget {
@@ -28,7 +29,7 @@ class CalculatorPageState extends State<CalculatorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Calculator"),
+        title:   Text(AppLocalizations.of(context)!.calculator),
       ),
       body: SimpleCalculator(
         maximumDigits: 12,
@@ -45,10 +46,10 @@ class CalculatorPageState extends State<CalculatorPage> {
             });
           }
         },
-        theme: CalculatorThemeData(),
+        theme: const CalculatorThemeData(),
       ),
       bottomNavigationBar: Container(
-        margin: EdgeInsets.symmetric(vertical: 5),
+        margin: const EdgeInsets.symmetric(vertical: 5),
         height: 50,
         child: ElevatedButton.icon(
             onPressed: _isDone
@@ -59,8 +60,8 @@ class CalculatorPageState extends State<CalculatorPage> {
                 : null,
             icon: const Icon(FontAwesomeIcons.check),
             label: Text(
-              "Done",
-              style: TextStyle(fontSize: 25),
+              AppLocalizations.of(context)!.done,
+              style: const TextStyle(fontSize: 25),
             )),
       ),
     );

@@ -12,16 +12,26 @@ class MyDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
+        
         children: [
-           UserAccountsDrawerHeader(
+          //  UserAccountsDrawerHeader(
 
-            accountName: Text(AppLocalizations.of(context)!.signUp),
-            accountEmail: const Text(""),
-            currentAccountPicture: const CircleAvatar(
-              child: Icon(Icons.person),
-            ),
-          ),
-          
+          //   accountName: Text(AppLocalizations.of(context)!.signUp),
+          //   accountEmail: const Text(""),
+          //   currentAccountPicture: const CircleAvatar(
+          //     child: Icon(Icons.person),
+          //   ),
+          // ),
+           Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+               children: [
+                 Text("Coin Saver",style: Theme.of(context).textTheme.titleLarge,),
+               ],
+             ),
+           ),
+          const Divider(),
           ListTile(
             leading:  const Icon(FontAwesomeIcons.house),
             title:  Text(AppLocalizations.of(context)!.home),

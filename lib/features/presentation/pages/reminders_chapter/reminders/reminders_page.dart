@@ -44,7 +44,6 @@ class RemindersPageState extends State<RemindersPage> {
           if (reminderState is ReminderLoaded) {
             _reminders = reminderState.reminders;
             return Scaffold(
-              backgroundColor: Colors.grey.shade100,
               key: _scaffoldKey,
               drawer: const MyDrawer(),
               appBar: AppBar(
@@ -62,27 +61,32 @@ class RemindersPageState extends State<RemindersPage> {
                       final reminder = _reminders[index];
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 10),
-                        child: ListTile(
-                          shape: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide.none),
-                          tileColor: Colors.white,
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, PageConst.createReminderPage,
-                                arguments: CreateReminderPage(
-                                  reminder: reminder,
-                                  isUpdate: true,
-                                ));
-                          },
-                          title: Text(reminder.title),
-                          trailing: Switch(
-                            value: reminder.isActive,
-                            onChanged: (value) {
-                              context.read<ReminderBloc>().add(UpdateReminder(
-                                  reminder:
-                                      reminder.copyWith(isActive: value)));
+                        child: Card(
+                          elevation: 3,
+                        shape: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide.none),
+                          child: ListTile(
+                            shape: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide.none),
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, PageConst.createReminderPage,
+                                  arguments: CreateReminderPage(
+                                    reminder: reminder,
+                                    isUpdate: true,
+                                  ));
                             },
+                            title: Text(reminder.title),
+                            trailing: Switch(
+                              value: reminder.isActive,
+                              onChanged: (value) {
+                                context.read<ReminderBloc>().add(UpdateReminder(
+                                    reminder:
+                                        reminder.copyWith(isActive: value)));
+                              },
+                            ),
                           ),
                         ),
                       );

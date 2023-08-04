@@ -241,8 +241,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                                                   .pleaseSelectCategory
                                                               : "",
                                                           style: TextStyle(
-                                                              color: Colors.red
-                                                                  .shade900),
+                                                              color: Theme.of(context).colorScheme.error),
                                                         ),
                                                       ],
                                                     ),
@@ -406,7 +405,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
               Icon(
                 _account?.iconData ?? FontAwesomeIcons.circleExclamation,
                 color: isErrorAccount
-                    ? Colors.red.shade900
+                    ? Theme.of(context).colorScheme.error
                     : Theme.of(context).primaryColor,
               ),
               sizeHor(5),
@@ -640,7 +639,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
                             color: DateFormat.yMd().format(_selectedDate) ==
                                     DateFormat.yMd().format(day.dateTime!)
                                 ? Theme.of(context).primaryColor
-                                : Colors.white,
+                                : Theme.of(context).colorScheme.background,
                           ),
                           padding: const EdgeInsets.all(5),
                           margin: const EdgeInsets.only(right: 10),

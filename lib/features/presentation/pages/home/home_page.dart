@@ -1,9 +1,11 @@
+import 'dart:io';
+
 import 'package:coin_saver/constants/period_enum.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/widgets/account_switch_pull_down_btn.dart';
 import 'package:coin_saver/features/presentation/pages/home/widgets/circular_chart.dart';
-import 'package:coin_saver/features/presentation/pages/home/widgets/period_tab_bar.dart';
+import 'package:coin_saver/features/presentation/widgets/period_tab_bar.dart';
 import 'package:coin_saver/features/presentation/pages/main_transaction/main_transaction_page.dart';
 import 'package:coin_saver/features/presentation/pages/transactions/transactions_page.dart';
 import 'package:coin_saver/features/presentation/widgets/day_navigation_widget.dart';
@@ -12,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'package:coin_saver/constants/constants.dart';
@@ -163,22 +166,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                       (index) => Padding(
                                         padding: const EdgeInsets.only(
                                             right: 10, bottom: 10, left: 10),
-                                        child: GestureDetector(
-                                            onTap: () {
-                                              Navigator.pushNamed(context,
-                                                  PageConst.mainTransactionPage,
-                                                  arguments:
-                                                      MainTransactionPage(
-                                                    mainTransaction:
-                                                        transactions[index],
-                                                  ));
-                                            },
-                                            child: CategoryTile(
-                                              totalExpense: _totalExpense,
-                                              mainTransaction:
-                                                  transactions[index],
-                                              account: _account,
-                                            )),
+                                        child: CategoryTile(
+                                          totalExpense: _totalExpense,
+                                          mainTransaction: transactions[index],
+                                          account: _account,
+                                        ),
                                       ),
                                     ),
                                     sizeVer(70),

@@ -1,14 +1,12 @@
 import 'package:coin_saver/constants/constants.dart';
-import 'package:coin_saver/features/data/datasources/local_datasource/hive/hive_local_data_source.dart';
-import 'package:coin_saver/features/domain/usecases/hive/init_hive_usecase.dart';
+import 'package:coin_saver/features/data/models/exchange_rate/exchange_rate_model.dart';
 import 'package:coin_saver/injection_container.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
 import '../../../../domain/usecases/settings/delete_all_data_usecase.dart';
@@ -28,7 +26,8 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.popUntil(context, (route) => route.isFirst);
+        Navigator.popUntil(
+            context, (route) => route.settings.name == PageConst.homePage);
         return true;
       },
       child: BlocBuilder<SettingsBloc, SettingsState>(
@@ -142,9 +141,37 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 const Spacer(),
                 ListTile(
-                  onTap: () async {
-                    await sl<DeleteAllDataUsecase>().call();
-                    SystemNavigator.pop();
+                  onTap: () {
+                   
+                   
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text(AppLocalizations.of(context)!
+                            .areYouSureYouWantToDelete),
+                        actions: [Row(
+                          children: [
+                          Expanded(
+                            child: TextButton(
+                                onPressed: () {
+                                  // Navigator.pop(context);
+                                  Navigator.pushNamed(context, PageConst.homePage);
+                                  
+                                },
+                                child: Text(AppLocalizations.of(context)!.no)),
+                          ),
+                          Expanded(
+                            child: TextButton(
+                                onPressed: () async {
+                                  await sl<DeleteAllDataUsecase>().call();
+                                  SystemNavigator.pop();
+                                },
+                                child: Text(AppLocalizations.of(context)!.yes)),
+                          ),
+                        ],
+                        )],
+                      ),
+                    );
                   },
                   leading: Icon(
                     FontAwesomeIcons.trashCan,
@@ -152,7 +179,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   title: Text(
                     AppLocalizations.of(context)!.deleteAllTheData,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.error),
                   ),
                 ),
               ],

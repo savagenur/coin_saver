@@ -1,18 +1,17 @@
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/constants/account_icons.dart';
 import 'package:coin_saver/constants/currencies.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
-import 'package:coin_saver/features/domain/usecases/account/create_account_usecase.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/main_colors/main_colors_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_color/selected_color_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_icon/selected_icon_cubit.dart';
-import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
+import 'package:coin_saver/features/presentation/bloc/currency/currency_bloc.dart';
 import 'package:coin_saver/features/presentation/widgets/my_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:uuid/uuid.dart';
@@ -116,7 +115,9 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                   Navigator.pop(context);
                 },
                 icon: const Icon(FontAwesomeIcons.arrowLeft)),
-            title: Text(_isUpdatePage ? AppLocalizations.of(context)!.updateAccount : AppLocalizations.of(context)!.addAccount),
+            title: Text(_isUpdatePage
+                ? AppLocalizations.of(context)!.updateAccount
+                : AppLocalizations.of(context)!.addAccount),
           ),
           body: BlocBuilder<SelectedColorCubit, Color?>(
             builder: (context, selectedColor) {
@@ -139,7 +140,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                 sizeVer(10),
                                 _buildInputAmount(context),
                                 sizeVer(20),
-                                 Text(
+                                Text(
                                   AppLocalizations.of(context)!.accountName,
                                   style: TextStyle(color: Colors.grey),
                                 ),
@@ -151,27 +152,32 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                       TextCapitalization.sentences,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
-                                      return AppLocalizations.of(context)!.pleaseEnterAccountName;
+                                      return AppLocalizations.of(context)!
+                                          .pleaseEnterAccountName;
                                     }
                                     return null;
                                   },
                                   onSaved: (newValue) =>
                                       _accountName = newValue!,
-                                  decoration:  InputDecoration(
-                                      hintText: AppLocalizations.of(context)!.enterAccountName),
+                                  decoration: InputDecoration(
+                                      hintText: AppLocalizations.of(context)!
+                                          .enterAccountName),
                                 ),
                                 sizeVer(20),
                                 Row(
                                   children: [
-                                     Text(
+                                    Text(
                                       AppLocalizations.of(context)!.icons,
                                       style: TextStyle(color: Colors.grey),
                                     ),
                                     _isErrorIcon
                                         ? Text(
-                                            AppLocalizations.of(context)!.pleaseSelectIcon,
+                                            AppLocalizations.of(context)!
+                                                .pleaseSelectIcon,
                                             style: TextStyle(
-                                                color: Theme.of(context).colorScheme.error),
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .error),
                                           )
                                         : Container(),
                                   ],
@@ -181,15 +187,19 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                 sizeVer(20),
                                 Row(
                                   children: [
-                                     Text(
+                                    Text(
                                       AppLocalizations.of(context)!.colors,
-                                      style: const TextStyle(color: Colors.grey),
+                                      style:
+                                          const TextStyle(color: Colors.grey),
                                     ),
                                     _isErrorColor
                                         ? Text(
-                                            AppLocalizations.of(context)!.pleaseSelectColor,
+                                            AppLocalizations.of(context)!
+                                                .pleaseSelectColor,
                                             style: TextStyle(
-                                                color: Theme.of(context).colorScheme.error),
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .error),
                                           )
                                         : Container(),
                                   ],
@@ -208,7 +218,9 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                         },
                                         icon: Icon(
                                           FontAwesomeIcons.trashCan,
-                                          color: Theme.of(context).colorScheme.error,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .error,
                                         ),
                                         label: Text(
                                           AppLocalizations.of(context)!.delete,
@@ -216,7 +228,9 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                               .textTheme
                                               .titleLarge!
                                               .copyWith(
-                                                  color: Theme.of(context).colorScheme.error),
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .error),
                                         ))
                                     : Container(),
                                 _isUpdatePage
@@ -225,8 +239,9 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                            Text(
-                                            AppLocalizations.of(context)!.selectCurrency,
+                                          Text(
+                                            AppLocalizations.of(context)!
+                                                .selectCurrency,
                                             style:
                                                 TextStyle(color: Colors.grey),
                                           ),
@@ -242,11 +257,11 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                                                       currency;
                                                                 });
                                                               },
-                                                              selected: _currency==currency,
-                                                              
-                                                              title: "${currency
-                                                                  .name} (${currency
-                                                                  .code})"))
+                                                              selected:
+                                                                  _currency ==
+                                                                      currency,
+                                                              title:
+                                                                  "${currency.name} (${currency.code})"))
                                                   .toList();
                                             },
                                             buttonBuilder: (context, showMenu) {
@@ -266,7 +281,9 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     MyButtonWidget(
-                                        title: _isUpdatePage ? AppLocalizations.of(context)!.save : AppLocalizations.of(context)!.add,
+                                        title: _isUpdatePage
+                                            ? AppLocalizations.of(context)!.save
+                                            : AppLocalizations.of(context)!.add,
                                         width:
                                             MediaQuery.of(context).size.width *
                                                 .5,
@@ -298,11 +315,19 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title:   Text(AppLocalizations.of(context)!.areYouSureYouWantToDelete),
+          title: Text(AppLocalizations.of(context)!.areYouSureYouWantToDelete),
           actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: [
             Row(
               children: [
+                Expanded(
+                  child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        AppLocalizations.of(context)!.no,
+                        
+                      )),
+                ),
                 Expanded(
                   child: TextButton(
                       onPressed: () {
@@ -315,23 +340,10 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                       },
                       child: Text(
                         AppLocalizations.of(context)!.yes,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge!
-                            .copyWith(color: Theme.of(context).colorScheme.error),
+                        
                       )),
                 ),
-                Expanded(
-                  child: TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(
-                        AppLocalizations.of(context)!.no,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge!
-                            .copyWith(color: Colors.grey),
-                      )),
-                ),
+                
               ],
             )
           ],
@@ -537,6 +549,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
       _isUpdatePage
           ? accountBloc.add(UpdateAccount(accountEntity: accountEntity))
           : accountBloc.add(CreateAccount(accountEntity: accountEntity));
+      context.read<CurrencyBloc>().add(CreateCurrency(currency: currency));
       Navigator.pop(context);
       selectedIconCubit.changeIcon(null);
       selectedColorCubit.changeColor(null);

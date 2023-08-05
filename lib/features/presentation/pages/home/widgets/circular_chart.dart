@@ -5,7 +5,6 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../../../domain/entities/account/account_entity.dart';
 import '../../../../domain/entities/category/category_entity.dart';
-import '../../../../domain/entities/main_transaction/main_transaction_entity.dart';
 import '../../../../domain/entities/transaction/transaction_entity.dart';
 
 class CircularChartWidget extends StatelessWidget {
@@ -36,7 +35,7 @@ class CircularChartWidget extends StatelessWidget {
         SizedBox(
           width: MediaQuery.of(context).size.width * .35,
           child: AutoSizeText(
-            NumberFormat.currency(
+            NumberFormat.compactCurrency(
               symbol: _account.currency.symbol,
               decimalDigits: 0,
             ).format(_totalExpense),

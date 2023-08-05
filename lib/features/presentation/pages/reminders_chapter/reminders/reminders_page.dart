@@ -10,7 +10,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../../injection_container.dart';
 import '../../../bloc/reminder/reminder_bloc.dart';
-import '../../../widgets/my_button_widget.dart';
 
 class RemindersPage extends StatefulWidget {
   const RemindersPage({super.key});
@@ -28,6 +27,7 @@ class RemindersPageState extends State<RemindersPage> {
     sl<AwesomeNotifications>().isNotificationAllowed().then((isAllowed) {
       if (!isAllowed) {
         sl<AwesomeNotifications>().requestPermissionToSendNotifications();
+        
       }
     });
   }
@@ -36,7 +36,8 @@ class RemindersPageState extends State<RemindersPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.popUntil(context, (route) => route.isFirst);
+        Navigator.popUntil(
+            context, (route) => route.settings.name == PageConst.homePage);
         return true;
       },
       child: BlocBuilder<ReminderBloc, ReminderState>(
@@ -51,7 +52,7 @@ class RemindersPageState extends State<RemindersPage> {
                     onPressed: () => _scaffoldKey.currentState?.openDrawer(),
                     icon: const Icon(FontAwesomeIcons.bars)),
                 centerTitle: true,
-                title:   Text(AppLocalizations.of(context)!.reminders),
+                title: Text(AppLocalizations.of(context)!.reminders),
               ),
               body: SingleChildScrollView(
                 padding: const EdgeInsets.all(10),
@@ -63,9 +64,9 @@ class RemindersPageState extends State<RemindersPage> {
                         padding: const EdgeInsets.only(bottom: 10),
                         child: Card(
                           elevation: 3,
-                        shape: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide.none),
+                          shape: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide.none),
                           child: ListTile(
                             shape: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -97,17 +98,25 @@ class RemindersPageState extends State<RemindersPage> {
               ),
               floatingActionButtonLocation:
                   FloatingActionButtonLocation.centerFloat,
-              floatingActionButton: MyButtonWidget(
-                title: "+ ${AppLocalizations.of(context)!.create}",
-                borderRadius: BorderRadius.circular(20),
-                onTap: () {
-                  Navigator.pushNamed(
-                    context,
-                    PageConst.createReminderPage,
-                    arguments: const CreateReminderPage(),
-                  );
-                },
-              ),
+              floatingActionButton: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      PageConst.createReminderPage,
+                      arguments: const CreateReminderPage(),
+                    );
+                  },
+                  icon: const Icon(FontAwesomeIcons.plus),
+                  label: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      AppLocalizations.of(context)!.add,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge!
+                          .copyWith(color: Colors.white),
+                    ),
+                  )),
             );
           }
           return const Scaffold();

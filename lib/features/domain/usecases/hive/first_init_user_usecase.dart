@@ -7,7 +7,8 @@ class FirstInitUserUsecase {
     required this.repository,
   });
 
-  Future<void> call(CurrencyEntity currencyEntity) async {
-    return repository.firstInitUser(currencyEntity);
+  Future<void> call(CurrencyEntity currencyEntity, String total,
+      String main, String reminderTitle, String reminderBody) async {
+    return repository.firstInitUser(currencyEntity, total, main, reminderTitle, reminderBody);
   }
 }

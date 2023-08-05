@@ -3,9 +3,9 @@ import 'package:coin_saver/features/domain/entities/category/category_entity.dar
 import 'package:coin_saver/features/presentation/pages/create_category/create_category_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../bloc/category/category_bloc.dart';
 import '../../bloc/cubit/selected_category/selected_category_cubit.dart';
 

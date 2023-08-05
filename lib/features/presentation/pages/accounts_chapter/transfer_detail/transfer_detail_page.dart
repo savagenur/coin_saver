@@ -1,15 +1,14 @@
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 import 'package:coin_saver/features/presentation/pages/accounts_chapter/create_transfer/create_transfer_page.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../../constants/constants.dart';
 import '../../../bloc/account/account_bloc.dart';
-import '../../../bloc/main_transaction/main_transaction_bloc.dart';
 
 class TransferDetailPage extends StatefulWidget {
   final TransactionEntity transfer;
@@ -191,6 +190,13 @@ class _TransferDetailPageState extends State<TransferDetailPage> {
           actions: [
             Row(
               children: [
+                 Expanded(
+                  child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        AppLocalizations.of(context)!.no,
+                      )),
+                ),
                 Expanded(
                   child: TextButton(
                       onPressed: () async {
@@ -208,23 +214,10 @@ class _TransferDetailPageState extends State<TransferDetailPage> {
                       },
                       child: Text(
                         AppLocalizations.of(context)!.yes,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge!
-                            .copyWith(color: Theme.of(context).colorScheme.error),
+                        
                       )),
                 ),
-                Expanded(
-                  child: TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(
-                        AppLocalizations.of(context)!.no,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge!
-                            .copyWith(color: Colors.grey),
-                      )),
-                ),
+               
               ],
             )
           ],

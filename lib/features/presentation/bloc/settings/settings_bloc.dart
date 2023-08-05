@@ -32,6 +32,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       UpdateTheme event, Emitter<SettingsState> emit) async {
     await updateThemeUsecase.call(event.isDarkTheme);
     final SettingsEntity settingsEntity = await getSettingsUsecase.call();
+
     emit(SettingsState(
       isDarkTheme: settingsEntity.isDarkTheme,
       language: settingsEntity.language,

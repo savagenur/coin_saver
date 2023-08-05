@@ -1,26 +1,34 @@
 import 'dart:io';
 
-import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:coin_saver/constants/constants.dart';
+import 'package:coin_saver/constants/main_categories.dart';
 import 'package:coin_saver/constants/theme.dart';
 import 'package:coin_saver/features/data/models/currency/currency_model.dart';
-import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:coin_saver/features/domain/usecases/hive/init_hive_usecase.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
+import 'package:coin_saver/features/presentation/bloc/cubit/first_launch/first_launch_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
+import 'package:coin_saver/features/presentation/bloc/cubit/rate_my_app/rate_my_app_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/transaction_period/transaction_period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/currency/currency_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/reminder/reminder_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/settings/settings_bloc.dart';
 import 'package:coin_saver/features/presentation/pages/welcome_chapter/welcome/welcome_page.dart';
+import 'package:coin_saver/features/presentation/widgets/rate_app_init_widget.dart';
+import 'package:coin_saver/features/presentation/widgets/splash_screen.dart';
 import 'package:coin_saver/routes.dart';
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
+
+import 'features/data/models/category/category_model.dart';
 import 'features/presentation/bloc/cubit/main_colors/main_colors_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_category/selected_category_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_color/selected_color_cubit.dart';
@@ -29,10 +37,8 @@ import 'features/presentation/bloc/cubit/selected_icon/selected_icon_cubit.dart'
 import 'features/presentation/bloc/home_time_period/home_time_period_bloc.dart';
 import 'features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
 import 'features/presentation/pages/home/home_page.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'injection_container.dart';
 import 'l10n/l10n.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'observer.dart';
 
 void main() async {
@@ -108,35 +114,60 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (_) => sl<SettingsBloc>()..add(const GetSettings()),
         ),
+        BlocProvider(
+          create: (_) => sl<RateMyAppCubit>(),
+        ),
+        BlocProvider(
+          create: (_) => sl<FirstLaunchCubit>()..getFirstLaunch(),
+        ),
       ],
-      child: BlocBuilder<SettingsBloc, SettingsState>(
-        builder: (context, settingsState) {
-          final bool isFirstInit =
-              Hive.box<CurrencyModel>(BoxConst.currency).isEmpty;
-          Intl.defaultLocale = settingsState.language??Platform.localeName;
-
-          return MaterialApp(
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-            ],
-            locale: settingsState.language == null
-                ? null
-                : Locale(settingsState.language!),
-            supportedLocales: L10n.all,
-            debugShowCheckedModeBanner: false,
-            title: "Coin Saver",
-            theme: settingsState.isDarkTheme
-                ? MyAppTheme.darkTheme
-                : MyAppTheme.lightTheme,
-            initialRoute: "/",
-            routes: {
-              "/": (context) =>
-                  isFirstInit ? const WelcomePage() : const HomePage(),
+      child: BlocBuilder<FirstLaunchCubit, FirstLaunch>(
+        builder: (context, firstLaunchState) {
+          return BlocBuilder<SettingsBloc, SettingsState>(
+            builder: (context, settingsState) {
+              Intl.defaultLocale =
+                  settingsState.language ?? Platform.localeName;
+              return MaterialApp(
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                ],
+                locale: settingsState.language == null
+                    ? null
+                    : Locale(settingsState.language!),
+                supportedLocales: L10n.all,
+                debugShowCheckedModeBanner: false,
+                title: "Coin Saver",
+                theme: settingsState.isDarkTheme
+                    ? MyAppTheme.darkTheme
+                    : MyAppTheme.lightTheme,
+                initialRoute: "/splash",
+                routes: {
+                  "/splash": (context) => RateAppInitWidget(
+                        builder: (rateMyApp) {
+                          return AnimatedSplashScreen.withScreenRouteFunction(
+                            splash: const SplashScreen(),
+                            duration: 700,
+                            curve: Curves.fastEaseInToSlowEaseOut,
+                            splashTransition: SplashTransition.sizeTransition,
+                            splashIconSize: 250,
+                            pageTransitionType: PageTransitionType.fade,
+                            backgroundColor: const Color(0xff095d9e),
+                            screenRouteFunction: () async {
+                              return PageConst.homePage;
+                            },
+                          );
+                        },
+                      ),
+                  "/homePage": (context) => firstLaunchState.isFirstLaunch!
+                      ? const WelcomePage()
+                      : const HomePage(),
+                },
+                onGenerateRoute: AppRoute().onGenerateRoute,
+              );
             },
-            onGenerateRoute: AppRoute().onGenerateRoute,
           );
         },
       ),

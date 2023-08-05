@@ -19,10 +19,13 @@ class HiveRepository implements BaseHiveRepository {
   Future<void> initHiveAdaptersBoxes() async =>
       hiveLocalDataSource.initHiveAdaptersBoxes();
   @override
+  bool getFirstLaunch()  => hiveLocalDataSource.getFirstLaunch();
+  @override
   Future<void> initHive() async => hiveLocalDataSource.initHive();
   @override
-  Future<void> firstInitUser(CurrencyEntity currencyEntity) async =>
-      hiveLocalDataSource.firstInitUser(currencyEntity);
+  Future<void> firstInitUser(CurrencyEntity currencyEntity, String total,
+      String main, String reminderTitle, String reminderBody) async =>
+      hiveLocalDataSource.firstInitUser(currencyEntity, total, main, reminderTitle, reminderBody);
   // Account
   @override
   Future<void> createAccount(AccountEntity accountEntity) async =>
@@ -191,7 +194,8 @@ class HiveRepository implements BaseHiveRepository {
   Future<void> updateTheme(bool isDarkTheme) async =>
       hiveLocalDataSource.updateTheme(isDarkTheme);
   @override
-  Future<SettingsEntity> getSettings() async => hiveLocalDataSource.getSettings();
+  Future<SettingsEntity> getSettings() async =>
+      hiveLocalDataSource.getSettings();
 
   // Delete all data
   @override

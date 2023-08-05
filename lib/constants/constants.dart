@@ -63,7 +63,7 @@ List<String> kGetChartPeriodTitles(BuildContext context) {
 
 
 
-const Color secondaryColor = Color.fromARGB(255, 111, 111, 111);
+const Color secondaryColor = Color.fromARGB(255, 124, 124, 124);
 // SizedBox
 Widget sizeVer(double height) {
   return SizedBox(
@@ -79,6 +79,8 @@ Widget sizeHor(double width) {
 
 class PageConst {
   static const String homePage = "/homePage";
+  static const String welcomePage = "/welcomePage";
+  static const String rateInitPage = "/rateInitPage";
   static const String calculatorPage = "/calculatorPage";
   static const String addTransactionPage = "/addTransactionPage";
   static const String catalogIconsPage = "/catalogIconsPage";
@@ -100,6 +102,7 @@ class PageConst {
   static const String chartsPage = "/chartsPage";
   static const String settingsPage = "/settingsPage";
   static const String chooseDefaultCurrencyPage = "/chooseDefaultCurrencyPage";
+  static const String selectCurrencyWidget = "/selectCurrencyWidget";
 }
 
 class BoxConst {

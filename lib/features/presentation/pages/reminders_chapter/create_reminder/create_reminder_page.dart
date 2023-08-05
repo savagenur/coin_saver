@@ -1,12 +1,11 @@
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/constants/constants.dart';
+import 'package:coin_saver/features/domain/entities/reminder/reminder_entity.dart';
 import 'package:coin_saver/features/presentation/bloc/reminder/reminder_bloc.dart';
 import 'package:coin_saver/features/presentation/widgets/simple_calendar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-import 'package:coin_saver/features/domain/entities/reminder/reminder_entity.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
@@ -107,6 +106,7 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
               sizeVer(5),
               TextFormField(
                 initialValue: _name,
+                textCapitalization: TextCapitalization.sentences,
                 validator: (value) {
                   if ((value == null || value == "")) {
                     return AppLocalizations.of(context)!.pleaseEnterValidName;
@@ -173,7 +173,7 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
                                 )
                               : DateTime.now(),
                           setDate: setDate,
-                          lastDay: DateTime(2010),
+                          lastDay: DateTime(2100),
                         ),
                       );
                     },
@@ -218,6 +218,7 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
               ),
               sizeVer(5),
               TextField(
+                textCapitalization: TextCapitalization.sentences,
                 controller: _commentController,
                 decoration: InputDecoration(
                   hintText: AppLocalizations.of(context)!.comment,
@@ -235,10 +236,8 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
                       ),
                       label: Text(
                         AppLocalizations.of(context)!.delete,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge!
-                            .copyWith(color: Theme.of(context).colorScheme.error),
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                            color: Theme.of(context).colorScheme.error),
                       ))
                   : Container(),
             ],
@@ -247,54 +246,59 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: MediaQuery.of(context).viewInsets.bottom != 0
             ? null
-            : MyButtonWidget(
-                title: _isUpdate
-                    ? AppLocalizations.of(context)!.save
-                    : AppLocalizations.of(context)!.create,
-                width: MediaQuery.of(context).size.width * .9,
-                onTap: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    final id = _reminder?.id ?? generateIntUniqueId();
-                    final day = _frequency == Frequency.onceAWeek ||
-                            _frequency == Frequency.daily
-                        ? null
-                        : _selectedDate.day;
-                    final month = _frequency == Frequency.onceAWeek ||
-                            _frequency == Frequency.daily
-                        ? null
-                        : _selectedDate.month;
-                    final year = _frequency == Frequency.onceAWeek ||
-                            _frequency == Frequency.daily
-                        ? null
-                        : _selectedDate.year;
-                    final ReminderEntity reminder = ReminderEntity(
-                      id: id,
-                      title: _name,
-                      body: _commentController.text,
-                      day: day,
-                      month: month,
-                      year: year,
-                      hour: _timeOfDay!.hour,
-                      minute: _timeOfDay!.minute,
-                      isActive: true,
-                      repeats: _repeats,
-                      weekday: _weekday,
-                    );
-                    if (_isUpdate) {
-                      context
-                          .read<ReminderBloc>()
-                          .add(UpdateReminder(reminder: reminder));
-                    } else {
-                      context
-                          .read<ReminderBloc>()
-                          .add(CreateReminder(reminder: reminder));
-                    }
-                    Navigator.pop(context);
-                  }
-                },
-              ),
+            : _buildCreateBtn(context),
       ),
+    );
+  }
+
+  MyButtonWidget _buildCreateBtn(BuildContext context) {
+    return MyButtonWidget(
+      borderRadius: BorderRadius.circular(5),
+      title: _isUpdate
+          ? AppLocalizations.of(context)!.save
+          : AppLocalizations.of(context)!.create,
+      width: MediaQuery.of(context).size.width * .9,
+      onTap: () {
+        if (_formKey.currentState!.validate()) {
+          _formKey.currentState!.save();
+          final id = _reminder?.id ?? generateIntUniqueId();
+          final day =
+              _frequency == Frequency.onceAWeek || _frequency == Frequency.daily
+                  ? null
+                  : _selectedDate.day;
+          final month =
+              _frequency == Frequency.onceAWeek || _frequency == Frequency.daily
+                  ? null
+                  : _selectedDate.month;
+          final year =
+              _frequency == Frequency.onceAWeek || _frequency == Frequency.daily
+                  ? null
+                  : _selectedDate.year;
+          final ReminderEntity reminder = ReminderEntity(
+            id: id,
+            title: _name,
+            body: _commentController.text,
+            day: day,
+            month: month,
+            year: year,
+            hour: _timeOfDay!.hour,
+            minute: _timeOfDay!.minute,
+            isActive: true,
+            repeats: _repeats,
+            weekday: _weekday,
+          );
+          if (_isUpdate) {
+            context
+                .read<ReminderBloc>()
+                .add(UpdateReminder(reminder: reminder));
+          } else {
+            context
+                .read<ReminderBloc>()
+                .add(CreateReminder(reminder: reminder));
+          }
+          Navigator.pop(context);
+        }
+      },
     );
   }
 
@@ -310,6 +314,13 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
               children: [
                 Expanded(
                   child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        AppLocalizations.of(context)!.no,
+                      )),
+                ),
+                Expanded(
+                  child: TextButton(
                       onPressed: () {
                         context
                             .read<ReminderBloc>()
@@ -319,13 +330,6 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
                       },
                       child: Text(
                         AppLocalizations.of(context)!.yes,
-                      )),
-                ),
-                Expanded(
-                  child: TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(
-                        AppLocalizations.of(context)!.no,
                       )),
                 ),
               ],

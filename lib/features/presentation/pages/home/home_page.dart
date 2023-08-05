@@ -1,32 +1,28 @@
-import 'dart:io';
-
+import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/constants/period_enum.dart';
+import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
+import 'package:coin_saver/features/presentation/bloc/cubit/first_launch/first_launch_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/widgets/account_switch_pull_down_btn.dart';
 import 'package:coin_saver/features/presentation/pages/home/widgets/circular_chart.dart';
-import 'package:coin_saver/features/presentation/widgets/period_tab_bar.dart';
-import 'package:coin_saver/features/presentation/pages/main_transaction/main_transaction_page.dart';
 import 'package:coin_saver/features/presentation/pages/transactions/transactions_page.dart';
 import 'package:coin_saver/features/presentation/widgets/day_navigation_widget.dart';
 import 'package:coin_saver/features/presentation/widgets/my_drawer.dart';
+import 'package:coin_saver/features/presentation/widgets/period_tab_bar.dart';
+import 'package:coin_saver/features/presentation/widgets/shadowed_container_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-
-import 'package:coin_saver/constants/constants.dart';
-import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
-import 'package:coin_saver/features/presentation/widgets/shadowed_container_widget.dart';
 
 import '../../../domain/entities/transaction/transaction_entity.dart';
 import '../../bloc/account/account_bloc.dart';
 import '../../bloc/cubit/selected_date/selected_date_cubit.dart';
 import '../../bloc/home_time_period/home_time_period_bloc.dart';
 import '../../widgets/category_tile.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   final bool isIncome;
@@ -53,7 +49,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late DateTime _selectedDateEnd;
   late AccountEntity _account;
   late double _totalExpense;
-  late final int _initialIndexTab;
+  late int _initialIndexTab;
   late TabController _tabController;
 
   @override
@@ -71,8 +67,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _tabController.dispose();
   }
 
+  void updatePage() {
+    setState(() {
+      _initialIndexTab = getPeriodKeyByValue(periodValues, _selectedPeriod)!;
+      _tabController =
+          TabController(length: 5, vsync: this, initialIndex: _initialIndexTab);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(Theme.of(context).primaryColor);
+
     return BlocBuilder<SelectedDateCubit, DateRange>(
       builder: (context, dateRange) {
         return BlocBuilder<AccountBloc, AccountState>(
@@ -178,14 +184,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 ),
                               ),
                               floatingActionButton: FloatingActionButton(
-                                onPressed: () {
-                                  Navigator.pushNamed(
+                                onPressed: () async {
+                                  var res = await Navigator.pushNamed(
                                       context, PageConst.addTransactionPage,
                                       arguments: AddTransactionPage(
                                         selectedDate: _selectedDate,
                                         isIncome: _isIncome,
                                         account: _account,
                                       ));
+                                  if (res == true) {
+                                    updatePage();
+                                  }
                                 },
                                 child: const Icon(FontAwesomeIcons.plus),
                               ),
@@ -251,13 +260,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ),
       actions: [
         IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, PageConst.transactionsPage,
-                  arguments: TransactionsPage(
-                    account: account,
-                    period: _selectedPeriod,
-                    isIncome: _isIncome,
-                  ));
+            onPressed: () async {
+              var res =
+                  await Navigator.pushNamed(context, PageConst.transactionsPage,
+                      arguments: TransactionsPage(
+                        account: account,
+                        period: _selectedPeriod,
+                        isIncome: _isIncome,
+                      ));
+              if (res == true) {
+                updatePage();
+              }
             },
             icon: const Icon(FontAwesomeIcons.rectangleList)),
       ],

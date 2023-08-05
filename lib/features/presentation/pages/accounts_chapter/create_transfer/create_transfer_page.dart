@@ -142,6 +142,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
                     : AppLocalizations.of(context)!.createTransfer),
               ),
               body: SingleChildScrollView(
+                reverse: true,
                 padding: const EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,11 +215,13 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
                     ),
                     sizeVer(5),
                     TextField(
+                      textCapitalization: TextCapitalization.sentences,
                       controller: _commentController,
                       decoration: InputDecoration(
                         hintText: AppLocalizations.of(context)!.comment,
                       ),
                     ),
+                    sizeVer(70),
                   ],
                 ),
               ),

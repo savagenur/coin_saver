@@ -9,7 +9,9 @@ abstract class BaseHiveLocalDataSource {
   // Hive
   Future<void> initHiveAdaptersBoxes();
   Future<void> initHive();
-  Future<void> firstInitUser(CurrencyEntity currencyEntity);
+  Future<void> firstInitUser(CurrencyEntity currencyEntity, String total,
+      String main, String reminderTitle, String reminderBody);
+  bool getFirstLaunch();
   // Account
   Future<List<AccountEntity>> getAccounts();
   Future<void> putAccounts(List<AccountEntity> accounts);
@@ -29,7 +31,7 @@ abstract class BaseHiveLocalDataSource {
     required AccountEntity accountTo,
     required TransactionEntity transactionEntity,
   });
-    Future<void> updateTransfer({
+  Future<void> updateTransfer({
     required AccountEntity accountFrom,
     required AccountEntity accountTo,
     required AccountEntity oldAccountTo,
@@ -54,8 +56,8 @@ abstract class BaseHiveLocalDataSource {
   // Category
   Future<List<CategoryEntity>> getCategories();
   Future<void> createCategory(CategoryEntity categoryEntity);
-  Future<void> updateCategory( CategoryEntity categoryEntity);
-  Future<void> deleteCategory(bool isIncome,String categoryId);
+  Future<void> updateCategory(CategoryEntity categoryEntity);
+  Future<void> deleteCategory(bool isIncome, String categoryId);
 
   // Currency
   Future<CurrencyEntity> getCurrency();
@@ -81,7 +83,7 @@ abstract class BaseHiveLocalDataSource {
   Future<void> deleteReminder({required ReminderEntity reminderEntity});
   List<ReminderEntity> getReminders();
 
-   // Settings
+  // Settings
   Future<void> updateLanguage(String language);
   Future<void> updateTheme(bool isDarkTheme);
   Future<SettingsEntity> getSettings();

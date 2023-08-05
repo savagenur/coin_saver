@@ -10,7 +10,9 @@ abstract class BaseHiveRepository {
   // Hive
   Future<void> initHiveAdaptersBoxes();
   Future<void> initHive();
-  Future<void> firstInitUser(CurrencyEntity currencyEntity);
+  Future<void> firstInitUser(CurrencyEntity currencyEntity, String total,
+      String main, String reminderTitle, String reminderBody);
+  bool getFirstLaunch();
   // Account
   Future<List<AccountEntity>> getAccounts();
   Future<void> putAccounts(List<AccountEntity> accounts);
@@ -89,5 +91,4 @@ abstract class BaseHiveRepository {
 
   // Delete all data
   Future<void> deleteAllData();
-
 }

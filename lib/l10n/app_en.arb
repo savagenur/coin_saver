@@ -95,6 +95,22 @@
   "@calculator": {
     "description": "Button calculator"
   },
+  "enjoyingCoinSaver": "Enjoying Coin Saver?",
+  "@enjoyingCoinSaver": {
+    "description": "Button enjoyingCoinSaver"
+  },
+  "tapAStarToRateIt": "Tap a star to rate it. This will help and motivate us a lot.",
+  "@tapAStarToRateIt": {
+    "description": "Button tapAStarToRateIt"
+  },
+  "ok": "Ok",
+  "@ok": {
+    "description": "Button ok"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Button cancel"
+  },
   "day": "Day",
   "@day": {
     "description": "Button day"
@@ -163,6 +179,78 @@
   "@more": {
     "description": "more"
   },
+
+
+  "main": "Main",
+  "@main": {
+    "description": "main"
+  },
+
+
+
+  "other": "Other",
+  "@other": {
+    "description":"other"
+  },
+
+  "transportation": "Transportation",
+  "@transportation": {
+    "description": "transportation"
+  },
+
+  "workout": "Workout",
+  "@workout": {
+    "description": "workout"
+  },
+
+  "family": "Family",
+  "@family": {
+    "description": "family"
+  },
+
+  "groceries": "Groceries",
+  "@groceries": {
+    "description": "groceries"
+  },
+
+  "gifts": "Gifts",
+  "@gifts": {
+    "description":"gifts"
+  },
+
+  "education": "Education",
+  "@education": {
+    "description": "education"
+  },
+
+  "cafe": "Cafe",
+  "@cafe": {
+    "description": "Cafe"
+  },
+
+  "interests": "Interests",
+  "@interests": {
+    "description": "Interests"
+  },
+
+  "gift": "Gift",
+  "@gift": {
+    "description": "Gift"
+  },
+
+  "paycheck": "Paycheck",
+  "@paycheck": {
+    "description": "paycheck"
+  },
+
+  
+
+
+
+  "donTForgetToRecordURExpenses": "Don't forget to record your expenses!",
+  "@donTForgetToRecordURExpenses": {
+    "description": "donTForgetToRecordURExpenses"
+  },
   "iconCatalog": "Icon Catalog",
   "@iconCatalog": {
     "description": "iconCatalog"
@@ -170,6 +258,10 @@
   "select": "Select",
   "@select": {
     "description": "select"
+  },
+  "currency": "Currency",
+  "@currency": {
+    "description": "currency"
   },
   "deleteCategory": "Delete category?",
   "@deleteCategory": {

@@ -46,7 +46,7 @@ class _PeriodCalendarWidgetState extends State<PeriodCalendarWidget> {
           if (accountState is AccountLoaded) {
             _transactionHistory = accountState.accounts
                 .firstWhere((element) => element.isPrimary)
-                .transactionHistory;
+                .transactionHistory..sort((a, b) =>a.date.compareTo(b.date) ,);
             _firstDate = _transactionHistory!.isEmpty
                 ? DateTime.now()
                 : _transactionHistory!.first.date;

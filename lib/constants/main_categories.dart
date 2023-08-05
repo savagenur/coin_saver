@@ -1,3 +1,4 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // Main Categories
 import 'package:coin_saver/injection_container.dart';
 import 'package:flutter/material.dart';
@@ -6,10 +7,12 @@ import 'package:uuid/uuid.dart';
 
 import '../features/data/models/category/category_model.dart';
 
-Uuid uuid = sl<Uuid>();
- CategoryModel categoryExpenseOther = CategoryModel(
+
+List<CategoryModel> getMainCategories(BuildContext context) {
+  Uuid uuid = sl<Uuid>();
+  CategoryModel categoryExpenseOther = CategoryModel(
     id: "otherExpense",
-    name: "Other",
+    name: AppLocalizations.of(context)!.other,
     iconData: FontAwesomeIcons.question,
     color: Colors.red.shade700,
     isIncome: false,
@@ -17,105 +20,105 @@ Uuid uuid = sl<Uuid>();
   );
   CategoryModel categoryIncomeOther = CategoryModel(
     id: "otherIncome",
-    name: "Other",
+    name: AppLocalizations.of(context)!.other,
     iconData: FontAwesomeIcons.question,
     color: Colors.grey,
     isIncome: true,
     dateTime: DateTime.now(),
   );
-List<CategoryModel> mainCategories = [
-  // EXPENSES
-  CategoryModel(
-    id: uuid.v1(),
-    name: "Transportation",
-    iconData: FontAwesomeIcons.bus,
-    color: Colors.indigoAccent,
-    isIncome: false,
-    dateTime: DateTime.now(),
-  ),
+  return [
+    // EXPENSES
+    CategoryModel(
+      id: uuid.v1(),
+      name: AppLocalizations.of(context)!.transportation,
+      iconData: FontAwesomeIcons.bus,
+      color: Colors.indigoAccent,
+      isIncome: false,
+      dateTime: DateTime.now(),
+    ),
 
-  CategoryModel(
-    id: uuid.v1(),
-    name: "Workout",
-    iconData: FontAwesomeIcons.personRunning,
-    color: Colors.green,
-    isIncome: false,
-    dateTime: DateTime.now(),
-  ),
+    CategoryModel(
+      id: uuid.v1(),
+      name: AppLocalizations.of(context)!.workout,
+      iconData: FontAwesomeIcons.personRunning,
+      color: Colors.green,
+      isIncome: false,
+      dateTime: DateTime.now(),
+    ),
 
-  CategoryModel(
-    id: uuid.v1(),
-    name: "Family",
-    iconData: FontAwesomeIcons.baby,
-    color: Colors.red,
-    isIncome: false,
-    dateTime: DateTime.now(),
-  ),
+    CategoryModel(
+      id: uuid.v1(),
+      name: AppLocalizations.of(context)!.family,
+      iconData: FontAwesomeIcons.baby,
+      color: Colors.red,
+      isIncome: false,
+      dateTime: DateTime.now(),
+    ),
 
-  CategoryModel(
-    id: uuid.v1(),
-    name: "Groceries",
-    iconData: FontAwesomeIcons.utensils,
-    color: Colors.blue,
-    isIncome: false,
-    dateTime: DateTime.now(),
-  ),
+    CategoryModel(
+      id: uuid.v1(),
+      name: AppLocalizations.of(context)!.groceries,
+      iconData: FontAwesomeIcons.utensils,
+      color: Colors.blue,
+      isIncome: false,
+      dateTime: DateTime.now(),
+    ),
 
-  CategoryModel(
-    id: uuid.v1(),
-    name: "Gifts",
-    iconData: FontAwesomeIcons.gifts,
-    color: Colors.green.shade300,
-    isIncome: false,
-    dateTime: DateTime.now(),
-  ),
+    CategoryModel(
+      id: uuid.v1(),
+      name: AppLocalizations.of(context)!.gifts,
+      iconData: FontAwesomeIcons.gifts,
+      color: Colors.green.shade300,
+      isIncome: false,
+      dateTime: DateTime.now(),
+    ),
 
-  CategoryModel(
-    id: uuid.v1(),
-    name: "Education",
-    iconData: FontAwesomeIcons.graduationCap,
-    color: Colors.pink,
-    isIncome: false,
-    dateTime: DateTime.now(),
-  ),
-  CategoryModel(
-    id: uuid.v1(),
-    name: "Cafe",
-    iconData: FontAwesomeIcons.martiniGlassCitrus,
-    color: Colors.yellow.shade900,
-    isIncome: false,
-    dateTime: DateTime.now(),
-  ),
-  categoryExpenseOther,
+    CategoryModel(
+      id: uuid.v1(),
+      name: AppLocalizations.of(context)!.education,
+      iconData: FontAwesomeIcons.graduationCap,
+      color: Colors.pink,
+      isIncome: false,
+      dateTime: DateTime.now(),
+    ),
+    CategoryModel(
+      id: uuid.v1(),
+      name: AppLocalizations.of(context)!.cafe,
+      iconData: FontAwesomeIcons.martiniGlassCitrus,
+      color: Colors.yellow.shade900,
+      isIncome: false,
+      dateTime: DateTime.now(),
+    ),
+    categoryExpenseOther,
 
-  // INCOME
+    // INCOME
 
-  CategoryModel(
-    id: uuid.v1(),
-    name: "Interest",
-    iconData: FontAwesomeIcons.buildingColumns,
-    color: Colors.green,
-    isIncome: true,
-    dateTime: DateTime.now(),
-  ),
+    CategoryModel(
+      id: uuid.v1(),
+      name: AppLocalizations.of(context)!.interests,
+      iconData: FontAwesomeIcons.buildingColumns,
+      color: Colors.green,
+      isIncome: true,
+      dateTime: DateTime.now(),
+    ),
 
-  CategoryModel(
-    id: uuid.v1(),
-    name: "Gift",
-    iconData: FontAwesomeIcons.gift,
-    color: Colors.pink.shade400,
-    isIncome: true,
-    dateTime: DateTime.now(),
-  ),
+    CategoryModel(
+      id: uuid.v1(),
+      name: AppLocalizations.of(context)!.gift,
+      iconData: FontAwesomeIcons.gift,
+      color: Colors.pink.shade400,
+      isIncome: true,
+      dateTime: DateTime.now(),
+    ),
 
-  CategoryModel(
-    id: uuid.v1(),
-    name: "Paycheck",
-    iconData: FontAwesomeIcons.fileInvoiceDollar,
-    color: Colors.indigoAccent,
-    isIncome: true,
-    dateTime: DateTime.now(),
-  ),
-categoryIncomeOther
-  ,
-];
+    CategoryModel(
+      id: uuid.v1(),
+      name: AppLocalizations.of(context)!.paycheck,
+      iconData: FontAwesomeIcons.fileInvoiceDollar,
+      color: Colors.indigoAccent,
+      isIncome: true,
+      dateTime: DateTime.now(),
+    ),
+    categoryIncomeOther,
+  ];
+}

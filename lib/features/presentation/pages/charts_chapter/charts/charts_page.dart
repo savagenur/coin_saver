@@ -1,4 +1,3 @@
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
@@ -6,6 +5,7 @@ import 'package:coin_saver/features/presentation/bloc/home_time_period/home_time
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_down_button/pull_down_button.dart';
@@ -54,7 +54,7 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
     final chartPeriodTitles = kGetChartPeriodTitles(context);
 
     return WillPopScope(onWillPop: () async {
-      Navigator.popUntil(context, (route) => route.isFirst);
+      Navigator.popUntil(context, (route) => route.settings.name==PageConst.homePage);
       return true;
     }, child: BlocBuilder<AccountBloc, AccountState>(
       builder: (context, accountState) {

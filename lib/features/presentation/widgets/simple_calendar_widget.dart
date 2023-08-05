@@ -29,7 +29,7 @@ class SimpleCalendarWidget extends StatelessWidget {
             calendarFormat: CalendarFormat.month,
             focusedDay: selectedDate,
             firstDay: firstDay,
-            lastDay: DateTime(2100),
+            lastDay: lastDay,
             selectedDayPredicate: (day) => isSameDay(day, selectedDate),
             onDaySelected: (selectedDay, focusedDay) {
               setDate(focusedDay);

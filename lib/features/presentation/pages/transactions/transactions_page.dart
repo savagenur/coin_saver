@@ -1,11 +1,11 @@
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/widgets/account_switch_pull_down_btn.dart';
-import 'package:coin_saver/features/presentation/widgets/period_tab_bar.dart';
 import 'package:coin_saver/features/presentation/pages/transactions/widgets/list_date_transactions_widget.dart';
+import 'package:coin_saver/features/presentation/widgets/period_tab_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -17,10 +17,9 @@ import '../../bloc/cubit/period/period_cubit.dart';
 import '../../bloc/cubit/selected_date/selected_date_cubit.dart';
 import '../../bloc/cubit/transaction_period/transaction_period_cubit.dart';
 import '../../bloc/home_time_period/home_time_period_bloc.dart';
-import '../home/home_page.dart';
-import '../main_transaction/main_transaction_page.dart';
 import '../../widgets/day_navigation_widget.dart';
 import '../../widgets/shadowed_container_widget.dart';
+import '../main_transaction/main_transaction_page.dart';
 
 class TransactionsPage extends StatefulWidget {
   final AccountEntity account;
@@ -165,16 +164,7 @@ class TransactionsPageState extends State<TransactionsPage>
 
                                 return WillPopScope(
                                   onWillPop: () async {
-                                    await Navigator.pushNamedAndRemoveUntil(
-                                        context,
-                                        PageConst.homePage,
-                                        arguments: HomePage(
-                                          isIncome: _isIncome,
-                                          period: _selectedPeriod,
-                                        ),
-                                        (route) =>
-                                            route.settings.name ==
-                                            PageConst.homePage);
+                                     Navigator.pop(context,true);
                                     return false;
                                   },
                                   child: DefaultTabController(
@@ -355,6 +345,7 @@ class TransactionsPageState extends State<TransactionsPage>
           },
         ),
         title: TextField(
+                      textCapitalization: TextCapitalization.sentences,
           onChanged: _searchTransactions,
           autofocus: true,
           cursorColor: Colors.white,
@@ -371,14 +362,7 @@ class TransactionsPageState extends State<TransactionsPage>
         toolbarHeight: 70,
         centerTitle: true,
         leading: IconButton(
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                context,
-                PageConst.homePage,
-                arguments: HomePage(
-                  isIncome: _isIncome,
-                  period: _selectedPeriod,
-                ),
-                (route) => route.settings.name == PageConst.homePage),
+            onPressed: () => Navigator.pop(context,true),
             icon: const Icon(FontAwesomeIcons.arrowLeft)),
         title: AccountSwitchPullDownBtn(accounts: accounts, account: account),
         bottom: TabBar(

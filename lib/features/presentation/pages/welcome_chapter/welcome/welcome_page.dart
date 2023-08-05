@@ -1,9 +1,13 @@
 import 'package:coin_saver/constants/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hive/hive.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../../../constants/main_categories.dart';
+import '../../../../data/models/category/category_model.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -21,33 +25,28 @@ class WelcomePageState extends State<WelcomePage> {
       PageViewModel(
         title: AppLocalizations.of(context)!.welcomePageTitle1,
         body: AppLocalizations.of(context)!.welcomePageBody1,
-        image: Image.asset(
-          "assets/page1.jpg",
-          fit: BoxFit.cover,
-          width: MediaQuery.of(context).size.width,
+        image: SvgPicture.asset(
+          "assets/svg/page1.svg",
+          width: MediaQuery.of(context).size.width * .65,
         ),
       ),
       PageViewModel(
         title: AppLocalizations.of(context)!.welcomePageTitle2,
         body: AppLocalizations.of(context)!.welcomePageBody2,
-        image: SizedBox(
-          child: Image.asset(
-            "assets/page2.jpg",
-            fit: BoxFit.cover,
-            width: MediaQuery.of(context).size.width,
-          ),
+        image: SvgPicture.asset(
+          "assets/svg/page2.svg",
+          width: MediaQuery.of(context).size.width * .8,
+          fit: BoxFit.cover,
         ),
         decoration: const PageDecoration(),
       ),
       PageViewModel(
         title: AppLocalizations.of(context)!.welcomePageTitle3,
         body: AppLocalizations.of(context)!.welcomePageBody3,
-        image: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          child: Image.asset(
-            "assets/page3.jpg",
-            fit: BoxFit.cover,
-          ),
+        image: SvgPicture.asset(
+          width: MediaQuery.of(context).size.width * .9,
+          "assets/svg/page3.svg",
+          fit: BoxFit.cover,
         ),
       ),
     ];
@@ -58,11 +57,20 @@ class WelcomePageState extends State<WelcomePage> {
         showNextButton: false,
         showSkipButton: true,
         back: const Icon(FontAwesomeIcons.arrowLeft),
-        skip:  Text(AppLocalizations.of(context)!.skip),
-        done:  Text(AppLocalizations.of(context)!.done),
-        onDone: () {
+        skip: Text(AppLocalizations.of(context)!.skip),
+        done: Text(AppLocalizations.of(context)!.done),
+        onDone: () async {
           Navigator.pushNamedAndRemoveUntil(
               context, PageConst.chooseDefaultCurrencyPage, (route) => false);
+          // Categories
+          if (Hive.box<CategoryModel>(BoxConst.categories).isEmpty) {
+            Map<String, CategoryModel> categoryMap = {};
+
+            for (var category in getMainCategories(context)) {
+              categoryMap[category.id] = category;
+            }
+            Hive.box<CategoryModel>(BoxConst.categories).putAll(categoryMap);
+          }
         },
         onSkip: () {
           _introKey.currentState?.next();

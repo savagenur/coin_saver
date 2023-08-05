@@ -82,7 +82,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
               selectedColorCubit.changeColor(null);
             },
             icon: const Icon(FontAwesomeIcons.arrowLeft)),
-        title:  Text(AppLocalizations.of(context)!.createCategory),
+        title: Text(AppLocalizations.of(context)!.createCategory),
       ),
       body: Form(
         key: _formKey,
@@ -140,17 +140,20 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                   validator: (value) {
                                                     if (value == null ||
                                                         value.isEmpty) {
-                                                      return AppLocalizations.of(context)!.pleaseEnterCategory
-                                                      ;
+                                                      return AppLocalizations
+                                                              .of(context)!
+                                                          .pleaseEnterCategory;
                                                     }
                                                     return null;
                                                   },
                                                   onSaved: (newValue) {
                                                     _title = newValue!;
                                                   },
-                                                  decoration:
-                                                       InputDecoration(
-                                                    hintText: AppLocalizations.of(context)!.categoryName,
+                                                  decoration: InputDecoration(
+                                                    hintText:
+                                                        AppLocalizations.of(
+                                                                context)!
+                                                            .categoryName,
                                                   ),
                                                 ),
                                               ),
@@ -178,7 +181,9 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                                     .start,
                                                             children: [
                                                               Text(
-                                                                AppLocalizations.of(context)!.type,
+                                                                AppLocalizations.of(
+                                                                        context)!
+                                                                    .type,
                                                                 style: TextStyle(
                                                                     color: Colors
                                                                         .grey
@@ -187,8 +192,12 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                               sizeVer(5),
                                                               Text(
                                                                 _isIncome
-                                                                    ? AppLocalizations.of(context)!.income
-                                                                    : AppLocalizations.of(context)!.expense,
+                                                                    ? AppLocalizations.of(
+                                                                            context)!
+                                                                        .income
+                                                                    : AppLocalizations.of(
+                                                                            context)!
+                                                                        .expense,
                                                                 style: Theme.of(
                                                                         context)
                                                                     .textTheme
@@ -212,7 +221,9 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                     Row(
                                                       children: [
                                                         Text(
-                                                          AppLocalizations.of(context)!.icons,
+                                                          AppLocalizations.of(
+                                                                  context)!
+                                                              .icons,
                                                           style: TextStyle(
                                                               color: Colors.grey
                                                                   .shade600),
@@ -220,9 +231,14 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                         sizeHor(10),
                                                         isErrorIcon
                                                             ? Text(
-                                                                AppLocalizations.of(context)!.pleaseSelectIcon,
+                                                                AppLocalizations.of(
+                                                                        context)!
+                                                                    .pleaseSelectIcon,
                                                                 style: TextStyle(
-                                                                    color: Theme.of(context).colorScheme.error),
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .error),
                                                               )
                                                             : Container(),
                                                       ],
@@ -234,7 +250,9 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                     Row(
                                                       children: [
                                                         Text(
-                                                          AppLocalizations.of(context)!.colors,
+                                                          AppLocalizations.of(
+                                                                  context)!
+                                                              .colors,
                                                           style: TextStyle(
                                                               color: Colors.grey
                                                                   .shade600),
@@ -242,9 +260,14 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                         sizeHor(10),
                                                         isErrorColor
                                                             ? Text(
-                                                                AppLocalizations.of(context)!.pleaseSelectIcon,
+                                                                AppLocalizations.of(
+                                                                        context)!
+                                                                    .pleaseSelectIcon,
                                                                 style: TextStyle(
-                                                                    color: Theme.of(context).colorScheme.error),
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .error),
                                                               )
                                                             : Container(),
                                                       ],
@@ -265,7 +288,10 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
                                                               .center,
                                                       children: [
                                                         MyButtonWidget(
-                                                            title: AppLocalizations.of(context)!.add,
+                                                            title: AppLocalizations
+                                                                    .of(
+                                                                        context)!
+                                                                .add,
                                                             width: MediaQuery.of(
                                                                         context)
                                                                     .size
@@ -433,9 +459,11 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
         Flexible(
           child: SizedBox(
             width: MediaQuery.of(context).size.width * .3,
-            child:  TextField(
+            child: TextField(
+              textCapitalization: TextCapitalization.sentences,
               enabled: false,
-              decoration: InputDecoration(hintText: AppLocalizations.of(context)!.notSelected),
+              decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context)!.notSelected),
             ),
           ),
         ),

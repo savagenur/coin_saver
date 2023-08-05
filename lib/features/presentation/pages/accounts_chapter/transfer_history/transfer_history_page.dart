@@ -4,17 +4,16 @@ import 'package:coin_saver/features/domain/entities/transaction/transaction_enti
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_date/selected_date_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/home_time_period/home_time_period_bloc.dart';
-import 'package:coin_saver/features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
 import 'package:coin_saver/features/presentation/pages/accounts_chapter/transfer_detail/transfer_detail_page.dart';
-import 'package:coin_saver/features/presentation/widgets/period_tab_bar.dart';
 import 'package:coin_saver/features/presentation/widgets/day_navigation_widget.dart';
+import 'package:coin_saver/features/presentation/widgets/period_tab_bar.dart';
 import 'package:coin_saver/features/presentation/widgets/shadowed_container_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_down_button/pull_down_button.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../../../constants/period_enum.dart';
 import '../../../bloc/account/account_bloc.dart';

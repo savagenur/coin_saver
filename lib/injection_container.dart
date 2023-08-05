@@ -18,6 +18,7 @@ import 'package:coin_saver/features/domain/usecases/currency/get_currency_usecas
 import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_api_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_assets_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/hive/first_init_user_usecase.dart';
+import 'package:coin_saver/features/domain/usecases/hive/get_first_launch_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/hive/init_hive_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/reminder/create_reminder_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/settings/delete_all_data_usecase.dart';
@@ -28,8 +29,9 @@ import 'package:coin_saver/features/domain/usecases/time_period/fetch_transactio
 import 'package:coin_saver/features/domain/usecases/time_period/get_transactions_for_today_usecase.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
-import 'package:coin_saver/features/presentation/bloc/cubit/selected_category/selected_category_cubit.dart';
+import 'package:coin_saver/features/presentation/bloc/cubit/first_launch/first_launch_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
+import 'package:coin_saver/features/presentation/bloc/cubit/selected_category/selected_category_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_icon/selected_icon_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/transaction_period/transaction_period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/currency/currency_bloc.dart';
@@ -47,6 +49,7 @@ import 'features/domain/usecases/category/create_category_usecase.dart';
 import 'features/domain/usecases/category/delete_category_usecase.dart';
 import 'features/domain/usecases/category/get_categories_usecase.dart';
 import 'features/domain/usecases/category/update_category_usecase.dart';
+import 'features/domain/usecases/currency/create_currency_usecase.dart';
 import 'features/domain/usecases/exchange_rates/convert_currency_usecase.dart';
 import 'features/domain/usecases/hive/init_hive_adapters_boxes_usecase.dart';
 import 'features/domain/usecases/reminder/delete_reminder_usecase.dart';
@@ -57,6 +60,7 @@ import 'features/domain/usecases/time_period/fetch_transactions_for_period_useca
 import 'features/domain/usecases/time_period/fetch_transactions_for_week_usecase.dart';
 import 'features/domain/usecases/time_period/fetch_transactions_for_year_usecase.dart';
 import 'features/presentation/bloc/cubit/main_colors/main_colors_cubit.dart';
+import 'features/presentation/bloc/cubit/rate_my_app/rate_my_app_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_color/selected_color_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_date/selected_date_cubit.dart';
 import 'features/presentation/bloc/home_time_period/home_time_period_bloc.dart';
@@ -92,6 +96,9 @@ Future<void> initGetIt() async {
     ),
   );
   sl.registerFactory(
+    () => RateMyAppCubit(),
+  );
+  sl.registerFactory(
     () => HomeTimePeriodBloc(
         fetchTransactionsForDayUsecase: sl.call(),
         getTransactionsForTodayUsecase: sl.call(),
@@ -102,7 +109,8 @@ Future<void> initGetIt() async {
         getTransactionsUsecase: sl.call()),
   );
   sl.registerFactory(
-    () => CurrencyBloc(getCurrencyUsecase: sl.call()),
+    () => CurrencyBloc(
+        getCurrencyUsecase: sl.call(), createCurrencyUsecase: sl.call()),
   );
   sl.registerFactory(
     () => ReminderBloc(
@@ -138,6 +146,9 @@ Future<void> initGetIt() async {
     () => SelectedDateCubit(),
   );
   sl.registerFactory(
+    () => FirstLaunchCubit(getFirstLaunchUsecase: sl.call()),
+  );
+  sl.registerFactory(
     () => SelectedCategoryCubit(),
   );
   sl.registerFactory(
@@ -155,6 +166,7 @@ Future<void> initGetIt() async {
   sl.registerLazySingleton(
       () => InitHiveAdaptersBoxesUsecase(repository: sl.call()));
   sl.registerLazySingleton(() => FirstInitUserUsecase(repository: sl.call()));
+  sl.registerLazySingleton(() => GetFirstLaunchUsecase(repository: sl.call()));
 // * Account usecases
   sl.registerLazySingleton(() => CreateAccountUsecase(repository: sl.call()));
   sl.registerLazySingleton(() => GetAccountsUsecase(repository: sl.call()));
@@ -165,6 +177,7 @@ Future<void> initGetIt() async {
 
 // * Currency usecases
   sl.registerLazySingleton(() => GetCurrencyUsecase(repository: sl.call()));
+  sl.registerLazySingleton(() => CreateCurrencyUsecase(repository: sl.call()));
 
 // * Settings usecases
   sl.registerLazySingleton(() => GetSettingsUsecase(repository: sl.call()));

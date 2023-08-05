@@ -2,13 +2,13 @@ import 'package:coin_saver/features/domain/entities/category/category_entity.dar
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
 import '../../../../../constants/constants.dart';
 import '../../../bloc/category/category_bloc.dart';
 import '../../../widgets/my_drawer.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../create_category/create_category_page.dart';
 
 class CategoriesPage extends StatefulWidget {
@@ -26,7 +26,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.popUntil(context, (route) => route.isFirst);
+        
+        Navigator.popUntil(context, (route) => route.settings.name==PageConst.homePage);
         return true;
       },
       child: DefaultTabController(
@@ -65,7 +66,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                   isIncome: _isIncome,
                                 ));
                           },
-                          child:   Column(
+                          child: Column(
                             children: [
                               CircleAvatar(
                                 backgroundColor: secondaryColor,
@@ -93,29 +94,47 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                   showDialog(
                                     context: context,
                                     builder: (context) => AlertDialog(
-                                      title:  Text(AppLocalizations.of(context)!.deleteCategory),
-                                      content:  Text(
-                                          AppLocalizations.of(context)!.allOperationsItContainsWillBe),
+                                      title: Text(AppLocalizations.of(context)!
+                                          .deleteCategory),
+                                      content: Text(
+                                          AppLocalizations.of(context)!
+                                              .allOperationsItContainsWillBe),
                                       actionsAlignment:
                                           MainAxisAlignment.spaceEvenly,
                                       actions: [
-                                        TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child:   Text(AppLocalizations.of(context)!.no)),
-                                        TextButton(
-                                            onPressed: () {
-                                              context.read<CategoryBloc>().add(
-                                                  DeleteCategory(
-                                                      isIncome: _isIncome,
-                                                      categoryId: category.id));
-                                              context
-                                                  .read<AccountBloc>()
-                                                  .add(GetAccounts());
-                                              Navigator.pop(context);
-                                            },
-                                            child:   Text(AppLocalizations.of(context)!.yes))
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: TextButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Text(
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .no)),
+                                            ),
+                                            Expanded(
+                                              child: TextButton(
+                                                  onPressed: () {
+                                                    context
+                                                        .read<CategoryBloc>()
+                                                        .add(DeleteCategory(
+                                                            isIncome: _isIncome,
+                                                            categoryId:
+                                                                category.id));
+                                                    context
+                                                        .read<AccountBloc>()
+                                                        .add(GetAccounts());
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Text(
+                                                      AppLocalizations.of(
+                                                              context)!
+                                                          .yes)),
+                                            )
+                                          ],
+                                        )
                                       ],
                                     ),
                                   );
@@ -137,11 +156,12 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                     category.id == "otherExpense") {
                                   showDialog(
                                     context: context,
-                                    builder: (context) =>   Dialog(
+                                    builder: (context) => Dialog(
                                       child: Padding(
                                         padding: EdgeInsets.all(30),
                                         child: Text(
-                                          AppLocalizations.of(context)!.thisIsAServiceCategoryAnd,
+                                          AppLocalizations.of(context)!
+                                              .thisIsAServiceCategoryAnd,
                                           textAlign: TextAlign.center,
                                         ),
                                       ),
@@ -197,7 +217,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
             onPressed: () => _scaffoldKey.currentState?.openDrawer(),
             icon: const Icon(FontAwesomeIcons.bars)),
         centerTitle: true,
-        title:   Text(AppLocalizations.of(context)!.categories),
+        title: Text(AppLocalizations.of(context)!.categories),
         bottom: TabBar(
           onTap: (value) {
             switch (value) {
@@ -217,7 +237,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           indicatorPadding: const EdgeInsets.only(bottom: 5),
           labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-          tabs:   [
+          tabs: [
             Tab(
               child: Text(AppLocalizations.of(context)!.expensesUpperCase),
             ),

@@ -2,33 +2,36 @@ import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/constants/period_enum.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/category/category_entity.dart';
+import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:coin_saver/features/domain/entities/date/date_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 import 'package:coin_saver/features/domain/usecases/account/transaction/delete_transaction_usecase.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
-import 'package:coin_saver/features/presentation/bloc/cubit/selected_category/selected_category_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
+import 'package:coin_saver/features/presentation/bloc/cubit/selected_category/selected_category_cubit.dart';
 import 'package:coin_saver/features/presentation/pages/add_category/add_category_page.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/widget/calculator_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
-import 'package:coin_saver/features/presentation/pages/main_transaction/main_transaction_page.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/features/presentation/pages/transactions/transactions_page.dart';
+import 'package:coin_saver/features/presentation/widgets/select_currency_widget.dart';
+import 'package:coin_saver/features/presentation/widgets/simple_calendar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:uuid/uuid.dart';
+
 import '../../../../injection_container.dart';
+import '../../../domain/usecases/exchange_rates/convert_currency_usecase.dart';
 import '../../bloc/cubit/selected_date/selected_date_cubit.dart';
 import '../../bloc/home_time_period/home_time_period_bloc.dart';
 import '../../bloc/main_transaction/main_transaction_bloc.dart';
 import '../../widgets/my_button_widget.dart';
-import '../main_transaction/main_transaction_page.dart';
 
 class AddTransactionPage extends StatefulWidget {
   final bool isIncome;
@@ -64,8 +67,13 @@ class AddTransactionPageState extends State<AddTransactionPage>
   late List<CategoryEntity> _categories;
   int _selectedDay = 0;
   late double _amount;
+  double? _amountFrom;
+  double? _exchangeRate;
+  CurrencyEntity? _currencyFrom;
+  CurrencyEntity? _currencyTotal;
   late final TextEditingController _descriptionController;
   late final TextEditingController _amountController;
+  late final TextEditingController _amountFromController;
 
   // DateTime vars
   DateTime yesterday = DateTime.now().subtract(const Duration(days: 1));
@@ -80,6 +88,12 @@ class AddTransactionPageState extends State<AddTransactionPage>
         _selectedDate.day != today.day) {
       _selectedDay = 2;
     }
+  }
+
+  void _setDate(DateTime newDate) {
+    setState(() {
+      _selectedDate = newDate;
+    });
   }
 
   // Category
@@ -113,6 +127,8 @@ class AddTransactionPageState extends State<AddTransactionPage>
     _amount = widget.transaction?.amount ?? 0;
     _amountController = TextEditingController(
         text: _amount == 0 ? "" : _amount.round().toString());
+    _amountFromController = TextEditingController(
+        text: _amount == 0 ? "" : _amount.round().toString());
     _descriptionController =
         TextEditingController(text: widget.transaction?.description);
     selectedCategoryCubit.changeCategory(widget.category);
@@ -130,6 +146,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
     _isIncome = widget.isIncome;
     // DateTime select init
     selectDay();
+    _amountListener();
   }
 
   @override
@@ -137,6 +154,9 @@ class AddTransactionPageState extends State<AddTransactionPage>
     _tabController.dispose();
     _descriptionController.dispose();
     _amountController.dispose();
+    _amountFromController.dispose();
+    _focusNode.dispose();
+    _fromFocusNode.dispose();
     super.dispose();
   }
 
@@ -146,6 +166,51 @@ class AddTransactionPageState extends State<AddTransactionPage>
       _amountController.text = newValue.toString();
     });
   }
+
+  void setCurrency(CurrencyEntity? newValue) {
+    setState(() {
+      _currencyFrom = newValue;
+    });
+  }
+
+  void _amountListener() {
+    _amountFromController.addListener(() {
+      _convertCurrency();
+    });
+    _amountController.addListener(() {
+      _convertCurrency();
+    });
+  }
+
+  void _convertCurrency() {
+    if (_fromFocusNode.hasFocus) {
+      _amountFrom = _amountFromController.text.isNotEmpty
+          ? double.parse(_amountFromController.text)
+          : 0;
+      _exchangeRate = sl<ConvertCurrencyUsecase>().call(
+          _currencyFrom!.code, _account?.currency.code ?? _currencyTotal!.code);
+      _amount = (_amountFrom! * _exchangeRate!);
+      setState(() {
+        _amountController.text = _amount.toStringAsFixed(2);
+      });
+    } else if (_focusNode.hasFocus) {
+      if (_currencyFrom != null) {
+        _amount = _amountController.text.isNotEmpty
+            ? double.parse(_amountController.text)
+            : 0;
+        _exchangeRate = sl<ConvertCurrencyUsecase>().call(
+            _account?.currency.code ?? _currencyTotal!.code,
+            _currencyFrom!.code);
+        _amountFrom = _amount * _exchangeRate!;
+        setState(() {
+          _amountFromController.text = _amountFrom!.toStringAsFixed(2);
+        });
+      }
+    }
+  }
+
+  final FocusNode _fromFocusNode = FocusNode();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -165,11 +230,11 @@ class AddTransactionPageState extends State<AddTransactionPage>
                     _categories.sort(
                       (a, b) => b.dateTime.compareTo(a.dateTime),
                     );
-
+                    _currencyTotal = _accounts
+                        .firstWhere((element) => element.id == "total")
+                        .currency;
                     return BlocBuilder<SelectedDateCubit, DateRange>(
                       builder: (context, dateRange) {
-                        _selectedDate = dateRange.startDate;
-
                         return BlocBuilder<SelectedCategoryCubit,
                             CategoryEntity?>(
                           builder: (context, selectedCategory) {
@@ -200,6 +265,10 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                             CrossAxisAlignment.start,
                                         children: [
                                           _buildInputAmount(context),
+                                          sizeVer(5),
+                                          _currencyFrom == null
+                                              ? Container()
+                                              : _buildInputAmount2(context),
                                           const Divider(),
                                           Expanded(
                                             child: Listener(
@@ -241,7 +310,10 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                                                   .pleaseSelectCategory
                                                               : "",
                                                           style: TextStyle(
-                                                              color: Theme.of(context).colorScheme.error),
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .colorScheme
+                                                                  .error),
                                                         ),
                                                       ],
                                                     ),
@@ -261,6 +333,8 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                                     ),
                                                     sizeVer(10),
                                                     TextFormField(
+                                                      textInputAction:
+                                                          TextInputAction.done,
                                                       controller:
                                                           _descriptionController,
                                                       textCapitalization:
@@ -340,32 +414,11 @@ class AddTransactionPageState extends State<AddTransactionPage>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                BlocBuilder<SelectedDateCubit, DateRange>(
-                  builder: (context, dateRange) {
-                    var selectedDate = dateRange.startDate;
-                    return TableCalendar(
-                      weekNumbersVisible: true,
-                      headerStyle:
-                          const HeaderStyle(formatButtonVisible: false),
-                      focusedDay: selectedDate,
-                      firstDay: DateTime(2000),
-                      lastDay: DateTime(DateTime.now().year,
-                          DateTime.now().month, DateTime.now().day),
-                      currentDay: selectedDate,
-                      onDaySelected: (selectedDay, focusedDay) {
-                        DateTime selectedDayConverted = DateTime(
-                            selectedDay.year,
-                            selectedDay.month,
-                            selectedDay.day);
-                        Navigator.pop(context);
-
-                        context
-                            .read<SelectedDateCubit>()
-                            .changeStartDate(selectedDayConverted);
-                      },
-                    );
-                  },
-                ),
+                SimpleCalendarWidget(
+                    selectedDate: _selectedDate,
+                    firstDay: DateTime(2010),
+                    lastDay: DateTime.now(),
+                    setDate: _setDate)
               ],
             ),
           ),
@@ -436,6 +489,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
           child: SizedBox(
             width: MediaQuery.of(context).size.width * .3,
             child: TextFormField(
+              focusNode: _focusNode,
               controller: _amountController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -471,17 +525,21 @@ class AddTransactionPageState extends State<AddTransactionPage>
           child: Row(
             children: [
               sizeHor(3),
-              Text(
-                _account == null
-                    ? _accounts
-                        .firstWhere((element) => element.id == "total")
-                        .currency
-                        .code
-                    : _account!.currency.code,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Theme.of(context).primaryColor),
+              InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, PageConst.selectCurrencyWidget,
+                      arguments: SelectCurrencyWidget(
+                          currency: _currencyTotal!, setCurrency: setCurrency));
+                },
+                child: Text(
+                  _account == null
+                      ? _currencyTotal!.code
+                      : _account!.currency.code,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge!
+                      .copyWith(color: Theme.of(context).primaryColor),
+                ),
               ),
               IconButton(
                   onPressed: () {
@@ -495,6 +553,62 @@ class AddTransactionPageState extends State<AddTransactionPage>
                         ));
                   },
                   icon: const Icon(FontAwesomeIcons.calculator)),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Row _buildInputAmount2(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const Spacer(
+          flex: 1,
+        ),
+        Expanded(
+          child: Row(
+            children: [
+              Flexible(
+                child: TextFormField(
+                  focusNode: _fromFocusNode,
+                  controller: _amountFromController,
+                  maxLength: 14,
+                  autofocus: true,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  maxLines: 1,
+                  textAlign: TextAlign.center,
+                  showCursor: false,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))
+                  ],
+                  decoration: const InputDecoration(
+                    counterText: "",
+                    hintText: "0",
+                  ),
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge!
+                      .copyWith(color: Theme.of(context).primaryColor),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Row(
+            children: [
+              sizeHor(3),
+              Text(
+                _currencyFrom!.code,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(color: Theme.of(context).primaryColor),
+              ),
             ],
           ),
         ),
@@ -567,31 +681,23 @@ class AddTransactionPageState extends State<AddTransactionPage>
         // Set the selected account as the primary account
         accountBloc.add(SetPrimaryAccount(accountId: _account!.id));
 
-        // Set the selected date as the day period
-        homeTimePeriodBloc.add(SetDayPeriod(selectedDate: _selectedDate));
-
-        // Change the period to 'day' in the PeriodCubit
-        periodCubit.changePeriod(Period.day);
-
         // Clear the selected category
         selectedCategoryCubit.changeCategory(null);
 
         // Navigate to the appropriate screen based on the widget type
-        if (widget.transaction != null) {
+        if (widget.isTransactionsPage) {
           // If it's an existing transaction, pop back to the previous screen(s)
+          Navigator.popUntil(context,
+              (route) => route.settings.name == PageConst.transactionsPage);
+        } else if (widget.transaction != null) {
           Navigator.pop(context);
           Navigator.pop(context);
-        } else if (widget.isTransactionsPage) {
-          Navigator.pushNamed(context, PageConst.transactionsPage,
-              arguments: TransactionsPage(
-                  account: _account!, period: Period.day, isIncome: _isIncome));
         } else if (widget.isMainTransactionPage) {
-          Navigator.pop(context);
-          Navigator.pop(context);
+          Navigator.popUntil(context,
+              (route) => route.settings.name == PageConst.mainTransactionPage);
         } else {
           // If it's a new transaction, navigate to the home page with the appropriate arguments
-          Navigator.pushNamed(context, PageConst.homePage,
-              arguments: HomePage(isIncome: _isIncome));
+          Navigator.pop(context, true);
         }
       }
     }
@@ -628,9 +734,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
                   .map((day) => GestureDetector(
                         onTap: () {
                           setState(() {
-                            context
-                                .read<SelectedDateCubit>()
-                                .changeStartDate(day.dateTime!);
+                            _selectedDate = day.dateTime!;
                           });
                         },
                         child: Container(

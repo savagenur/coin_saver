@@ -1,3 +1,6 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'dart:ui';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:coin_saver/features/domain/entities/reminder/reminder_entity.dart';
 import 'package:coin_saver/features/domain/entities/settings/settings_entity.dart';
@@ -86,6 +89,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
           importance: NotificationImportance.High,
         )
       ],
+      debug: true,
     );
 
     // Colors
@@ -93,27 +97,8 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       await colorsBox.addAll(mainColors);
     }
 
-    // Categories
-    if (categoriesBox.isEmpty) {
-      Map<String, CategoryModel> categoryMap = {};
-      for (var category in mainCategories) {
-        categoryMap[category.id] = category;
-      }
-      await categoriesBox.putAll(categoryMap);
-    }
-
     // Exchange rates
-    try {
-      exchangeRates = await sl<GetExchangeRatesFromApiUsecase>().call();
 
-      final Map<String, ExchangeRateModel> exchangeRatesMap = {};
-      for (ExchangeRateModel exchangeRate in exchangeRates) {
-        exchangeRatesMap[exchangeRate.base] = exchangeRate;
-      }
-      await exchangeRatesBox.putAll(exchangeRatesMap);
-    } catch (e) {
-      print("Error: $e");
-    }
     if (exchangeRatesBox.isEmpty) {
       exchangeRates = await sl<GetExchangeRatesFromAssetsUsecase>().call();
       final Map<String, ExchangeRateModel> exchangeRatesMap = {};
@@ -122,18 +107,34 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       }
       await exchangeRatesBox.putAll(exchangeRatesMap);
     }
+    try {
+      exchangeRates = await sl<GetExchangeRatesFromApiUsecase>().call();
+
+      await Future.wait(exchangeRates.map((exchangeRate) async {
+        await exchangeRatesBox.put(exchangeRate.base, exchangeRate);
+      }));
+    } catch (e) {
+      print("Error: $e");
+    }
   }
- 
+
   @override
-  Future<void> firstInitUser(CurrencyEntity currencyEntity) async {
+  bool getFirstLaunch() {
+    final isFirstLaunch = Hive.box<CurrencyModel>(BoxConst.currency).isEmpty;
+    return isFirstLaunch;
+  }
+
+  @override
+  Future<void> firstInitUser(CurrencyEntity currencyEntity, String total,
+      String main, String reminderTitle, String reminderBody) async {
     await currencyBox.put(
         currencyEntity.code, CurrencyModel.fromEntity(currencyEntity));
-
+    // var locale = PlatformDispatcher.instance.locale;
     await accountsBox.put(
         "total",
         AccountModel(
             id: "total",
-            name: "Total",
+            name: total,
             iconData: FontAwesomeIcons.sackDollar,
             type: AccountType.cash,
             color: Colors.blue.shade800,
@@ -148,7 +149,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         "main",
         AccountModel(
             id: "main",
-            name: "Main",
+            name: main,
             iconData: FontAwesomeIcons.coins,
             type: AccountType.cash,
             color: Colors.blue.shade800,
@@ -160,16 +161,21 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
             openingDate: DateTime.now(),
             transactionHistory: const []));
     // Reminder
-    const ReminderEntity reminder = ReminderEntity(
+    ReminderEntity reminder = ReminderEntity(
       id: 1,
-      title: "Reminder",
-      body: "Don't forget to record your expenses!",
+      title: reminderTitle,
+      body: reminderBody,
       hour: 20,
       minute: 00,
       isActive: true,
       repeats: true,
     );
-    await createReminder(reminderEntity: reminder);
+    var isNotificationAllowed =
+        await sl<AwesomeNotifications>().isNotificationAllowed();
+    if (isNotificationAllowed) {
+      await createReminder(reminderEntity: reminder);
+    }
+    await sl<GetExchangeRatesFromApiUsecase>().call();
   }
 
   // * Account
@@ -257,7 +263,6 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
           // await Future.delayed(const Duration(milliseconds: 300));
         }
       }));
-      print(oldAccountBalance);
       final totalAccount = accountsBox.get("total");
       if (totalAccount != null) {
         final exchangeRate = sl<ConvertCurrencyUsecase>()
@@ -317,7 +322,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
 
       final totalAccount = accountsBox.get("total");
       if (totalAccount != null) {
-        final exchangeRate =  sl<ConvertCurrencyUsecase>()
+        final exchangeRate = sl<ConvertCurrencyUsecase>()
             .call(existingAccount.currency.code, totalAccount.currency.code);
         final convertedAmount = exchangeRate * updatedAccountBalance;
         final updatedTotalAccount = totalAccount.copyWith(
@@ -728,7 +733,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
 
       final totalAccount = accountsBox.get("total");
       if (totalAccount != null) {
-        final exchangeRate =  sl<ConvertCurrencyUsecase>()
+        final exchangeRate = sl<ConvertCurrencyUsecase>()
             .call(existingAccount.currency.code, totalAccount.currency.code);
 
         final convertedAmount = amountDifference * exchangeRate;
@@ -752,7 +757,6 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
     }
   }
 
-  // Todo
   @override
   List<TransactionEntity> getTransactions() {
     final primaryAccount =
@@ -769,12 +773,13 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
   Future<void> createCurrency(CurrencyEntity currencyEntity) async {
     final key = currencyEntity.code;
     final CurrencyModel currencyModel = CurrencyModel(
-      code: currencyEntity.code,
+      code: key,
       name: currencyEntity.name,
       symbol: currencyEntity.symbol,
     );
 
     await currencyBox.put(key, currencyModel);
+    await sl<GetExchangeRatesFromApiUsecase>().call();
   }
 
   @override
@@ -807,8 +812,14 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
   }
 
   @override
-  Future<void> deleteCategory(bool isIncome, String categoryId) async {
+  Future<void> deleteCategory(
+      bool isIncome,
+      String categoryId,) async {
     final accounts = accountsBox.values.cast<AccountModel>().toList();
+    final categories =
+        categoriesBox.values.cast<CategoryModel>().toList();
+    final categoryIncomeOther = categories.firstWhere((element) => element.id=="otherIncome");
+    final categoryExpenseOther = categories.firstWhere((element) => element.id=="otherExpense");
     CategoryModel categoryModel =
         isIncome ? categoryIncomeOther : categoryExpenseOther;
     await Future.wait(accounts.map((account) async {
@@ -1040,8 +1051,8 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
 
   // * Settings
   @override
-  Future<void> deleteAllData() async{
-   final boxes = [
+  Future<void> deleteAllData() async {
+    final boxes = [
       Hive.box<AccountModel>(BoxConst.accounts),
       Hive.box<CategoryModel>(BoxConst.categories),
       Hive.box<Color>(BoxConst.colors),

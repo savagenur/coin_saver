@@ -73,7 +73,7 @@ class AccountSwitchPullDownBtn extends StatelessWidget {
                     .format(account.balance),
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: account.balance.round() > 0
+                    color: account.balance >= 0
                         ? Colors.white
                         : Colors.red.shade300),
               ),

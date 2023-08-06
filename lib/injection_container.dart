@@ -64,7 +64,6 @@ import 'features/presentation/bloc/cubit/rate_my_app/rate_my_app_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_color/selected_color_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_date/selected_date_cubit.dart';
 import 'features/presentation/bloc/home_time_period/home_time_period_bloc.dart';
-import 'features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
 
 final GetIt sl = GetIt.instance;
 Future<void> initGetIt() async {
@@ -79,7 +78,8 @@ Future<void> initGetIt() async {
       addTransferUsecase: sl.call(),
       updateTransferUsecase: sl.call(),
       deleteTransferUsecase: sl.call(),
-      deleteAccountUsecase: sl.call()));
+      deleteAccountUsecase: sl.call(),
+      updateTransactionUsecase: sl.call()));
 
   sl.registerFactory(
     () => CategoryBloc(
@@ -120,15 +120,15 @@ Future<void> initGetIt() async {
         getRemindersUsecase: sl.call()),
   );
 
-  sl.registerFactory(
-    () => MainTransactionBloc(
-      getTransactionsUsecase: sl.call(),
-      addTransactionUsecase: sl.call(),
-      updateTransactionUsecase: sl.call(),
-      deleteTransactionUsecase: sl.call(),
-      setPrimaryAccountUsecase: sl.call(),
-    ),
-  );
+  // sl.registerFactory(
+  //   () => MainTransactionBloc(
+  //     getTransactionsUsecase: sl.call(),
+  //     addTransactionUsecase: sl.call(),
+  //     updateTransactionUsecase: sl.call(),
+  //     deleteTransactionUsecase: sl.call(),
+  //     setPrimaryAccountUsecase: sl.call(),
+  //   ),
+  // );
 
   sl.registerFactory(
     () => TransactionPeriodCubit(

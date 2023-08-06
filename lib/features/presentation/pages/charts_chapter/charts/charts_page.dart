@@ -54,7 +54,8 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
     final chartPeriodTitles = kGetChartPeriodTitles(context);
 
     return WillPopScope(onWillPop: () async {
-      Navigator.popUntil(context, (route) => route.settings.name==PageConst.homePage);
+      Navigator.popUntil(
+          context, (route) => route.settings.name == PageConst.homePage);
       return true;
     }, child: BlocBuilder<AccountBloc, AccountState>(
       builder: (context, accountState) {
@@ -66,7 +67,9 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
           return BlocBuilder<HomeTimePeriodBloc, HomeTimePeriodState>(
             builder: (context, homeTimePeriodState) {
               if (homeTimePeriodState is HomeTimePeriodLoaded) {
-                _transactions = _account!.transactionHistory;
+                _transactions = _account!.transactionHistory
+                    .where((element) => element.isTransfer != true)
+                    .toList();
                 _timeGroupModels = _transactions.isEmpty
                     ? []
                     : groupTransactionsByTime(_transactions, _timeGroupType);
@@ -89,7 +92,6 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
                         onTap: (value) {
                           setState(() {
                             _timeGroupType = chartTimeGroupTypeValues[value]!;
-                            print(_timeGroupType);
                             _timeGroupModels = groupTransactionsByTime(
                                 _transactions, _timeGroupType);
                             setDateTimeIntervalType();
@@ -100,7 +102,8 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
                               (e) => Tab(
                                 child: Text(
                                   e,
-                                  style:  TextStyle(color:Theme.of(context).primaryColor ),
+                                  style: TextStyle(
+                                      color: Theme.of(context).primaryColor),
                                 ),
                               ),
                             )
@@ -201,11 +204,13 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
           : (_timeGroupModels.length * 120),
       child: BarChart(
         BarChartData(
-          barTouchData: BarTouchData(touchTooltipData: BarTouchTooltipData(
-            getTooltipItem: (group, groupIndex, rod, rodIndex) {
-              return _buildBarToolTipItem(rod, rodIndex, groupIndex, group);
-            },
-          )),
+          barTouchData: BarTouchData(
+            touchTooltipData: BarTouchTooltipData(
+              getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                return _buildBarToolTipItem(rod, rodIndex, groupIndex, group);
+              },
+            ),
+          ),
           titlesData: FlTitlesData(
             topTitles:
                 const AxisTitles(sideTitles: SideTitles(showTitles: false)),

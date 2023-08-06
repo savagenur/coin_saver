@@ -55,7 +55,7 @@ class HomeTimePeriodBloc
 
     for (var transaction in totalTransactions) {
       final existingTransaction = summedTransactions.firstWhere(
-          (t) => t.category == transaction.category,
+          (t) => t.category.id == transaction.category.id,
           orElse: () => transaction.copyWith(id: ""));
       if (existingTransaction.id != "") {
         double amount = existingTransaction.amount;
@@ -102,7 +102,7 @@ class HomeTimePeriodBloc
 
     for (var transaction in totalTransactions) {
       final existingTransaction = summedTransactions.firstWhere(
-          (t) => t.category == transaction.category,
+          (t) => t.category.id == transaction.category.id,
           orElse: () => transaction.copyWith(id: ""));
       if (existingTransaction.id != "") {
         double amount = existingTransaction.amount;
@@ -137,7 +137,7 @@ class HomeTimePeriodBloc
 
     for (var transaction in totalTransactions) {
       final existingTransaction = summedTransactions.firstWhere(
-          (t) => t.category == transaction.category,
+          (t) => t.category.id == transaction.category.id,
           orElse: () => transaction.copyWith(id: ""));
       if (existingTransaction.id != "") {
         double amount = existingTransaction.amount;
@@ -172,7 +172,7 @@ class HomeTimePeriodBloc
 
     for (var transaction in totalTransactions) {
       final TransactionEntity existingTransaction = summedTransactions
-          .firstWhere((t) => t.category == transaction.category,
+          .firstWhere((t) => t.category.id == transaction.category.id,
               orElse: () => transaction.copyWith(id: ""));
       if (existingTransaction.id != "") {
         double amount = existingTransaction.amount;
@@ -208,7 +208,7 @@ class HomeTimePeriodBloc
 
     for (var transaction in totalTransactions) {
       final existingTransaction = summedTransactions.firstWhere(
-          (t) => t.category == transaction.category,
+          (t) => t.category.id == transaction.category.id,
           orElse: () => transaction.copyWith(id: ""));
       if (existingTransaction.id != "") {
         double amount = existingTransaction.amount;

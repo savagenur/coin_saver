@@ -22,60 +22,58 @@ class CategoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
-      shape: OutlineInputBorder(borderSide: BorderSide.none,
-      borderRadius: BorderRadius.circular(20),
-
+      shape: OutlineInputBorder(
+        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(20),
       ),
       child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-           shape: OutlineInputBorder(borderSide: BorderSide.none,
-      borderRadius: BorderRadius.circular(20),
-
-      ),
-          onTap: () {
-             Navigator.pushNamed(context,
-                                                  PageConst.mainTransactionPage,
-                                                  arguments:
-                                                      MainTransactionPage(
-                                                    mainTransaction:
-                                                        mainTransaction,
-                                                  ));
-          },
-          leading: CircleAvatar(
-            backgroundColor: mainTransaction.color,
-            child: Icon(
-              mainTransaction.iconData,
-              color: Colors.white,
-            ),
-          ),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(flex: 7, child: Text(mainTransaction.category.name)),
-              Flexible(
-                flex: 3,
-                child: Text(
-                  NumberFormat.percentPattern()
-                      .format(mainTransaction.amount / totalExpense),
-                ),
-              ),
-              Expanded(
-                flex: 3,
-                child: Text(
-                  NumberFormat.compactCurrency(symbol: account.currency.symbol,decimalDigits: 0,)
-                        .format(mainTransaction.amount)
-                  ,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .copyWith(fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.end,
-                ),
-              )
-            ],
+        contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+        shape: OutlineInputBorder(
+          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        onTap: () {
+          Navigator.pushNamed(context, PageConst.mainTransactionPage,
+              arguments: MainTransactionPage(
+                mainTransaction: mainTransaction,
+              ));
+        },
+        leading: CircleAvatar(
+          backgroundColor: mainTransaction.color,
+          child: Icon(
+            mainTransaction.iconData,
+            color: Colors.white,
           ),
         ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(flex: 7, child: Text(mainTransaction.category.name)),
+            Flexible(
+              flex: 3,
+              child: Text(
+                NumberFormat.percentPattern()
+                    .format(mainTransaction.amount / totalExpense),
+              ),
+            ),
+            Expanded(
+              flex: 3,
+              child: Text(
+                NumberFormat.compactCurrency(
+                  symbol: account.currency.symbol,
+                  decimalDigits: 0,
+                ).format(mainTransaction.amount),
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge!
+                    .copyWith(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.end,
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

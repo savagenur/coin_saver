@@ -813,13 +813,15 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
 
   @override
   Future<void> deleteCategory(
-      bool isIncome,
-      String categoryId,) async {
+    bool isIncome,
+    String categoryId,
+  ) async {
     final accounts = accountsBox.values.cast<AccountModel>().toList();
-    final categories =
-        categoriesBox.values.cast<CategoryModel>().toList();
-    final categoryIncomeOther = categories.firstWhere((element) => element.id=="otherIncome");
-    final categoryExpenseOther = categories.firstWhere((element) => element.id=="otherExpense");
+    final categories = categoriesBox.values.cast<CategoryModel>().toList();
+    final categoryIncomeOther =
+        categories.firstWhere((element) => element.id == "otherIncome");
+    final categoryExpenseOther =
+        categories.firstWhere((element) => element.id == "otherExpense");
     CategoryModel categoryModel =
         isIncome ? categoryIncomeOther : categoryExpenseOther;
     await Future.wait(accounts.map((account) async {
@@ -1058,9 +1060,8 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       Hive.box<Color>(BoxConst.colors),
       Hive.box<CurrencyModel>(BoxConst.currency),
     ];
-    for (var box in boxes) {
-      await box.clear();
-    }
+    await Future.wait(boxes.map((e) => e.clear()));
+    
   }
 
   @override

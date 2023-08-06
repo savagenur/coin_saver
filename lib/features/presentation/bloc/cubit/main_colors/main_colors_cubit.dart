@@ -16,7 +16,7 @@ class MainColorsCubit extends Cubit<MainColorsState> {
   }
 
   Future<void> addMainColor(Color color) async {
-    Box box = await Hive.openBox<Color>(BoxConst.colors);
+      Box box = await Hive.openBox<Color>(BoxConst.colors);
     List<Color> oldColors = box.values.toList() as List<Color>;
     List<Color> mainColors = oldColors;
     if (!oldColors.contains(color)) {

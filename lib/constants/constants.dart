@@ -46,22 +46,19 @@ List<String> kGetTransactionPeriodTitles(BuildContext context) {
     AppLocalizations.of(context)!.month,
     AppLocalizations.of(context)!.year,
     AppLocalizations.of(context)!.period,
-   
   ];
   return transactionPeriodTitles;
 }
+
 List<String> kGetChartPeriodTitles(BuildContext context) {
   List<String> transactionPeriodTitles = [
     AppLocalizations.of(context)!.byYear,
     AppLocalizations.of(context)!.byMonth,
     AppLocalizations.of(context)!.byWeek,
     AppLocalizations.of(context)!.byDay,
-   
   ];
   return transactionPeriodTitles;
 }
-
-
 
 const Color secondaryColor = Color.fromARGB(255, 124, 124, 124);
 // SizedBox
@@ -128,4 +125,18 @@ int generateIntUniqueId() {
   int id = random.nextInt(1000000);
 
   return id;
+}
+
+void loadingScreen(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) => Container(
+      color: Colors.black12,
+      width: double.infinity,
+      height: double.infinity,
+      child: const Center(
+        child: CircularProgressIndicator(),
+      ),
+    ),
+  );
 }

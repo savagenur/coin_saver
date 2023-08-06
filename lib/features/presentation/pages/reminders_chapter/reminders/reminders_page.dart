@@ -92,7 +92,7 @@ class RemindersPageState extends State<RemindersPage> {
                         ),
                       );
                     }),
-                    sizeVer(80),
+                    sizeVer(100),
                   ],
                 ),
               ),

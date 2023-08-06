@@ -13,6 +13,7 @@ import 'package:coin_saver/features/presentation/bloc/cubit/selected_category/se
 import 'package:coin_saver/features/presentation/pages/add_category/add_category_page.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/widget/calculator_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
+import 'package:coin_saver/features/presentation/pages/transaction_detail/transaction_detail_page.dart';
 import 'package:coin_saver/features/presentation/pages/transactions/transactions_page.dart';
 import 'package:coin_saver/features/presentation/widgets/select_currency_widget.dart';
 import 'package:coin_saver/features/presentation/widgets/simple_calendar_widget.dart';
@@ -103,7 +104,6 @@ class AddTransactionPageState extends State<AddTransactionPage>
   late SelectedCategoryCubit selectedCategoryCubit;
   late AccountBloc accountBloc;
   late HomeTimePeriodBloc homeTimePeriodBloc;
-  late MainTransactionBloc mainTransactionBloc;
   late PeriodCubit periodCubit;
   late SelectedDateCubit selectedDateCubit;
 
@@ -120,7 +120,6 @@ class AddTransactionPageState extends State<AddTransactionPage>
     selectedCategoryCubit = context.read<SelectedCategoryCubit>();
     accountBloc = context.read<AccountBloc>();
     homeTimePeriodBloc = context.read<HomeTimePeriodBloc>();
-    mainTransactionBloc = context.read<MainTransactionBloc>();
     periodCubit = context.read<PeriodCubit>();
     selectedDateCubit = context.read<SelectedDateCubit>();
     // First init
@@ -259,7 +258,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                   child: Scaffold(
                                     appBar: _buildAppBar(),
                                     body: Padding(
-                                      padding: const EdgeInsets.all(10),
+                                      padding: const EdgeInsets.only(top: 10,left: 10,right: 10),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -351,7 +350,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                                                 .comment,
                                                       ),
                                                     ),
-                                                    sizeVer(30),
+                                                    sizeVer(70),
                                                   ],
                                                 ),
                                               ),
@@ -657,29 +656,31 @@ class AddTransactionPageState extends State<AddTransactionPage>
             await sl<DeleteTransactionUsecase>()
                 .call(widget.account, widget.transaction!);
             if (mounted) {
-              mainTransactionBloc.add(
+              accountBloc.add(
                   AddTransaction(transaction: transaction, account: _account!));
             }
             // Add the transaction to the new account
           } catch (e) {
-            // Handle the error, show a snackbar, or revert changes if needed
-            // ...
             return;
           }
         } else {
           // Update the transaction within the same account
-          mainTransactionBloc.add(
+
+          accountBloc.add(
               UpdateTransaction(transaction: transaction, account: _account!));
         }
       } else {
         // Add a new transaction to the selected account
-        mainTransactionBloc
+
+        accountBloc
             .add(AddTransaction(transaction: transaction, account: _account!));
       }
 
+      // await Future.delayed(const Duration(milliseconds: 200));
+      // accountBloc.add(GetAccounts());
       if (mounted) {
         // Set the selected account as the primary account
-        accountBloc.add(SetPrimaryAccount(accountId: _account!.id));
+        // accountBloc.add(SetPrimaryAccount(accountId: _account!.id));
 
         // Clear the selected category
         selectedCategoryCubit.changeCategory(null);
@@ -690,8 +691,15 @@ class AddTransactionPageState extends State<AddTransactionPage>
           Navigator.popUntil(context,
               (route) => route.settings.name == PageConst.transactionsPage);
         } else if (widget.transaction != null) {
-          Navigator.pop(context);
-          Navigator.pop(context);
+          Navigator.pushNamedAndRemoveUntil(
+              context,
+              PageConst.transactionDetailPage,
+              arguments: TransactionDetailPage(
+                  transaction: transaction, account: _account!),
+              (route) =>
+                  route.settings.name == PageConst.transactionsPage ||
+                  route.settings.name == PageConst.mainTransactionPage);
+          // Navigator.pop(context);
         } else if (widget.isMainTransactionPage) {
           Navigator.popUntil(context,
               (route) => route.settings.name == PageConst.mainTransactionPage);
@@ -890,12 +898,8 @@ class AddTransactionPageState extends State<AddTransactionPage>
       centerTitle: true,
       leading: IconButton(
           onPressed: () async {
-            if (widget.transaction != null) {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            } else {
-              Navigator.pop(context);
-            }
+            Navigator.pop(context);
+
             selectedCategoryCubit.changeCategory(null);
           },
           icon: const Icon(FontAwesomeIcons.arrowLeft)),

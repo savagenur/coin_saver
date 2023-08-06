@@ -8,9 +8,15 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../../constants/category_icons.dart';
 
-class CatalogIconsPage extends StatelessWidget {
+class CatalogIconsPage extends StatefulWidget {
   const CatalogIconsPage({super.key});
 
+  @override
+  State<CatalogIconsPage> createState() => _CatalogIconsPageState();
+}
+
+class _CatalogIconsPageState extends State<CatalogIconsPage> {
+  IconData? _selectedIcon;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,11 +27,9 @@ class CatalogIconsPage extends StatelessWidget {
             },
             icon: const Icon(FontAwesomeIcons.arrowLeft)),
         centerTitle: true,
-        title:  Text(AppLocalizations.of(context)!.iconCatalog),
+        title: Text(AppLocalizations.of(context)!.iconCatalog),
       ),
-      body: BlocBuilder<SelectedIconCubit, IconData?>(
-        builder: (context, selectedIcon) {
-          return SingleChildScrollView(
+      body: SingleChildScrollView(
             child: Column(
               children: [
                 sizeVer(20),
@@ -41,7 +45,7 @@ class CatalogIconsPage extends StatelessWidget {
                                   .copyWith(fontWeight: FontWeight.bold),
                             ),
                             Padding(
-                              padding: EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(10),
                               child: Wrap(
                                 runAlignment: WrapAlignment.spaceEvenly,
                                 spacing: 10,
@@ -56,21 +60,21 @@ class CatalogIconsPage extends StatelessWidget {
                                             .elementAt(keyIndex)]![valueIndex];
                                     return GestureDetector(
                                       onTap: () {
-                                        context
-                                            .read<SelectedIconCubit>()
-                                            .changeIcon(primaryIcon);
+                                        setState(() {
+                                          _selectedIcon = primaryIcon;
+                                        });
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.all(10),
                                         decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(10),
-                                            color: selectedIcon == primaryIcon
+                                            color: _selectedIcon == primaryIcon
                                                 ? Theme.of(context).primaryColor
                                                 : null),
                                         child: CircleAvatar(
                                           radius: 30,
-                                          backgroundColor: selectedIcon ==
+                                          backgroundColor: _selectedIcon ==
                                                   primaryIcon
                                               ? Theme.of(context).primaryColor
                                               : secondaryColor,
@@ -93,14 +97,13 @@ class CatalogIconsPage extends StatelessWidget {
                 sizeVer(60),
               ],
             ),
-          );
-        },
-      ),
+          ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: MyButtonWidget(
         title: AppLocalizations.of(context)!.select,
         borderRadius: BorderRadius.circular(50),
-        onTap: () {
+        onTap:_selectedIcon==null?null: () {
+          context.read<SelectedIconCubit>().changeIcon(_selectedIcon);
           Navigator.pop(context);
         },
         width: MediaQuery.of(context).size.width * .6,

@@ -45,160 +45,167 @@ class _CategoriesPageState extends State<CategoriesPage> {
                   ..sort(
                     (a, b) => b.dateTime.compareTo(a.dateTime),
                   );
-                return Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 4,
-                            mainAxisSpacing: 5,
-                            crossAxisSpacing: 5),
-                    itemCount: _categories.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == _categories.length) {
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, PageConst.createCategoryPage,
-                                arguments: CreateCategoryPage(
-                                  isIncome: _isIncome,
-                                ));
-                          },
-                          child: Column(
-                            children: [
-                              CircleAvatar(
-                                backgroundColor: secondaryColor,
-                                radius: 25,
-                                child: Icon(
-                                  FontAwesomeIcons.plus,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Text(
-                                AppLocalizations.of(context)!.create,
-                                maxLines: 1,
-                              ),
-                            ],
-                          ),
-                        );
-                      } else {
-                        CategoryEntity category = _categories[index];
-
-                        return PullDownButton(
-                          itemBuilder: (context) {
-                            return [
-                              PullDownMenuItem(
+                return SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        
+                        GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 4,
+                                  mainAxisSpacing: 5,
+                                  crossAxisSpacing: 5),
+                          itemCount: _categories.length + 1,
+                          itemBuilder: (BuildContext context, int index) {
+                            if (index == _categories.length) {
+                              return GestureDetector(
                                 onTap: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: Text(AppLocalizations.of(context)!
-                                          .deleteCategory),
-                                      content: Text(
-                                          AppLocalizations.of(context)!
-                                              .allOperationsItContainsWillBe),
-                                      actionsAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      actions: [
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: TextButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: Text(
-                                                      AppLocalizations.of(
-                                                              context)!
-                                                          .no)),
-                                            ),
-                                            Expanded(
-                                              child: TextButton(
-                                                  onPressed: () {
-                                                    context
-                                                        .read<CategoryBloc>()
-                                                        .add(DeleteCategory(
-                                                            isIncome: _isIncome,
-                                                            categoryId:
-                                                                category.id));
-                                                    context
-                                                        .read<AccountBloc>()
-                                                        .add(GetAccounts());
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: Text(
-                                                      AppLocalizations.of(
-                                                              context)!
-                                                          .yes)),
-                                            )
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                },
-                                title: AppLocalizations.of(context)!.delete,
-                                icon: FontAwesomeIcons.trash,
-                                iconColor: Theme.of(context).colorScheme.error,
-                              ),
-                            ];
-                          },
-                          buttonBuilder: (context, showMenu) {
-                            return GestureDetector(
-                              onLongPress: category.id == "otherIncome" ||
-                                      category.id == "otherExpense"
-                                  ? () {}
-                                  : showMenu,
-                              onTap: () {
-                                if (category.id == "otherIncome" ||
-                                    category.id == "otherExpense") {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => Dialog(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(30),
-                                        child: Text(
-                                          AppLocalizations.of(context)!
-                                              .thisIsAServiceCategoryAnd,
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                } else {
                                   Navigator.pushNamed(
                                       context, PageConst.createCategoryPage,
                                       arguments: CreateCategoryPage(
                                         isIncome: _isIncome,
-                                        isUpdate: true,
-                                        category: category,
                                       ));
-                                }
-                              },
-                              child: Column(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 30,
-                                    backgroundColor: category.color,
-                                    child: Icon(
-                                      category.iconData,
-                                      color: Colors.white,
+                                },
+                                child: Column(
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundColor: secondaryColor,
+                                      radius: 25,
+                                      child: Icon(
+                                        FontAwesomeIcons.plus,
+                                        color: Colors.white,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    category.name,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              ),
-                            );
+                                    Text(
+                                      AppLocalizations.of(context)!.create,
+                                      maxLines: 1,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            } else {
+                              CategoryEntity category = _categories[index];
+                
+                              return PullDownButton(
+                                itemBuilder: (context) {
+                                  return [
+                                    PullDownMenuItem(
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            title: Text(AppLocalizations.of(context)!
+                                                .deleteCategory),
+                                            content: Text(
+                                                AppLocalizations.of(context)!
+                                                    .allOperationsItContainsWillBe),
+                                            actionsAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            actions: [
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: TextButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(context);
+                                                        },
+                                                        child: Text(
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .no)),
+                                                  ),
+                                                  Expanded(
+                                                    child: TextButton(
+                                                        onPressed: () {
+                                                          context
+                                                              .read<CategoryBloc>()
+                                                              .add(DeleteCategory(
+                                                                  isIncome: _isIncome,
+                                                                  categoryId:
+                                                                      category.id));
+                                                          context
+                                                              .read<AccountBloc>()
+                                                              .add(GetAccounts());
+                                                          Navigator.pop(context);
+                                                        },
+                                                        child: Text(
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .yes)),
+                                                  )
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                      title: AppLocalizations.of(context)!.delete,
+                                      icon: FontAwesomeIcons.trash,
+                                      iconColor: Theme.of(context).colorScheme.error,
+                                    ),
+                                  ];
+                                },
+                                buttonBuilder: (context, showMenu) {
+                                  return GestureDetector(
+                                    onLongPress: category.id == "otherIncome" ||
+                                            category.id == "otherExpense"
+                                        ? () {}
+                                        : showMenu,
+                                    onTap: () {
+                                      if (category.id == "otherIncome" ||
+                                          category.id == "otherExpense") {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => Dialog(
+                                            child: Padding(
+                                              padding: EdgeInsets.all(30),
+                                              child: Text(
+                                                AppLocalizations.of(context)!
+                                                    .thisIsAServiceCategoryAnd,
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      } else {
+                                        Navigator.pushNamed(
+                                            context, PageConst.createCategoryPage,
+                                            arguments: CreateCategoryPage(
+                                              isIncome: _isIncome,
+                                              isUpdate: true,
+                                              category: category,
+                                            ));
+                                      }
+                                    },
+                                    child: Column(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 30,
+                                          backgroundColor: category.color,
+                                          child: Icon(
+                                            category.iconData,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        Text(
+                                          category.name,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            }
                           },
-                        );
-                      }
-                    },
+                        ),
+                      ],
+                    ),
                   ),
                 );
               } else {

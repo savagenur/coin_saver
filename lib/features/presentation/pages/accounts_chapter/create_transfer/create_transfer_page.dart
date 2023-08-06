@@ -1,3 +1,4 @@
+import 'package:coin_saver/features/presentation/pages/accounts_chapter/transfer_detail/transfer_detail_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
@@ -71,6 +72,8 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
         TextEditingController(text: _amountFrom.toStringAsFixed(2));
     _amountToController =
         TextEditingController(text: _amountTo.toStringAsFixed(2));
+    _commentController.text =
+        _transfer == null ? "" : _transfer!.description ?? "";
     _amountListener();
   }
 
@@ -483,7 +486,13 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
                 oldAccountTo: widget.accountTo!,
               ),
             );
-        Navigator.pop(context);
+        Navigator.pushNamedAndRemoveUntil(
+            context,
+            PageConst.transferDetailPage,
+            arguments: TransferDetailPage(
+              transfer: transaction,
+            ),
+            (route) => route.settings.name == PageConst.transferHistoryPage);
       } else {
         context.read<AccountBloc>().add(
               AddTransfer(
@@ -491,9 +500,8 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
                   accountTo: _accountTo!,
                   transactionEntity: transaction),
             );
+        Navigator.pop(context);
       }
-
-      Navigator.pop(context);
     }
   }
 }

@@ -45,7 +45,7 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
       List<TransactionEntity> transactions) {
     Map<DateTime, List<TransactionEntity>> map = {};
     for (var transaction in transactions) {
-      DateTime transactionDate = transaction.date;
+      DateTime transactionDate = DateTime(transaction.date.year,transaction.date.month,transaction.date.day);
       if (map.containsKey(transactionDate)) {
         map[transactionDate]!.add(transaction);
       } else {
@@ -78,17 +78,17 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                                 (account) => account.isPrimary,
                                 orElse: () => accountError);
                             _mainTransactions = transactions
-                                .where((mainTransaction) =>
+                                .where((transaction) =>
                                     _account!.id == "total"
-                                        ? mainTransaction.category ==
+                                        ? transaction.category ==
                                                 _mainTransaction.category &&
-                                            mainTransaction.isIncome ==
+                                            transaction.isIncome ==
                                                 _mainTransaction.isIncome
-                                        : mainTransaction.accountId ==
+                                        : transaction.accountId ==
                                                 _account!.id &&
-                                            mainTransaction.category ==
+                                            transaction.category ==
                                                 _mainTransaction.category &&
-                                            mainTransaction.isIncome ==
+                                            transaction.isIncome ==
                                                 _mainTransaction.isIncome)
                                 .toList();
 
@@ -100,8 +100,8 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
 
                             var allTransactions = _account!.transactionHistory
                                 .where((transaction) =>
-                                    transaction.category ==
-                                    widget.mainTransaction.category)
+                                    transaction.category.id ==
+                                    widget.mainTransaction.category.id)
                                 .toList()
                               ..sort(
                                 (a, b) => selectedFilter == Filter.byDate

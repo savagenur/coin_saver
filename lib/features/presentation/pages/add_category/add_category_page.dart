@@ -60,67 +60,88 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
             return BlocBuilder<SelectedCategoryCubit, CategoryEntity?>(
               builder: (context, selectedCategory) {
                 _category = selectedCategory;
-                return Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 4,
-                            mainAxisSpacing: 5,
-                            crossAxisSpacing: 5),
-                    itemCount: _categories.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == _categories.length) {
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, PageConst.createCategoryPage,
-                                arguments: CreateCategoryPage(
-                                  isIncome: _isIncome,
-                                ));
-                          },
-                          child:  Column(
-                            children: [
-                              CircleAvatar(
-                                backgroundColor: secondaryColor,
-                                radius: 25,
-                                child: Icon(
-                                  FontAwesomeIcons.plus,
-                                  color: Colors.white,
+                return SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 4,
+                              mainAxisSpacing: 5,
+                              crossAxisSpacing: 5),
+                      itemCount: _categories.length + 1,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (index == _categories.length) {
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, PageConst.createCategoryPage,
+                                  arguments: CreateCategoryPage(
+                                    isIncome: _isIncome,
+                                  ));
+                            },
+                            child:  Column(
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: secondaryColor,
+                                  radius: 25,
+                                  child: Icon(
+                                    FontAwesomeIcons.plus,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                AppLocalizations.of(context)!.create,
-                                maxLines: 1,
-                              ),
-                            ],
-                          ),
-                        );
-                      } else {
-                        CategoryEntity categoryEntity = _categories[index];
-
-                        return GestureDetector(
-                          onTap: () {
-                            selectedCategoryCubit
-                                .changeCategory(categoryEntity);
-                            categoryBloc.add(UpdateCategory(
-                                category: categoryEntity.copyWith(
-                                    dateTime: DateTime.now())));
-                            Navigator.pop(context);
-                          },
-                          child: _category != null &&
-                                  _category!.id == categoryEntity.id
-                              ? Column(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(2),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(5),
-                                        color: categoryEntity.color,
+                                Text(
+                                  AppLocalizations.of(context)!.create,
+                                  maxLines: 1,
+                                ),
+                              ],
+                            ),
+                          );
+                        } else {
+                          CategoryEntity categoryEntity = _categories[index];
+                
+                          return GestureDetector(
+                            onTap: () {
+                              selectedCategoryCubit
+                                  .changeCategory(categoryEntity);
+                              categoryBloc.add(UpdateCategory(
+                                  category: categoryEntity.copyWith(
+                                      dateTime: DateTime.now())));
+                              Navigator.pop(context);
+                            },
+                            child: _category != null &&
+                                    _category!.id == categoryEntity.id
+                                ? Column(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(2),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(5),
+                                          color: categoryEntity.color,
+                                        ),
+                                        child: CircleAvatar(
+                                          radius: 30,
+                                          backgroundColor: categoryEntity.color,
+                                          child: Icon(
+                                            categoryEntity.iconData,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                       ),
-                                      child: CircleAvatar(
+                                      Text(
+                                        categoryEntity.name,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  )
+                                : Column(
+                                    children: [
+                                      CircleAvatar(
                                         radius: 30,
                                         backgroundColor: categoryEntity.color,
                                         child: Icon(
@@ -128,34 +149,20 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
                                           color: Colors.white,
                                         ),
                                       ),
-                                    ),
-                                    Text(
-                                      categoryEntity.name,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                )
-                              : Column(
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 30,
-                                      backgroundColor: categoryEntity.color,
-                                      child: Icon(
-                                        categoryEntity.iconData,
-                                        color: Colors.white,
+                                      Text(
+                                        categoryEntity.name,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                    ),
-                                    Text(
-                                      categoryEntity.name,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                ),
-                        );
-                      }
-                    },
+                                    ],
+                                  ),
+                          );
+                        }
+                      },
+                    ),sizeVer(50),
+                    
+                      ],
+                    ),
                   ),
                 );
               },

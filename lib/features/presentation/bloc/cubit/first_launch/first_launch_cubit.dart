@@ -12,13 +12,11 @@ class FirstLaunchCubit extends Cubit<FirstLaunch> {
         isFirstLaunch: newValue, isSplashShowed: state.isSplashShowed));
   }
 
-  void changeIsSplashShowed(bool? newValue) {
-    print("object");
+  // void changeIsSplashShowed(bool? newValue) {
 
-    emit(FirstLaunch(
-        isFirstLaunch: state.isFirstLaunch, isSplashShowed: newValue));
-    print(state.isSplashShowed);
-  }
+  //   emit(FirstLaunch(
+  //       isFirstLaunch: state.isFirstLaunch, isSplashShowed: newValue));
+  // }
 
   void getFirstLaunch() {
     final bool isFirstLaunch = getFirstLaunchUsecase.call();

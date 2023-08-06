@@ -4,8 +4,6 @@ PODS:
   - Flutter (1.0.0)
   - flutter_keyboard_visibility (0.0.1):
     - Flutter
-  - launch_review (0.0.1):
-    - Flutter
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -21,7 +19,6 @@ DEPENDENCIES:
   - awesome_notifications (from `.symlinks/plugins/awesome_notifications/ios`)
   - Flutter (from `Flutter`)
   - flutter_keyboard_visibility (from `.symlinks/plugins/flutter_keyboard_visibility/ios`)
-  - launch_review (from `.symlinks/plugins/launch_review/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - rate_my_app (from `.symlinks/plugins/rate_my_app/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
@@ -34,8 +31,6 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_keyboard_visibility:
     :path: ".symlinks/plugins/flutter_keyboard_visibility/ios"
-  launch_review:
-    :path: ".symlinks/plugins/launch_review/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
   rate_my_app:
@@ -49,7 +44,6 @@ SPEC CHECKSUMS:
   awesome_notifications: 04530aafec8dac4635244ed4b4072f4aea6cc938
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
-  launch_review: 75d5a956ba8eaa493e9c9d4bf4c05e505e8d5ed0
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
   rate_my_app: 80fba94c4885cd31738231b7b1f51c1ad726f5c7
   share_plus: 599aa54e4ea31d4b4c0e9c911bcc26c55e791028

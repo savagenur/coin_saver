@@ -1,13 +1,9 @@
 import 'package:coin_saver/constants/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:hive/hive.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-import '../../../../../constants/main_categories.dart';
-import '../../../../data/models/category/category_model.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -62,15 +58,8 @@ class WelcomePageState extends State<WelcomePage> {
         onDone: () async {
           Navigator.pushNamedAndRemoveUntil(
               context, PageConst.chooseDefaultCurrencyPage, (route) => false);
-          // Categories
-          if (Hive.box<CategoryModel>(BoxConst.categories).isEmpty) {
-            Map<String, CategoryModel> categoryMap = {};
-
-            for (var category in getMainCategories(context)) {
-              categoryMap[category.id] = category;
-            }
-            Hive.box<CategoryModel>(BoxConst.categories).putAll(categoryMap);
-          }
+          
+        
         },
         onSkip: () {
           _introKey.currentState?.next();

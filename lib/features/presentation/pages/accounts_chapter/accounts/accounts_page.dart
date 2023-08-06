@@ -98,11 +98,13 @@ class AccountsPage extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            sizeVer(30),
+                            sizeVer(10),
                             Expanded(
                                 child: SingleChildScrollView(
                               child: Column(
-                                children: accounts
+                                children: [
+                            sizeVer(10),
+                                  ...accounts
                                     .map(
                                       (account) => Padding(
                                         padding: const EdgeInsets.only(
@@ -151,8 +153,10 @@ class AccountsPage extends StatelessWidget {
                                       ),
                                     )
                                     .toList(),
+                            sizeVer(100)
+                                    ],
                               ),
-                            ))
+                            )),
                           ],
                         );
                       }

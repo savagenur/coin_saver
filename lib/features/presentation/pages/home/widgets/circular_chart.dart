@@ -10,18 +10,15 @@ import '../../../../domain/entities/transaction/transaction_entity.dart';
 class CircularChartWidget extends StatelessWidget {
   final List<TransactionEntity> transactions;
   final DateTime _selectedDate;
-  final TooltipBehavior _tooltipBehavior;
   final AccountEntity _account;
   final double _totalExpense;
   const CircularChartWidget({
     super.key,
     required this.transactions,
     required DateTime selectedDate,
-    required TooltipBehavior tooltipBehavior,
     required AccountEntity account,
     required double totalExpense,
   })  : _selectedDate = selectedDate,
-        _tooltipBehavior = tooltipBehavior,
         _account = account,
         _totalExpense = totalExpense;
 
@@ -30,8 +27,7 @@ class CircularChartWidget extends StatelessWidget {
     return Stack(
       alignment: Alignment.center,
       children: [
-        HomeSfCircularChart(
-            tooltipBehavior: _tooltipBehavior, transactions: transactions),
+        HomeSfCircularChart(transactions: transactions, account: _account),
         SizedBox(
           width: MediaQuery.of(context).size.width * .35,
           child: AutoSizeText(
@@ -51,20 +47,30 @@ class CircularChartWidget extends StatelessWidget {
   }
 }
 
-class HomeSfCircularChart extends StatelessWidget {
+class HomeSfCircularChart extends StatefulWidget {
   const HomeSfCircularChart({
     super.key,
-    required TooltipBehavior tooltipBehavior,
     required this.transactions,
-  }) : _tooltipBehavior = tooltipBehavior;
+    required this.account,
+  });
 
-  final TooltipBehavior _tooltipBehavior;
   final List<TransactionEntity> transactions;
+  final AccountEntity account;
 
+  @override
+  State<HomeSfCircularChart> createState() => _HomeSfCircularChartState();
+}
+
+class _HomeSfCircularChartState extends State<HomeSfCircularChart> {
   @override
   Widget build(BuildContext context) {
     return SfCircularChart(
-      tooltipBehavior: _tooltipBehavior,
+      tooltipBehavior: TooltipBehavior(
+              animationDuration: 1,
+              enable: true,
+              textStyle: const TextStyle(fontSize: 16),
+              format: 'point.x - ${widget.account.currency.symbol}point.y',
+            ),
       series: [
         DoughnutSeries<TransactionEntity, String>(
           // animationDelay: 0,
@@ -74,14 +80,14 @@ class HomeSfCircularChart extends StatelessWidget {
           strokeWidth: 2,
           innerRadius: "70",
           opacity: 1,
-          dataSource: transactions.isEmpty
+          dataSource: widget.transactions.isEmpty
               ? [
                   TransactionEntity(
                       id: "id",
                       date: DateTime(2023),
                       amount: 1,
                       category: CategoryEntity(
-                          id: "id",
+                          id: "null",
                           name: "null",
                           iconData: Icons.abc,
                           color: Colors.grey,
@@ -92,8 +98,10 @@ class HomeSfCircularChart extends StatelessWidget {
                       isIncome: false,
                       color: Colors.grey)
                 ]
-              : transactions,
+              : widget.transactions,
+
           xValueMapper: (TransactionEntity data, index) {
+           
             return data.category.name;
           },
           pointColorMapper: (datum, index) {

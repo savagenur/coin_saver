@@ -44,6 +44,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
   IconData? _iconData;
   Color? _color;
   final ScrollController _colorController = ScrollController();
+  final ScrollController _pullDownBtnController = ScrollController();
   final TextEditingController _amountController = TextEditingController();
   final FocusNode _amountFocusNode = FocusNode();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -246,6 +247,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                                 TextStyle(color: Colors.grey),
                                           ),
                                           PullDownButton(
+                                            scrollController: _pullDownBtnController,
                                             itemBuilder: (context) {
                                               return currencies
                                                   .map((currency) =>

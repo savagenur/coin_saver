@@ -100,7 +100,8 @@ class _TransferHistoryPageState extends State<TransferHistoryPage>
                                           child: SingleChildScrollView(
                                             child: Column(
                                               children:
-                                                  _transfers!.map((transfer) {
+                                                  [
+                                                    ..._transfers!.map((transfer) {
                                                 final accountFrom = _accounts!
                                                     .firstWhere((element) =>
                                                         element.id ==
@@ -158,6 +159,9 @@ class _TransferHistoryPageState extends State<TransferHistoryPage>
                                                   ),
                                                 );
                                               }).toList(),
+                            sizeVer(100),
+
+                                                  ],
                                             ),
                                           ),
                                         )

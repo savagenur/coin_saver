@@ -81,9 +81,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (_) => sl<CurrencyBloc>()..add(GetCurrency()),
         ),
-        BlocProvider(
-          create: (_) => sl<MainTransactionBloc>()..add(GetTransactions()),
-        ),
+        
         BlocProvider(
           create: (_) => sl<HomeTimePeriodBloc>()..add(GetTodayPeriod()),
         ),
@@ -147,18 +145,7 @@ class MyApp extends StatelessWidget {
                 routes: {
                   "/splash": (context) => RateAppInitWidget(
                         builder: (rateMyApp) {
-                          return AnimatedSplashScreen.withScreenRouteFunction(
-                            splash: const SplashScreen(),
-                            duration: 700,
-                            curve: Curves.fastEaseInToSlowEaseOut,
-                            splashTransition: SplashTransition.sizeTransition,
-                            splashIconSize: 250,
-                            pageTransitionType: PageTransitionType.fade,
-                            backgroundColor: const Color(0xff095d9e),
-                            screenRouteFunction: () async {
-                              return PageConst.homePage;
-                            },
-                          );
+                          return const SplashScreen();
                         },
                       ),
                   "/homePage": (context) => firstLaunchState.isFirstLaunch!

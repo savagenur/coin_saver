@@ -112,36 +112,49 @@ class UpdateTransfer extends AccountEvent {
       ];
 }
 
-// class AddTransaction extends AccountEvent {
-//   final AccountEntity accountEntity;
-//   final TransactionEntity transactionEntity;
-//   final bool isIncome;
-//   final double amount;
-//   const AddTransaction({
-//     required this.accountEntity,
-//     required this.transactionEntity,
-//     required this.isIncome,
-//     required this.amount,
-//   });
-//   @override
-//   List<Object> get props => [
-//         accountEntity,
-//         transactionEntity,
-//         isIncome,
-//         amount,
-//       ];
-// }
 
-// class DeleteTransaction extends AccountEvent {
-//   final AccountEntity accountEntity;
-//   final TransactionEntity transactionEntity;
-//   const DeleteTransaction({
-//     required this.accountEntity,
-//     required this.transactionEntity,
-//   });
-//   @override
-//   List<Object> get props => [
-//         accountEntity,
-//         transactionEntity,
-//       ];
-// }
+class AddTransaction extends AccountEvent {
+  final TransactionEntity transaction;
+  final AccountEntity account;
+  const AddTransaction({
+    required this.transaction,
+    required this.account,
+  });
+
+  @override
+  List<Object> get props => [
+        transaction,
+        account,
+      ];
+}
+
+class UpdateTransaction extends AccountEvent {
+  final TransactionEntity transaction;
+  final AccountEntity account;
+
+  const UpdateTransaction({
+    required this.transaction,
+    required this.account,
+  });
+
+  @override
+  List<Object> get props => [
+        transaction,
+        account,
+      ];
+}
+
+
+
+class DeleteTransaction extends AccountEvent {
+  final AccountEntity account;
+  final TransactionEntity transaction;
+  const DeleteTransaction({
+    required this.transaction,
+    required this.account,
+  });
+
+  @override
+  List<Object> get props => [transaction, account];
+}
+

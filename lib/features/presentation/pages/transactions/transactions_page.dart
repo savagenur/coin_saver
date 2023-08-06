@@ -64,7 +64,9 @@ class TransactionsPageState extends State<TransactionsPage>
       List<TransactionEntity> transactions) {
     Map<DateTime, List<TransactionEntity>> map = {};
     for (var transaction in transactions) {
-      DateTime transactionDate = transaction.date;
+      DateTime transactionDate = DateTime(
+          transaction.date.year, transaction.date.month, transaction.date.day);
+
       if (map.containsKey(transactionDate)) {
         map[transactionDate]!.add(transaction);
       } else {
@@ -88,12 +90,7 @@ class TransactionsPageState extends State<TransactionsPage>
     });
   }
 
-  void isSearchingToFalse() {
-    setState(() {
-      _isSearching = false;
-      _searchQuery = "";
-    });
-  }
+  
 
   @override
   void dispose() {
@@ -131,20 +128,22 @@ class TransactionsPageState extends State<TransactionsPage>
 
                                 // Total amountMoney of MainTransactions
 
-                                var allTransactions = timePeriodState
-                                    .transactions
-                                    .where((transaction) =>
-                                        transaction.isIncome == _isIncome &&
-                                        transaction.isTransfer == null)
-                                    .toList()
-                                  ..sort(
-                                    (a, b) => _selectedFilter == Filter.byDate
-                                        ? b.date.compareTo(a.date)
-                                        : b.amount.compareTo(a.amount),
-                                  );
-                                _totalExpense = (_searchQuery != ''
-                                        ? _filteredTransactions
-                                        : allTransactions)
+                                var allTransactions = _searchQuery == ""
+                                    ? _account.transactionHistory
+                                        .where((transaction) =>
+                                            transaction.isIncome == _isIncome &&
+                                            transaction.isTransfer == null)
+                                        .toList()
+                                    : _account.transactionHistory
+                                        .where((transaction) =>
+                                            transaction.isIncome == _isIncome &&
+                                            transaction.isTransfer == null &&
+                                            transaction.category.name
+                                                .toLowerCase()
+                                                .contains(
+                                                    _searchQuery.toLowerCase()))
+                                        .toList();
+                                _totalExpense = _transactions
                                     .fold(
                                         0,
                                         (previousValue, element) =>
@@ -158,13 +157,11 @@ class TransactionsPageState extends State<TransactionsPage>
                                 );
                                 _transactions = transactions;
                                 _filteredTransactionsMap = _filterTransactions(
-                                    _searchQuery != ""
-                                        ? _filteredTransactions
-                                        : _transactions);
+                                    _transactions);
 
                                 return WillPopScope(
                                   onWillPop: () async {
-                                     Navigator.pop(context,true);
+                                    Navigator.pop(context, true);
                                     return false;
                                   },
                                   child: DefaultTabController(
@@ -229,8 +226,7 @@ class TransactionsPageState extends State<TransactionsPage>
                                                             accounts:
                                                                 accountState
                                                                     .accounts,
-                                                            isSearchingToFalse:
-                                                                isSearchingToFalse,
+                                                            
                                                           ),
                                                         ),
                                                       ),
@@ -345,7 +341,7 @@ class TransactionsPageState extends State<TransactionsPage>
           },
         ),
         title: TextField(
-                      textCapitalization: TextCapitalization.sentences,
+          textCapitalization: TextCapitalization.sentences,
           onChanged: _searchTransactions,
           autofocus: true,
           cursorColor: Colors.white,
@@ -356,13 +352,39 @@ class TransactionsPageState extends State<TransactionsPage>
             border: InputBorder.none,
           ),
         ),
+        bottom: TabBar(
+          onTap: (value) {
+            switch (value) {
+              case 0:
+                setState(() {
+                  _isIncome = false;
+                });
+                break;
+              case 1:
+                setState(() {
+                  _isIncome = true;
+                });
+                break;
+              default:
+            }
+          },
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          indicatorPadding: const EdgeInsets.only(bottom: 5),
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+          tabs: [
+            Tab(
+              child: Text(AppLocalizations.of(context)!.expensesUpperCase),
+            ),
+            Tab(child: Text(AppLocalizations.of(context)!.incomeUpperCase)),
+          ],
+        ),
       );
     } else {
       return AppBar(
         toolbarHeight: 70,
         centerTitle: true,
         leading: IconButton(
-            onPressed: () => Navigator.pop(context,true),
+            onPressed: () => Navigator.pop(context, true),
             icon: const Icon(FontAwesomeIcons.arrowLeft)),
         title: AccountSwitchPullDownBtn(accounts: accounts, account: account),
         bottom: TabBar(

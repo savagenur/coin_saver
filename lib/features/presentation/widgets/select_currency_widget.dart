@@ -108,7 +108,7 @@ class SelectCurrencyWidgetState extends State<SelectCurrencyWidget> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: MyButtonWidget(
         title: AppLocalizations.of(context)!.select,
-        onTap: () {
+        onTap:_currency==null?null: () {
           widget.setCurrency(_currency);
           Navigator.pop(context);
         },

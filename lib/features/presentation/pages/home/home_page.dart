@@ -77,7 +77,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    print(Theme.of(context).primaryColor);
 
     return BlocBuilder<SelectedDateCubit, DateRange>(
       builder: (context, dateRange) {
@@ -152,15 +151,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                             CircularChartWidget(
                                                 transactions: transactions,
                                                 selectedDate: _selectedDate,
-                                                tooltipBehavior:
-                                                    TooltipBehavior(
-                                                  animationDuration: 1,
-                                                  enable: true,
-                                                  textStyle: const TextStyle(
-                                                      fontSize: 16),
-                                                  format:
-                                                      'point.x - ${_account.currency.symbol}point.y',
-                                                ),
+                                                
                                                 account: _account,
                                                 totalExpense: _totalExpense),
                                           ],
@@ -179,7 +170,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         ),
                                       ),
                                     ),
-                                    sizeVer(70),
+                                    sizeVer(100),
                                   ],
                                 ),
                               ),

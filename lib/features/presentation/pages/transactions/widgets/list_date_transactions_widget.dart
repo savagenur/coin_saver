@@ -10,15 +10,12 @@ class ListDateTransactionsWidget extends StatelessWidget {
   final Map<DateTime, List<TransactionEntity>> _filteredTransactionsMap;
   final AccountEntity _account;
   final List<AccountEntity> _accounts;
-  final Function(
-    
-  ) isSearchingToFalse;
+  
   const ListDateTransactionsWidget({
     super.key,
     required Map<DateTime, List<TransactionEntity>> filteredTransactionsMap,
     required AccountEntity account,
     required List<AccountEntity> accounts,
-    required this.isSearchingToFalse,
   })  : _filteredTransactionsMap = filteredTransactionsMap,
         _account = account,
         _accounts = accounts;
@@ -65,8 +62,6 @@ class ListDateTransactionsWidget extends StatelessWidget {
                                     element.id == transaction.accountId,
                                 orElse: () => accountError),
                           ));
-                      await Future.delayed(const Duration(milliseconds: 300));
-                      isSearchingToFalse();
                     },
                     contentPadding: EdgeInsets.zero,
                     leading: CircleAvatar(
@@ -90,7 +85,7 @@ class ListDateTransactionsWidget extends StatelessWidget {
             );
           },
         ),
-        sizeVer(20),
+        sizeVer(70),
       ],
     );
   }

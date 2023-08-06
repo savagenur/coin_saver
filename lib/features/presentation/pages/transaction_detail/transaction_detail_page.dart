@@ -180,14 +180,11 @@ class TransactionDetailPage extends StatelessWidget {
                 Expanded(
                   child: TextButton(
                       onPressed: () async {
-                        context.read<MainTransactionBloc>().add(
-                              DeleteTransaction(
-                                  transaction: transaction, account: account),
-                            );
+                        
 
                         context
                             .read<AccountBloc>()
-                            .add(SetPrimaryAccount(accountId: account.id));
+                            .add(DeleteTransaction(transaction: transaction, account: account));
                         Navigator.pop(context);
                         Navigator.pop(context);
                       },

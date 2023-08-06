@@ -1,15 +1,15 @@
 import 'package:coin_saver/constants/constants.dart';
-import 'package:coin_saver/features/data/models/exchange_rate/exchange_rate_model.dart';
+import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
+import 'package:coin_saver/features/presentation/bloc/cubit/main_colors/main_colors_cubit.dart';
 import 'package:coin_saver/injection_container.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:hive/hive.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
 import '../../../../domain/usecases/settings/delete_all_data_usecase.dart';
+import '../../../bloc/cubit/first_launch/first_launch_cubit.dart';
 import '../../../bloc/settings/settings_bloc.dart';
 import '../../../widgets/my_drawer.dart';
 
@@ -142,34 +142,51 @@ class _SettingsPageState extends State<SettingsPage> {
                 const Spacer(),
                 ListTile(
                   onTap: () {
-                   
-                   
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
                         title: Text(AppLocalizations.of(context)!
                             .areYouSureYouWantToDelete),
-                        actions: [Row(
-                          children: [
-                          Expanded(
-                            child: TextButton(
-                                onPressed: () {
-                                  // Navigator.pop(context);
-                                  Navigator.pushNamed(context, PageConst.homePage);
-                                  
-                                },
-                                child: Text(AppLocalizations.of(context)!.no)),
-                          ),
-                          Expanded(
-                            child: TextButton(
-                                onPressed: () async {
-                                  await sl<DeleteAllDataUsecase>().call();
-                                  SystemNavigator.pop();
-                                },
-                                child: Text(AppLocalizations.of(context)!.yes)),
-                          ),
+                        actions: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child:
+                                        Text(AppLocalizations.of(context)!.no)),
+                              ),
+                              Expanded(
+                                child: TextButton(
+                                    onPressed: () async {
+                                      loadingScreen(context);
+
+                                      await sl<DeleteAllDataUsecase>().call();
+
+                                      if (mounted) {
+                                        context
+                                            .read<FirstLaunchCubit>()
+                                            .changeIsFirstLaunch(true);
+
+                                        await Future.delayed(
+                                            const Duration(seconds: 1));
+
+                                        if (mounted) {
+                                          Navigator.pushNamedAndRemoveUntil(
+                                              context,
+                                              PageConst.homePage,
+                                              (route) => false);
+                                        }
+                                      }
+                                    },
+                                    child: Text(
+                                        AppLocalizations.of(context)!.yes)),
+                              ),
+                            ],
+                          )
                         ],
-                        )],
                       ),
                     );
                   },

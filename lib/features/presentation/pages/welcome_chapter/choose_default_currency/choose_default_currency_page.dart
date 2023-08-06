@@ -3,6 +3,7 @@ import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/constants/currencies.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:coin_saver/features/domain/usecases/hive/first_init_user_usecase.dart';
+import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/first_launch/first_launch_cubit.dart';
 import 'package:coin_saver/features/presentation/widgets/my_button_widget.dart';
 import 'package:coin_saver/injection_container.dart';
@@ -10,6 +11,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:hive/hive.dart';
+
+import '../../../../../constants/main_categories.dart';
+import '../../../../data/models/category/category_model.dart';
+import '../../../bloc/category/category_bloc.dart';
+import '../../../bloc/cubit/main_colors/main_colors_cubit.dart';
 
 class ChooseDefaultCurrencyPage extends StatefulWidget {
   const ChooseDefaultCurrencyPage({super.key});
@@ -95,6 +102,8 @@ class _ChooseDefaultCurrencyPageState extends State<ChooseDefaultCurrencyPage> {
                 title: AppLocalizations.of(context)!.next,
                 borderRadius: BorderRadius.circular(20),
                 onTap: () async {
+                  loadingScreen(context);
+
                   await sl<FirstInitUserUsecase>().call(
                       _currency,
                       AppLocalizations.of(context)!.total,
@@ -103,18 +112,21 @@ class _ChooseDefaultCurrencyPageState extends State<ChooseDefaultCurrencyPage> {
                       AppLocalizations.of(context)!
                           .donTForgetToRecordURExpenses);
                   if (mounted) {
+                    // Categories
+                    if (Hive.box<CategoryModel>(BoxConst.categories).isEmpty) {
+                      Map<String, CategoryModel> categoryMap = {};
+
+                      for (var category in getMainCategories(context)) {
+                        categoryMap[category.id] = category;
+                      }
+                      Hive.box<CategoryModel>(BoxConst.categories)
+                          .putAll(categoryMap);
+                    }
+                    // Blocs
+                    context.read<AccountBloc>().add(GetAccounts());
+                    context.read<CategoryBloc>().add(GetCategories());
+                    context.read<MainColorsCubit>().getMainColors();
                     context.read<FirstLaunchCubit>().changeIsFirstLaunch(false);
-                    showDialog(
-                      context: context,
-                      builder: (context) => Container(
-                        color: Colors.black12,
-                        width: double.infinity,
-                        height: double.infinity,
-                        child: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      ),
-                    );
                     await Future.delayed(const Duration(seconds: 1));
 
                     if (mounted) {

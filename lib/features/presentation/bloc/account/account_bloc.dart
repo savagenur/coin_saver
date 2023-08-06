@@ -15,6 +15,8 @@ import '../../../domain/entities/account/account_entity.dart';
 import '../../../domain/entities/transaction/transaction_entity.dart';
 import '../../../domain/usecases/account/set_primary_account_usecase.dart';
 import '../../../domain/usecases/account/transaction/delete_transfer_usecase.dart';
+import '../../../domain/usecases/account/transaction/get_transactions_usecase.dart';
+import '../../../domain/usecases/account/transaction/update_transaction_usecase.dart';
 import '../../../domain/usecases/account/transaction/update_transfer_usecase.dart';
 
 part 'account_event.dart';
@@ -26,8 +28,13 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   final UpdateAccountUsecase updateAccountUsecase;
   final DeleteAccountUsecase deleteAccountUsecase;
   final SetPrimaryAccountUsecase setPrimaryAccountUsecase;
+
+// Transactions usecases
   final AddTransactionUsecase addTransactionUsecase;
+  final UpdateTransactionUsecase updateTransactionUsecase;
   final DeleteTransactionUsecase deleteTransactionUsecase;
+// Transfers usecases
+
   final AddTransferUsecase addTransferUsecase;
   final DeleteTransferUsecase deleteTransferUsecase;
   final UpdateTransferUsecase updateTransferUsecase;
@@ -42,6 +49,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     required this.addTransferUsecase,
     required this.deleteTransferUsecase,
     required this.updateTransferUsecase,
+    required this.updateTransactionUsecase,
   }) : super(AccountInitial()) {
     on<CreateAccount>(_onCreateAccount);
     on<DeleteAccount>(_onDeleteAccount);
@@ -53,8 +61,9 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     on<DeleteTransfer>(_onDeleteTransfer);
 
     // Transaction
-    // on<AddTransaction>(_onAddTransaction);
-    // on<DeleteTransaction>(_onDeleteTransaction);
+    on<AddTransaction>(_onAddTransaction);
+    on<DeleteTransaction>(_onDeleteTransaction);
+    on<UpdateTransaction>(_onUpdateTransaction);
   }
 
   FutureOr<void> _onCreateAccount(
@@ -145,12 +154,35 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     final accounts = await getAccountsUsecase.call();
     emit(AccountLoaded(accounts: accounts));
   }
+
   FutureOr<void> _onDeleteTransfer(
       DeleteTransfer event, Emitter<AccountState> emit) async {
     await deleteTransferUsecase.call(
         accountFrom: event.accountFrom,
         accountTo: event.accountTo,
         transactionEntity: event.transactionEntity);
+    final accounts = await getAccountsUsecase.call();
+    emit(AccountLoaded(accounts: accounts));
+  }
+
+  FutureOr<void> _onAddTransaction(
+      AddTransaction event, Emitter<AccountState> emit) async {
+    await addTransactionUsecase.call(event.account, event.transaction);
+
+    final accounts = await getAccountsUsecase.call();
+    emit(AccountLoaded(accounts: accounts));
+  }
+
+  FutureOr<void> _onDeleteTransaction(
+      DeleteTransaction event, Emitter<AccountState> emit) async {
+    await deleteTransactionUsecase.call(event.account, event.transaction);
+    final accounts = await getAccountsUsecase.call();
+    emit(AccountLoaded(accounts: accounts));
+  }
+
+  FutureOr<void> _onUpdateTransaction(
+      UpdateTransaction event, Emitter<AccountState> emit) async {
+    await updateTransactionUsecase.call(event.account, event.transaction);
     final accounts = await getAccountsUsecase.call();
     emit(AccountLoaded(accounts: accounts));
   }

@@ -42,6 +42,10 @@ class HiveRepository implements BaseHiveRepository {
   Future<List<AccountEntity>> getAccounts() async =>
       hiveLocalDataSource.getAccounts();
   @override
+    AccountEntity getPrimaryAccount()
+  =>
+      hiveLocalDataSource.getPrimaryAccount();
+  @override
   Future<void> updateAccount(AccountEntity accountEntity) async =>
       hiveLocalDataSource.updateAccount(accountEntity);
 

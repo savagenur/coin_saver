@@ -529,8 +529,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
         _iconData != null) {
       _formKey.currentState!.save();
       final String accountId = _isUpdatePage ? _account!.id : sl<Uuid>().v1();
-      final List<TransactionEntity> transactionHistory =
-          _isUpdatePage ? _account!.transactionHistory : [];
+      
       final bool isPrimary = _isUpdatePage ? true : false;
       final DateTime openingDate =
           accountId == "main" ? _account!.openingDate : DateTime.now();
@@ -547,7 +546,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
           isActive: true,
           ownershipType: OwnershipType.individual,
           openingDate: openingDate,
-          transactionHistory: transactionHistory);
+          );
       _isUpdatePage
           ? accountBloc.add(UpdateAccount(accountEntity: accountEntity))
           : accountBloc.add(CreateAccount(accountEntity: accountEntity));

@@ -1,3 +1,4 @@
+import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/category/category_entity.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -40,10 +41,12 @@ class TransactionEntity extends Equatable {
   final List<String>? linkedTransactions;
   final bool? isVoid;
   final bool? isTransfer;
+  final bool? isTotal;
   final String? accountFromId;
   final String? accountToId;
   final double? amountFrom;
   final double? amountTo;
+  final AccountEntity account;
 
   const TransactionEntity({
     required this.id,
@@ -54,7 +57,9 @@ class TransactionEntity extends Equatable {
     required this.accountId,
     required this.isIncome,
     required this.color,
+    required this.account,
     this.isTransfer = false,
+    this.isTotal = false,
     this.accountFromId,
     this.accountToId,
     this.amountFrom,
@@ -80,9 +85,11 @@ class TransactionEntity extends Equatable {
         id,
         date,
         amount,
+        account,
         category,
         iconData,
         isTransfer,
+        isTotal,
         accountFromId,
         accountToId,
         amountFrom,
@@ -108,6 +115,7 @@ class TransactionEntity extends Equatable {
   TransactionEntity copyWith({
     String? id,
     DateTime? date,
+    AccountEntity? account,
     double? amount,
     CategoryEntity? category,
     IconData? iconData,
@@ -115,6 +123,7 @@ class TransactionEntity extends Equatable {
     String? accountId,
     bool? isIncome,
     bool? isTransfer,
+    bool? isTotal,
     String? accountFromId,
     String? accountToId,
     double? amountFrom,
@@ -142,8 +151,10 @@ class TransactionEntity extends Equatable {
       iconData: iconData ?? this.iconData,
       description: description ?? this.description,
       accountId: accountId ?? this.accountId,
+      account: account ?? this.account,
       isIncome: isIncome ?? this.isIncome,
       isTransfer: isTransfer ?? this.isTransfer,
+      isTotal: isTotal ?? this.isTotal,
       color: color ?? this.color,
       tags: tags ?? this.tags,
       payee: payee ?? this.payee,

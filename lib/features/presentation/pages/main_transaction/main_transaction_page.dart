@@ -16,6 +16,7 @@ import 'package:pull_down_button/pull_down_button.dart';
 import '../../../../constants/constants.dart';
 import '../../../../constants/period_enum.dart';
 import '../../bloc/home_time_period/home_time_period_bloc.dart';
+import '../../bloc/transaction/transaction_bloc.dart';
 
 class MainTransactionPage extends StatefulWidget {
   final TransactionEntity mainTransaction;
@@ -45,7 +46,8 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
       List<TransactionEntity> transactions) {
     Map<DateTime, List<TransactionEntity>> map = {};
     for (var transaction in transactions) {
-      DateTime transactionDate = DateTime(transaction.date.year,transaction.date.month,transaction.date.day);
+      DateTime transactionDate = DateTime(
+          transaction.date.year, transaction.date.month, transaction.date.day);
       if (map.containsKey(transactionDate)) {
         map[transactionDate]!.add(transaction);
       } else {
@@ -57,162 +59,176 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AccountBloc, AccountState>(
-      builder: (context, accountState) {
-        if (accountState is AccountLoaded) {
-          return BlocBuilder<SelectedDateCubit, DateRange>(
-            builder: (context, dateRange) {
-              var selectedDate = dateRange.startDate;
-              var selectedEnd = dateRange.endDate;
-              return BlocBuilder<TransactionPeriodCubit,
-                  List<TransactionEntity>>(
-                builder: (context, transactions) {
-                  return BlocBuilder<PeriodCubit, Period>(
-                    builder: (context, selectedPeriod) {
-                      return BlocBuilder<HomeTimePeriodBloc,
-                          HomeTimePeriodState>(
-                        builder: (context, timePeriodState) {
-                          if (timePeriodState is HomeTimePeriodLoaded) {
-                            _selectedPeriod = selectedPeriod;
-                            _account = accountState.accounts.firstWhere(
-                                (account) => account.isPrimary,
-                                orElse: () => accountError);
-                            _mainTransactions = transactions
-                                .where((transaction) =>
-                                    _account!.id == "total"
-                                        ? transaction.category ==
-                                                _mainTransaction.category &&
-                                            transaction.isIncome ==
-                                                _mainTransaction.isIncome
-                                        : transaction.accountId ==
-                                                _account!.id &&
-                                            transaction.category ==
-                                                _mainTransaction.category &&
-                                            transaction.isIncome ==
-                                                _mainTransaction.isIncome)
-                                .toList();
+    return BlocBuilder<TransactionBloc, TransactionState>(
+      builder: (context, transactionState) {
+        return BlocBuilder<AccountBloc, AccountState>(
+          builder: (context, accountState) {
+            if (accountState is AccountLoaded) {
+              return BlocBuilder<SelectedDateCubit, DateRange>(
+                builder: (context, dateRange) {
+                  var selectedDate = dateRange.startDate;
+                  var selectedEnd = dateRange.endDate;
+                  return BlocBuilder<TransactionPeriodCubit,
+                      List<TransactionEntity>>(
+                    builder: (context, transactions) {
+                      return BlocBuilder<PeriodCubit, Period>(
+                        builder: (context, selectedPeriod) {
+                          return BlocBuilder<HomeTimePeriodBloc,
+                              HomeTimePeriodState>(
+                            builder: (context, timePeriodState) {
+                              if (timePeriodState is HomeTimePeriodLoaded) {
+                                _selectedPeriod = selectedPeriod;
+                                _account = accountState.accounts.firstWhere(
+                                    (account) => account.isPrimary,
+                                    orElse: () => accountError);
+                                _mainTransactions = transactions
+                                    .where((transaction) =>
+                                        transaction.accountId == _account!.id &&
+                                        transaction.category ==
+                                            _mainTransaction.category &&
+                                        transaction.isIncome ==
+                                            _mainTransaction.isIncome)
+                                    .toList();
+                                // print(
+                                //     "_mainTransaction: ${transactions.length}");
 
-                            // Total amountMoney of MainTransactions
-                            _totalAmount = _mainTransactions.fold(
-                                0,
-                                (previousValue, element) =>
-                                    previousValue + element.amount);
+                                // Total amountMoney of MainTransactions
+                                _totalAmount = _mainTransactions.fold(
+                                    0,
+                                    (previousValue, element) =>
+                                        previousValue + element.amount);
 
-                            var allTransactions = _account!.transactionHistory
-                                .where((transaction) =>
-                                    transaction.category.id ==
-                                    widget.mainTransaction.category.id)
-                                .toList()
-                              ..sort(
-                                (a, b) => selectedFilter == Filter.byDate
-                                    ? b.date.compareTo(a.date)
-                                    : b.amount.compareTo(a.amount),
-                              );
-                            BlocProvider.of<TransactionPeriodCubit>(context)
-                                .setPeriod(
-                              period: _selectedPeriod,
-                              selectedDate: selectedDate,
-                              totalTransactions: allTransactions,
-                              selectedEnd: selectedEnd,
-                            );
-                            _transactions = transactions;
-                            _filteredMap = _filterTransactions(_transactions);
+                                var allTransactions = transactionState
+                                    .transactions
+                                    .where((element) =>
+                                        element.accountId == _account!.id)
+                                    .where((transaction) =>
+                                        transaction.category.id ==
+                                        widget.mainTransaction.category.id)
+                                    .toList()
+                                  ..sort(
+                                    (a, b) => selectedFilter == Filter.byDate
+                                        ? b.date.compareTo(a.date)
+                                        : b.amount.compareTo(a.amount),
+                                  );
+                                BlocProvider.of<TransactionPeriodCubit>(context)
+                                    .setPeriod(
+                                  period: _selectedPeriod,
+                                  selectedDate: selectedDate,
+                                  totalTransactions: allTransactions,
+                                  selectedEnd: selectedEnd,
+                                );
+                                _transactions = transactions;
+                                _filteredMap =
+                                    _filterTransactions(_transactions);
 
-                            return Scaffold(
-                              appBar: _buildAppBar(),
-                              body: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        _buildPullDownButton(
-                                            _account!, accountState.accounts),
-                                        PopupMenuButton(
-                                            onSelected: (value) {
-                                              setState(() {
-                                                selectedFilter = value;
-                                              });
-                                            },
-                                            itemBuilder: (context) {
-                                              return [
-                                                PopupMenuItem(
-                                                    value: Filter.byDate,
-                                                    onTap: () {},
-                                                    child:
-                                                         Text(AppLocalizations.of(context)!.byDate)),
-                                                PopupMenuItem(
-                                                    value: Filter.byAmount,
-                                                    onTap: () {},
-                                                    child:  Text(
-                                                        AppLocalizations.of(context)!.byAmount)),
-                                              ];
-                                            },
-                                            child: Row(
-                                              children: [
-                                                Text(
-                                                  selectedFilter ==
-                                                          Filter.byDate
-                                                      ? AppLocalizations.of(context)!.byDate
-                                                      : AppLocalizations.of(context)!.byAmount,
-                                                  style: const TextStyle(
-                                                      decoration: TextDecoration
-                                                          .underline),
-                                                ),
-                                                const Icon(
-                                                    Icons.arrow_drop_down)
-                                              ],
-                                            )),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: SingleChildScrollView(
-                                      child: Padding(
+                                return Scaffold(
+                                  appBar: _buildAppBar(),
+                                  body: Column(
+                                    children: [
+                                      Padding(
                                         padding: const EdgeInsets.all(10),
-                                        child: _buildListTiles(
-                                            accountState, context),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            _buildPullDownButton(_account!,
+                                                accountState.accounts),
+                                            PopupMenuButton(
+                                                onSelected: (value) {
+                                                  setState(() {
+                                                    selectedFilter = value;
+                                                  });
+                                                },
+                                                itemBuilder: (context) {
+                                                  return [
+                                                    PopupMenuItem(
+                                                        value: Filter.byDate,
+                                                        onTap: () {},
+                                                        child: Text(
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .byDate)),
+                                                    PopupMenuItem(
+                                                        value: Filter.byAmount,
+                                                        onTap: () {},
+                                                        child: Text(
+                                                            AppLocalizations.of(
+                                                                    context)!
+                                                                .byAmount)),
+                                                  ];
+                                                },
+                                                child: Row(
+                                                  children: [
+                                                    Text(
+                                                      selectedFilter ==
+                                                              Filter.byDate
+                                                          ? AppLocalizations.of(
+                                                                  context)!
+                                                              .byDate
+                                                          : AppLocalizations.of(
+                                                                  context)!
+                                                              .byAmount,
+                                                      style: const TextStyle(
+                                                          decoration:
+                                                              TextDecoration
+                                                                  .underline),
+                                                    ),
+                                                    const Icon(
+                                                        Icons.arrow_drop_down)
+                                                  ],
+                                                )),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              floatingActionButtonLocation:
-                                  FloatingActionButtonLocation.centerFloat,
-                              floatingActionButton: FloatingActionButton(
-                                onPressed: () {
-                                  Navigator.pushNamed(
-                                      context, PageConst.addTransactionPage,
-                                      arguments: AddTransactionPage(
-                                        isIncome: _mainTransaction.isIncome,
-                                        account: _account!,
-                                        selectedDate: DateTime.now(),
-                                        category:
-                                            widget.mainTransaction.category,
-                                      ));
-                                },
-                                child: const Icon(FontAwesomeIcons.plus),
-                              ),
-                            );
-                          }
-                          return const Scaffold();
+                                      Expanded(
+                                        child: SingleChildScrollView(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10),
+                                            child: _buildListTiles(accountState,
+                                                context, transactionState),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  floatingActionButtonLocation:
+                                      FloatingActionButtonLocation.centerFloat,
+                                  floatingActionButton: FloatingActionButton(
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                          context, PageConst.addTransactionPage,
+                                          arguments: AddTransactionPage(
+                                            isIncome: _mainTransaction.isIncome,
+                                            account: _account!,
+                                            selectedDate: DateTime.now(),
+                                            category:
+                                                widget.mainTransaction.category,
+                                          ));
+                                    },
+                                    child: const Icon(FontAwesomeIcons.plus),
+                                  ),
+                                );
+                              }
+                              return const Scaffold();
+                            },
+                          );
                         },
                       );
                     },
                   );
                 },
               );
-            },
-          );
-        }
-        return const Scaffold();
+            }
+            return const Scaffold();
+          },
+        );
       },
     );
   }
 
-  Column _buildListTiles(AccountLoaded accountState, BuildContext context) {
+  Column _buildListTiles(AccountLoaded accountState, BuildContext context,
+      TransactionState transactionState) {
     return Column(
       children: [
         ...List.generate(
@@ -232,23 +248,22 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                     (valueIndex) {
                   var transaction = _filteredMap[
                       _filteredMap.keys.elementAt(keyIndex)]![valueIndex];
-                  String accountName = accountState.accounts
-                      .firstWhere(
-                          (element) => element.id == transaction.accountId,
-                          orElse: () => accountError)
-                      .name;
-                  final account = accountState.accounts.firstWhere(
-                      (element) => element.id == transaction.accountId,
-                      orElse: () => accountError);
-                  final transactionDetail = account.transactionHistory
-                      .firstWhere((element) => transaction.id == element.id,orElse: () => transactionError,);
+                  String accountName = transaction.account.name;
+
+                  final transactionDetail =
+                      transactionState.transactions.firstWhere(
+                    (element) =>
+                        transaction.id== element.id,
+                    orElse: () => transactionError,
+                  );
+                  // print(transaction.id.replaceAll(totalId, ""));
                   return ListTile(
                     onTap: () {
                       Navigator.pushNamed(
                           context, PageConst.transactionDetailPage,
                           arguments: TransactionDetailPage(
                             transaction: transactionDetail,
-                            account: account,
+                            account: transaction.account,
                           ));
                     },
                     contentPadding: EdgeInsets.zero,
@@ -261,7 +276,7 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                     ),
                     title: Text(_mainTransaction.category.name),
                     subtitle:
-                        _account!.id == "total" ? Text(accountName) : null,
+                        _account!.id == totalId ? Text(accountName) : null,
                     trailing: Text(
                       NumberFormat.currency(symbol: _account!.currency.symbol)
                           .format(transaction.amount),

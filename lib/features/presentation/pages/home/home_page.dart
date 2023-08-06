@@ -3,6 +3,7 @@ import 'package:coin_saver/constants/period_enum.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/first_launch/first_launch_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
+import 'package:coin_saver/features/presentation/bloc/transaction/transaction_bloc.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/widgets/account_switch_pull_down_btn.dart';
 import 'package:coin_saver/features/presentation/pages/home/widgets/circular_chart.dart';
@@ -77,138 +78,147 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-
-    return BlocBuilder<SelectedDateCubit, DateRange>(
-      builder: (context, dateRange) {
-        return BlocBuilder<AccountBloc, AccountState>(
-          builder: (context, accountState) {
-            if (accountState is AccountLoaded) {
-              return BlocBuilder<HomeTimePeriodBloc, HomeTimePeriodState>(
-                builder: (context, timePeriodState) {
-                  if (timePeriodState is HomeTimePeriodLoaded) {
-                    return BlocBuilder<PeriodCubit, Period>(
-                      builder: (context, selectedPeriod) {
-                        _selectedPeriod = selectedPeriod;
-                        // Selected DateTime
-                        _selectedDate = dateRange.startDate;
-                        _selectedDateEnd = dateRange.endDate;
-                        // Primary Account
-                        _account = accountState.accounts.firstWhere(
-                          (account) => account.isPrimary == true,
-                          orElse: () => accountError,
-                        );
-
-                        // MainTransactions Sort
-                        List<TransactionEntity> transactions = timePeriodState
-                            .transactions
-                            .where((transaction) =>
-                                transaction.isIncome == _isIncome &&
-                                transaction.isTransfer == null)
-                            .toList()
-                          ..sort(
-                            (a, b) => b.amount.compareTo(a.amount),
+    return BlocListener<TransactionBloc, TransactionState>(
+      listener: (context, state) {
+        context.read<AccountBloc>().add(const GetAccounts());
+      },
+      child: BlocBuilder<SelectedDateCubit, DateRange>(
+        builder: (context, dateRange) {
+          return BlocConsumer<AccountBloc, AccountState>(
+            listener: (context, state) =>
+                context.read<TransactionBloc>().add(const GetTransactions()),
+            builder: (context, accountState) {
+              if (accountState is AccountLoaded) {
+                return BlocBuilder<HomeTimePeriodBloc, HomeTimePeriodState>(
+                  builder: (context, timePeriodState) {
+                    if (timePeriodState is HomeTimePeriodLoaded) {
+                      return BlocBuilder<PeriodCubit, Period>(
+                        builder: (context, selectedPeriod) {
+                          _selectedPeriod = selectedPeriod;
+                          // Selected DateTime
+                          _selectedDate = dateRange.startDate;
+                          _selectedDateEnd = dateRange.endDate;
+                          // Primary Account
+                          _account = accountState.accounts.firstWhere(
+                            (account) => account.isPrimary,
+                            orElse: () => accountError,
                           );
-                        // Total amountMoney of MainTransactions
-                        _totalExpense = transactions.fold(
-                            0,
-                            (previousValue, element) =>
-                                previousValue + element.amount);
-                        return WillPopScope(
-                          onWillPop: () async {
-                            SystemNavigator.pop();
-                            return false;
-                          },
-                          child: DefaultTabController(
-                            initialIndex: _isIncome ? 1 : 0,
-                            length: 2,
-                            child: Scaffold(
-                              key: _scaffoldKey,
-                              drawer: const MyDrawer(),
-                              appBar:
-                                  _buildAppBar(_account, accountState.accounts),
-                              body: SingleChildScrollView(
-                                child: Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: ShadowedContainerWidget(
-                                        borderRadius: BorderRadius.circular(30),
-                                        child: Column(
-                                          children: [
-                                            PeriodTabBar(
-                                                tabController: _tabController,
+
+                          // MainTransactions Sort
+                          List<TransactionEntity> transactions = timePeriodState
+                              .transactions
+                              .where((transaction) =>
+                                  _account.id == transaction.accountId &&
+                                  transaction.isIncome == _isIncome)
+                              .toList()
+                            ..sort(
+                              (a, b) => b.amount.compareTo(a.amount),
+                            );
+                          // Total amountMoney of MainTransactions
+                          _totalExpense = transactions.fold(
+                              0,
+                              (previousValue, element) =>
+                                  previousValue + element.amount);
+
+                          return WillPopScope(
+                            onWillPop: () async {
+                              SystemNavigator.pop();
+                              return false;
+                            },
+                            child: DefaultTabController(
+                              initialIndex: _isIncome ? 1 : 0,
+                              length: 2,
+                              child: Scaffold(
+                                key: _scaffoldKey,
+                                drawer: const MyDrawer(),
+                                appBar: _buildAppBar(
+                                    _account, accountState.accounts),
+                                body: SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: ShadowedContainerWidget(
+                                          borderRadius:
+                                              BorderRadius.circular(30),
+                                          child: Column(
+                                            children: [
+                                              PeriodTabBar(
+                                                  tabController: _tabController,
+                                                  selectedPeriod:
+                                                      _selectedPeriod,
+                                                  selectedDate: _selectedDate,
+                                                  selectedDateEnd:
+                                                      _selectedDateEnd,
+                                                  transactions: transactions),
+                                              DayNavigationWidget(
                                                 selectedPeriod: _selectedPeriod,
-                                                selectedDate: _selectedDate,
-                                                selectedDateEnd:
-                                                    _selectedDateEnd,
-                                                transactions: transactions),
-                                            DayNavigationWidget(
-                                              selectedPeriod: _selectedPeriod,
-                                              account: _account,
-                                              dateTime: _selectedDate,
-                                              isIncome: _isIncome,
-                                            ),
-                                            CircularChartWidget(
-                                                transactions: transactions,
-                                                selectedDate: _selectedDate,
-                                                
                                                 account: _account,
-                                                totalExpense: _totalExpense),
-                                          ],
+                                                dateTime: _selectedDate,
+                                                isIncome: _isIncome,
+                                              ),
+                                              CircularChartWidget(
+                                                  transactions: transactions,
+                                                  selectedDate: _selectedDate,
+                                                  account: _account,
+                                                  totalExpense: _totalExpense),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    ...List.generate(
-                                      transactions.length,
-                                      (index) => Padding(
-                                        padding: const EdgeInsets.only(
-                                            right: 10, bottom: 10, left: 10),
-                                        child: CategoryTile(
-                                          totalExpense: _totalExpense,
-                                          mainTransaction: transactions[index],
+                                      ...List.generate(
+                                        transactions.length,
+                                        (index) => Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 10, bottom: 10, left: 10),
+                                          child: CategoryTile(
+                                            totalExpense: _totalExpense,
+                                            mainTransaction:
+                                                transactions[index],
+                                            account: _account,
+                                          ),
+                                        ),
+                                      ),
+                                      sizeVer(100),
+                                    ],
+                                  ),
+                                ),
+                                floatingActionButton: FloatingActionButton(
+                                  onPressed: () async {
+                                    var res = await Navigator.pushNamed(
+                                        context, PageConst.addTransactionPage,
+                                        arguments: AddTransactionPage(
+                                          selectedDate: _selectedDate,
+                                          isIncome: _isIncome,
                                           account: _account,
-                                        ),
-                                      ),
-                                    ),
-                                    sizeVer(100),
-                                  ],
+                                        ));
+                                    if (res == true) {
+                                      updatePage();
+                                    }
+                                  },
+                                  child: const Icon(FontAwesomeIcons.plus),
                                 ),
                               ),
-                              floatingActionButton: FloatingActionButton(
-                                onPressed: () async {
-                                  var res = await Navigator.pushNamed(
-                                      context, PageConst.addTransactionPage,
-                                      arguments: AddTransactionPage(
-                                        selectedDate: _selectedDate,
-                                        isIncome: _isIncome,
-                                        account: _account,
-                                      ));
-                                  if (res == true) {
-                                    updatePage();
-                                  }
-                                },
-                                child: const Icon(FontAwesomeIcons.plus),
-                              ),
                             ),
-                          ),
-                        );
-                      },
-                    );
-                  } else {
-                    return const Scaffold();
-                  }
-                },
-              );
-            } else {
-              return const Scaffold(
-                body: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
-            }
-          },
-        );
-      },
+                          );
+                        },
+                      );
+                    } else {
+                      return const Scaffold();
+                    }
+                  },
+                );
+              } else {
+                return const Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+            },
+          );
+        },
+      ),
     );
   }
 

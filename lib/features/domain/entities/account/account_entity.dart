@@ -38,6 +38,7 @@ class AccountEntity extends Equatable {
   final CurrencyEntity currency;
   final bool isPrimary;
   final bool isActive;
+  final bool? isTotal;
   final String? accountNumber;
   final String? institution;
   final OwnershipType ownershipType;
@@ -49,7 +50,6 @@ class AccountEntity extends Equatable {
   final double? minimumBalance;
   final List<String>? linkedAccounts;
   final String? notes;
-  final List<TransactionEntity> transactionHistory;
   final String? monthlyStatement;
 
   const AccountEntity({
@@ -68,13 +68,13 @@ class AccountEntity extends Equatable {
     required this.ownershipType,
     required this.openingDate,
     this.closingDate,
+    this.isTotal=false,
     this.interestRate,
     this.creditLimit,
     this.dueDate,
     this.minimumBalance,
     this.linkedAccounts,
     this.notes,
-    required this.transactionHistory,
     this.monthlyStatement,
   });
 
@@ -101,7 +101,7 @@ class AccountEntity extends Equatable {
         minimumBalance,
         linkedAccounts,
         notes,
-        transactionHistory,
+        isTotal,
         monthlyStatement,
       ];
   AccountEntity copyWith({
@@ -115,6 +115,7 @@ class AccountEntity extends Equatable {
     CurrencyEntity? currency,
     bool? isPrimary,
     bool? isActive,
+    bool? isTotal,
     String? accountNumber,
     String? institution,
     OwnershipType? ownershipType,
@@ -126,7 +127,6 @@ class AccountEntity extends Equatable {
     double? minimumBalance,
     List<String>? linkedAccounts,
     String? notes,
-    List<TransactionEntity>? transactionHistory,
     String? monthlyStatement,
   }) {
     return AccountEntity(
@@ -134,6 +134,7 @@ class AccountEntity extends Equatable {
       name: name ?? this.name,
       iconData: iconData ?? this.iconData,
       type: type ?? this.type,
+      isTotal: isTotal ?? this.isTotal,
       paymentType: paymentType ?? this.paymentType,
       color: color ?? this.color,
       balance: balance ?? this.balance,
@@ -151,7 +152,6 @@ class AccountEntity extends Equatable {
       minimumBalance: minimumBalance ?? this.minimumBalance,
       linkedAccounts: linkedAccounts ?? this.linkedAccounts,
       notes: notes ?? this.notes,
-      transactionHistory: transactionHistory ?? this.transactionHistory,
       monthlyStatement: monthlyStatement ?? this.monthlyStatement,
     );
   }

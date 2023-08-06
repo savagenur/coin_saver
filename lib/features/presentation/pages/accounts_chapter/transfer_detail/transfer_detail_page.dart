@@ -1,5 +1,6 @@
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
+import 'package:coin_saver/features/presentation/bloc/transaction/transaction_bloc.dart';
 import 'package:coin_saver/features/presentation/pages/accounts_chapter/create_transfer/create_transfer_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -205,7 +206,7 @@ class _TransferDetailPageState extends State<TransferDetailPage> {
                         //           transaction: widget.transfer, account: account),
                         //     );
 
-                        context.read<AccountBloc>().add(DeleteTransfer(
+                        context.read<TransactionBloc>().add(DeleteTransfer(
                             accountFrom: _accountFrom!,
                             accountTo: _accountTo!,
                             transactionEntity: widget.transfer));

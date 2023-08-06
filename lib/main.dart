@@ -15,6 +15,7 @@ import 'package:coin_saver/features/presentation/bloc/cubit/transaction_period/t
 import 'package:coin_saver/features/presentation/bloc/currency/currency_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/reminder/reminder_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/settings/settings_bloc.dart';
+import 'package:coin_saver/features/presentation/bloc/transaction/transaction_bloc.dart';
 import 'package:coin_saver/features/presentation/pages/welcome_chapter/welcome/welcome_page.dart';
 import 'package:coin_saver/features/presentation/widgets/rate_app_init_widget.dart';
 import 'package:coin_saver/features/presentation/widgets/splash_screen.dart';
@@ -35,7 +36,6 @@ import 'features/presentation/bloc/cubit/selected_color/selected_color_cubit.dar
 import 'features/presentation/bloc/cubit/selected_date/selected_date_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_icon/selected_icon_cubit.dart';
 import 'features/presentation/bloc/home_time_period/home_time_period_bloc.dart';
-import 'features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
 import 'features/presentation/pages/home/home_page.dart';
 import 'injection_container.dart';
 import 'l10n/l10n.dart';
@@ -73,7 +73,10 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => sl<AccountBloc>()..add(GetAccounts()),
+          create: (_) => sl<AccountBloc>()..add(const GetAccounts()),
+        ),
+        BlocProvider(
+          create: (_) => sl<TransactionBloc>()..add(const GetTransactions()),
         ),
         BlocProvider(
           create: (_) => sl<CategoryBloc>()..add(GetCategories()),

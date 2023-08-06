@@ -31,7 +31,7 @@ class AccountSwitchPullDownBtn extends StatelessWidget {
                   },
                   selected: accountItem.isPrimary,
                   title: accountItem.name,
-                  itemTheme: accountItem.id != "total"
+                  itemTheme: accountItem.id != totalId
                       ? null
                       : const PullDownMenuItemTheme(
                           textStyle: TextStyle(
@@ -41,7 +41,7 @@ class AccountSwitchPullDownBtn extends StatelessWidget {
                       NumberFormat.currency(symbol: accountItem.currency.symbol)
                           .format(accountItem.balance),
                   icon: accountItem.iconData,
-                  iconColor: accountItem.id == "total"
+                  iconColor: accountItem.id == totalId
                       ? null
                       : Theme.of(context).primaryColor,
                 ))

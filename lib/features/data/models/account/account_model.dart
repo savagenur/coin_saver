@@ -4,7 +4,6 @@ import 'package:hive/hive.dart';
 
 import 'package:coin_saver/features/data/models/transaction/transaction_model.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
-import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 
 import '../../../domain/entities/account/account_entity.dart';
 
@@ -48,8 +47,7 @@ class AccountModel extends AccountEntity {
   final List<String>? linkedAccounts;
   @HiveField(17)
   final String? notes;
-  @HiveField(18)
-  final List<TransactionModel> transactionHistory;
+
   @HiveField(19)
   final String? monthlyStatement;
   @HiveField(20)
@@ -58,6 +56,8 @@ class AccountModel extends AccountEntity {
   final IconData iconData;
   @HiveField(22)
   final Color color;
+  @HiveField(23)
+  final bool? isTotal;
 
   const AccountModel({
     required this.id,
@@ -70,6 +70,7 @@ class AccountModel extends AccountEntity {
     required this.isPrimary,
     required this.isActive,
     this.accountNumber,
+    this.isTotal,
     this.institution,
     required this.ownershipType,
     required this.openingDate,
@@ -80,7 +81,6 @@ class AccountModel extends AccountEntity {
     this.minimumBalance,
     this.linkedAccounts,
     this.notes,
-    required this.transactionHistory,
     this.monthlyStatement,
     this.paymentType = PaymentType.cash,
   }) : super(
@@ -105,8 +105,8 @@ class AccountModel extends AccountEntity {
           minimumBalance: minimumBalance,
           linkedAccounts: linkedAccounts,
           notes: notes,
-          transactionHistory: transactionHistory,
           monthlyStatement: monthlyStatement,
+          isTotal: isTotal,
         );
 
   @override
@@ -121,6 +121,7 @@ class AccountModel extends AccountEntity {
     CurrencyEntity? currency,
     bool? isPrimary,
     bool? isActive,
+    bool? isTotal,
     String? accountNumber,
     String? institution,
     OwnershipType? ownershipType,
@@ -132,7 +133,6 @@ class AccountModel extends AccountEntity {
     double? minimumBalance,
     List<String>? linkedAccounts,
     String? notes,
-    List<TransactionEntity>? transactionHistory,
     String? monthlyStatement,
   }) {
     return AccountModel(
@@ -140,6 +140,7 @@ class AccountModel extends AccountEntity {
       name: name ?? this.name,
       iconData: iconData ?? this.iconData,
       type: type ?? this.type,
+      isTotal: isTotal ?? this.isTotal,
       color: color ?? this.color,
       paymentType: paymentType ?? this.paymentType,
       balance: balance ?? this.balance,
@@ -158,11 +159,43 @@ class AccountModel extends AccountEntity {
       minimumBalance: minimumBalance ?? this.minimumBalance,
       linkedAccounts: linkedAccounts ?? this.linkedAccounts,
       notes: notes ?? this.notes,
-      transactionHistory: transactionHistory
-              ?.map((e) => TransactionModel.fromEntity(e))
-              .toList() ??
-          this.transactionHistory,
       monthlyStatement: monthlyStatement ?? this.monthlyStatement,
+    );
+  }
+
+  static AccountModel fromEntity(AccountEntity entity) {
+    return AccountModel(
+      id: entity.id,
+      name: entity.name,
+      iconData: entity.iconData,
+      type: entity.type,
+      color: entity.color,
+      balance: entity.balance,
+      currency: CurrencyModel.fromEntity(entity.currency),
+      isPrimary: entity.isPrimary,
+      isActive: entity.isActive,
+      ownershipType: entity.ownershipType,
+      openingDate: entity.openingDate,
+      accountNumber: entity.accountNumber,
+      closingDate: entity.closingDate,
+      isTotal: entity.isTotal,
+    );
+  }
+
+  toEntity() {
+    return AccountEntity(
+      id: id,
+      name: name,
+      iconData: iconData,
+      color: color,
+      type: type,
+      balance: balance,
+      currency: currency,
+      isPrimary: isPrimary,
+      isActive: isActive,
+      ownershipType: ownershipType,
+      openingDate: openingDate,
+      isTotal: isTotal,
     );
   }
 }

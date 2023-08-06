@@ -1,4 +1,6 @@
+import 'package:coin_saver/features/data/models/account/account_model.dart';
 import 'package:coin_saver/features/data/models/category/category_model.dart';
+import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/category/category_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -62,6 +64,10 @@ class TransactionModel extends TransactionEntity {
   final double? amountFrom;
   @HiveField(26)
   final double? amountTo;
+  @HiveField(27)
+  final bool? isTotal;
+  @HiveField(28)
+  final AccountModel account;
 
   const TransactionModel({
     required this.id,
@@ -72,7 +78,9 @@ class TransactionModel extends TransactionEntity {
     required this.accountId,
     required this.isIncome,
     required this.color,
+    required this.account,
     this.isTransfer,
+    this.isTotal,
     this.accountFromId,
     this.accountToId,
     this.amountFrom,
@@ -95,12 +103,14 @@ class TransactionModel extends TransactionEntity {
           id: id,
           date: date,
           amount: amount,
+          account: account,
           category: category,
           iconData: iconData,
           description: description,
           accountId: accountId,
           isIncome: isIncome,
           isTransfer: isTransfer,
+          isTotal: isTotal,
           color: color,
           tags: tags,
           payee: payee,
@@ -132,6 +142,8 @@ class TransactionModel extends TransactionEntity {
     String? accountId,
     bool? isIncome,
     bool? isTransfer,
+    bool? isTotal,
+    AccountEntity? account,
     String? accountFromId,
     String? accountToId,
     double? amountFrom,
@@ -157,11 +169,14 @@ class TransactionModel extends TransactionEntity {
       amount: amount ?? this.amount,
       category:
           category != null ? CategoryModel.fromEntity(category) : this.category,
+      account:
+          account != null ? AccountModel.fromEntity(account) : this.account,
       iconData: iconData ?? this.iconData,
       description: description ?? this.description,
       accountId: accountId ?? this.accountId,
       isIncome: isIncome ?? this.isIncome,
       isTransfer: isTransfer ?? this.isTransfer,
+      isTotal: isTotal ?? this.isTotal,
       color: color ?? this.color,
       tags: tags ?? this.tags,
       payee: payee ?? this.payee,
@@ -188,11 +203,13 @@ class TransactionModel extends TransactionEntity {
       id: id,
       date: date,
       amount: amount,
+      account: account,
       category: category,
       iconData: iconData,
       accountId: accountId,
       isIncome: isIncome,
       isTransfer: isTransfer,
+      isTotal: isTotal,
       color: color,
       currency: currency,
       description: description,
@@ -219,12 +236,14 @@ class TransactionModel extends TransactionEntity {
     return TransactionModel(
       id: entity.id,
       date: entity.date,
+      account: AccountModel.fromEntity(entity.account),
       amount: entity.amount,
       category: CategoryModel.fromEntity(entity.category),
       iconData: entity.iconData,
       accountId: entity.accountId,
       isIncome: entity.isIncome,
       isTransfer: entity.isTransfer,
+      isTotal: entity.isTotal,
       color: entity.color,
       currency: entity.currency,
       description: entity.description,

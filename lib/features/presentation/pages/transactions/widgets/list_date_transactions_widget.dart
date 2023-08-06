@@ -10,7 +10,7 @@ class ListDateTransactionsWidget extends StatelessWidget {
   final Map<DateTime, List<TransactionEntity>> _filteredTransactionsMap;
   final AccountEntity _account;
   final List<AccountEntity> _accounts;
-  
+
   const ListDateTransactionsWidget({
     super.key,
     required Map<DateTime, List<TransactionEntity>> filteredTransactionsMap,
@@ -72,7 +72,7 @@ class ListDateTransactionsWidget extends StatelessWidget {
                       ),
                     ),
                     title: Text(transaction.category.name),
-                    subtitle: _account.id == "total" ? Text(accountName) : null,
+                    subtitle: _account.id == totalId ? Text(accountName) : null,
                     trailing: Text(
                       NumberFormat.currency(symbol: _account.currency.symbol)
                           .format(transaction.amount),

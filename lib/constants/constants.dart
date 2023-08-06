@@ -10,7 +10,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../features/data/models/account/account_model.dart';
 
 // print('Primary Color Hex Code: ${Theme.of(context).primaryColor.value.toRadixString(16).toUpperCase()}');
-
+const String totalId = "total";
 AccountModel accountError = AccountModel(
     id: "null",
     name: "null",
@@ -23,10 +23,11 @@ AccountModel accountError = AccountModel(
     isActive: true,
     ownershipType: OwnershipType.business,
     openingDate: DateTime(2023),
-    transactionHistory: []);
+   );
 TransactionModel transactionError = TransactionModel(
     id: 'null',
     date: DateTime.now(),
+    account: accountError,
     amount: 0,
     category: CategoryModel(
         id: "null",
@@ -111,6 +112,7 @@ class BoxConst {
   static const String exchangeRates = "exchangeRates";
   static const String reminders = "reminders";
   static const String settings = "settings";
+  static const String transactions = "transactions";
 }
 
 class SettingsConst {

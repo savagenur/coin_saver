@@ -17,6 +17,7 @@ import '../../bloc/cubit/period/period_cubit.dart';
 import '../../bloc/cubit/selected_date/selected_date_cubit.dart';
 import '../../bloc/cubit/transaction_period/transaction_period_cubit.dart';
 import '../../bloc/home_time_period/home_time_period_bloc.dart';
+import '../../bloc/transaction/transaction_bloc.dart';
 import '../../widgets/day_navigation_widget.dart';
 import '../../widgets/shadowed_container_widget.dart';
 import '../main_transaction/main_transaction_page.dart';
@@ -90,8 +91,6 @@ class TransactionsPageState extends State<TransactionsPage>
     });
   }
 
-  
-
   @override
   void dispose() {
     _tabController.dispose();
@@ -101,179 +100,193 @@ class TransactionsPageState extends State<TransactionsPage>
   @override
   Widget build(BuildContext context) {
     // Update the tab index to select the desired tab (e.g., index 1 for the second tab)
-    return BlocBuilder<PeriodCubit, Period>(
-      builder: (context, selectedPeriod) {
-        return BlocBuilder<TransactionPeriodCubit, List<TransactionEntity>>(
-          builder: (context, transactions) {
-            return BlocBuilder<SelectedDateCubit, DateRange>(
-              builder: (context, dateRange) {
-                return BlocBuilder<AccountBloc, AccountState>(
-                  builder: (context, accountState) {
-                    if (accountState is AccountLoaded) {
-                      return BlocBuilder<HomeTimePeriodBloc,
-                          HomeTimePeriodState>(
-                        builder: (context, timePeriodState) {
-                          if (timePeriodState is HomeTimePeriodLoaded) {
-                            return BlocBuilder<PeriodCubit, Period>(
-                              builder: (context, selectedPeriod) {
-                                _selectedPeriod = selectedPeriod;
+    return BlocBuilder<TransactionBloc, TransactionState>(
+      builder: (context, transactionState) {
+        return BlocBuilder<PeriodCubit, Period>(
+          builder: (context, selectedPeriod) {
+            return BlocBuilder<TransactionPeriodCubit, List<TransactionEntity>>(
+              builder: (context, transactions) {
+                return BlocBuilder<SelectedDateCubit, DateRange>(
+                  builder: (context, dateRange) {
+                    return BlocBuilder<AccountBloc, AccountState>(
+                      builder: (context, accountState) {
+                        if (accountState is AccountLoaded) {
+                          return BlocBuilder<HomeTimePeriodBloc,
+                              HomeTimePeriodState>(
+                            builder: (context, timePeriodState) {
+                              if (timePeriodState is HomeTimePeriodLoaded) {
+                                return BlocBuilder<PeriodCubit, Period>(
+                                  builder: (context, selectedPeriod) {
+                                    _selectedPeriod = selectedPeriod;
 
-                                // Selected DateTime
-                                _selectedDate = dateRange.startDate;
-                                _selectedDateEnd = dateRange.endDate;
-                                // Primary Account
-                                _account = accountState.accounts.firstWhere(
-                                    (account) => account.isPrimary == true,
-                                    orElse: () => accountError);
+                                    // Selected DateTime
+                                    _selectedDate = dateRange.startDate;
+                                    _selectedDateEnd = dateRange.endDate;
+                                    // Primary Account
+                                    _account = accountState.accounts.firstWhere(
+                                        (account) => account.isPrimary == true,
+                                        orElse: () => accountError);
 
-                                // Total amountMoney of MainTransactions
-
-                                var allTransactions = _searchQuery == ""
-                                    ? _account.transactionHistory
-                                        .where((transaction) =>
-                                            transaction.isIncome == _isIncome &&
-                                            transaction.isTransfer == null)
-                                        .toList()
-                                    : _account.transactionHistory
-                                        .where((transaction) =>
-                                            transaction.isIncome == _isIncome &&
-                                            transaction.isTransfer == null &&
-                                            transaction.category.name
-                                                .toLowerCase()
-                                                .contains(
-                                                    _searchQuery.toLowerCase()))
-                                        .toList();
-                                _totalExpense = _transactions
-                                    .fold(
+                                    // Total amountMoney of MainTransactions
+                                    var transactionsFromBox = transactionState
+                                        .transactions
+                                        .where((element) =>
+                                            element.accountId == _account.id).toList();
+                                    var allTransactions = _searchQuery == ""
+                                        ? transactionsFromBox
+                                            .where((transaction) =>
+                                                transaction.isIncome ==
+                                                    _isIncome &&
+                                                transaction.isTransfer == false)
+                                            .toList()
+                                        : transactionsFromBox
+                                            .where((transaction) =>
+                                                transaction.isIncome ==
+                                                    _isIncome &&
+                                                transaction.isTransfer ==
+                                                    null &&
+                                                transaction.category.name
+                                                    .toLowerCase()
+                                                    .contains(_searchQuery
+                                                        .toLowerCase()))
+                                            .toList();
+                                    _totalExpense = _transactions.fold(
                                         0,
                                         (previousValue, element) =>
                                             previousValue + element.amount);
-                                BlocProvider.of<TransactionPeriodCubit>(context)
-                                    .setPeriod(
-                                  period: selectedPeriod,
-                                  selectedDate: _selectedDate,
-                                  totalTransactions: allTransactions,
-                                  selectedEnd: _selectedDateEnd,
-                                );
-                                _transactions = transactions;
-                                _filteredTransactionsMap = _filterTransactions(
-                                    _transactions);
+                                    BlocProvider.of<TransactionPeriodCubit>(
+                                            context)
+                                        .setPeriod(
+                                      period: selectedPeriod,
+                                      selectedDate: _selectedDate,
+                                      totalTransactions: allTransactions,
+                                      selectedEnd: _selectedDateEnd,
+                                    );
+                                    _transactions = transactions;
+                                    _filteredTransactionsMap =
+                                        _filterTransactions(_transactions);
 
-                                return WillPopScope(
-                                  onWillPop: () async {
-                                    Navigator.pop(context, true);
-                                    return false;
-                                  },
-                                  child: DefaultTabController(
-                                    initialIndex: _isIncome ? 1 : 0,
-                                    length: 2,
-                                    child: Scaffold(
-                                      appBar: _buildAppBar(
-                                          _account, accountState.accounts),
-                                      body: Column(
-                                        children: [
-                                          Expanded(
-                                            child: Padding(
-                                              padding: const EdgeInsets.all(10),
-                                              child: ShadowedContainerWidget(
-                                                borderRadius:
-                                                    BorderRadius.circular(30),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Column(
+                                    return WillPopScope(
+                                      onWillPop: () async {
+                                        Navigator.pop(context, true);
+                                        return false;
+                                      },
+                                      child: DefaultTabController(
+                                        initialIndex: _isIncome ? 1 : 0,
+                                        length: 2,
+                                        child: Scaffold(
+                                          appBar: _buildAppBar(
+                                              _account, accountState.accounts),
+                                          body: Column(
+                                            children: [
+                                              Expanded(
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  child:
+                                                      ShadowedContainerWidget(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            30),
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
                                                       children: [
-                                                        PeriodTabBar(
-                                                            tabController:
-                                                                _tabController,
-                                                            selectedPeriod:
-                                                                _selectedPeriod,
-                                                            selectedDate:
-                                                                _selectedDate,
-                                                            selectedDateEnd:
-                                                                _selectedDateEnd,
-                                                            transactions:
-                                                                allTransactions),
-                                                        DayNavigationWidget(
-                                                          account: _account,
-                                                          isIncome: true,
-                                                          dateTime:
-                                                              _selectedDate,
+                                                        Column(
+                                                          children: [
+                                                            PeriodTabBar(
+                                                                tabController:
+                                                                    _tabController,
+                                                                selectedPeriod:
+                                                                    _selectedPeriod,
+                                                                selectedDate:
+                                                                    _selectedDate,
+                                                                selectedDateEnd:
+                                                                    _selectedDateEnd,
+                                                                transactions:
+                                                                    allTransactions),
+                                                            DayNavigationWidget(
+                                                              account: _account,
+                                                              isIncome: true,
+                                                              dateTime:
+                                                                  _selectedDate,
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(10),
+                                                              child:
+                                                                  _buildTotalFilter(
+                                                                      context),
+                                                            ),
+                                                          ],
                                                         ),
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(10),
+                                                        Expanded(
                                                           child:
-                                                              _buildTotalFilter(
-                                                                  context),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    Expanded(
-                                                      child:
-                                                          SingleChildScrollView(
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(10),
-                                                          child:
-                                                              ListDateTransactionsWidget(
-                                                            filteredTransactionsMap:
-                                                                _filteredTransactionsMap,
-                                                            account: _account,
-                                                            accounts:
-                                                                accountState
-                                                                    .accounts,
-                                                            
+                                                              SingleChildScrollView(
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(10),
+                                                              child:
+                                                                  ListDateTransactionsWidget(
+                                                                filteredTransactionsMap:
+                                                                    _filteredTransactionsMap,
+                                                                account:
+                                                                    _account,
+                                                                accounts:
+                                                                    accountState
+                                                                        .accounts,
+                                                              ),
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
+                                                        sizeVer(10)
+                                                      ],
                                                     ),
-                                                    sizeVer(10)
-                                                  ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
+                                            ],
                                           ),
-                                        ],
+                                          floatingActionButtonLocation:
+                                              FloatingActionButtonLocation
+                                                  .centerFloat,
+                                          floatingActionButton:
+                                              FloatingActionButton(
+                                            onPressed: () {
+                                              Navigator.pushNamed(context,
+                                                  PageConst.addTransactionPage,
+                                                  arguments: AddTransactionPage(
+                                                    isIncome: _isIncome,
+                                                    account: _account,
+                                                    selectedDate: _selectedDate,
+                                                    isTransactionsPage: true,
+                                                  ));
+                                            },
+                                            child: const Icon(
+                                                FontAwesomeIcons.plus),
+                                          ),
+                                        ),
                                       ),
-                                      floatingActionButtonLocation:
-                                          FloatingActionButtonLocation
-                                              .centerFloat,
-                                      floatingActionButton:
-                                          FloatingActionButton(
-                                        onPressed: () {
-                                          Navigator.pushNamed(context,
-                                              PageConst.addTransactionPage,
-                                              arguments: AddTransactionPage(
-                                                isIncome: _isIncome,
-                                                account: _account,
-                                                selectedDate: _selectedDate,
-                                                isTransactionsPage: true,
-                                              ));
-                                        },
-                                        child:
-                                            const Icon(FontAwesomeIcons.plus),
-                                      ),
-                                    ),
-                                  ),
+                                    );
+                                  },
                                 );
-                              },
-                            );
-                          } else {
-                            return const Scaffold();
-                          }
-                        },
-                      );
-                    } else {
-                      return const Scaffold(
-                        body: Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    }
+                              } else {
+                                return const Scaffold();
+                              }
+                            },
+                          );
+                        } else {
+                          return const Scaffold(
+                            body: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        }
+                      },
+                    );
                   },
                 );
               },

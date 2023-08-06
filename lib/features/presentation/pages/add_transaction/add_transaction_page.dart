@@ -5,11 +5,12 @@ import 'package:coin_saver/features/domain/entities/category/category_entity.dar
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:coin_saver/features/domain/entities/date/date_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
-import 'package:coin_saver/features/domain/usecases/account/transaction/delete_transaction_usecase.dart';
+import 'package:coin_saver/features/domain/usecases/transaction/delete_transaction_usecase.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_category/selected_category_cubit.dart';
+import 'package:coin_saver/features/presentation/bloc/transaction/transaction_bloc.dart';
 import 'package:coin_saver/features/presentation/pages/add_category/add_category_page.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/widget/calculator_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
@@ -31,7 +32,6 @@ import '../../../../injection_container.dart';
 import '../../../domain/usecases/exchange_rates/convert_currency_usecase.dart';
 import '../../bloc/cubit/selected_date/selected_date_cubit.dart';
 import '../../bloc/home_time_period/home_time_period_bloc.dart';
-import '../../bloc/main_transaction/main_transaction_bloc.dart';
 import '../../widgets/my_button_widget.dart';
 
 class AddTransactionPage extends StatefulWidget {
@@ -103,6 +103,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
   // Blocs
   late SelectedCategoryCubit selectedCategoryCubit;
   late AccountBloc accountBloc;
+  late TransactionBloc transactionBloc;
   late HomeTimePeriodBloc homeTimePeriodBloc;
   late PeriodCubit periodCubit;
   late SelectedDateCubit selectedDateCubit;
@@ -119,6 +120,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
     // Blocs
     selectedCategoryCubit = context.read<SelectedCategoryCubit>();
     accountBloc = context.read<AccountBloc>();
+    transactionBloc = context.read<TransactionBloc>();
     homeTimePeriodBloc = context.read<HomeTimePeriodBloc>();
     periodCubit = context.read<PeriodCubit>();
     selectedDateCubit = context.read<SelectedDateCubit>();
@@ -137,7 +139,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
     // Controls isIncome tab or not
     _tabController = TabController(
         length: 2, vsync: this, initialIndex: widget.isIncome ? 1 : 0);
-    if (widget.account.id == "total") {
+    if (widget.account.id == totalId) {
       _account = null;
     } else {
       _account = widget.account;
@@ -230,7 +232,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
                       (a, b) => b.dateTime.compareTo(a.dateTime),
                     );
                     _currencyTotal = _accounts
-                        .firstWhere((element) => element.id == "total")
+                        .firstWhere((element) => element.id == totalId)
                         .currency;
                     return BlocBuilder<SelectedDateCubit, DateRange>(
                       builder: (context, dateRange) {
@@ -258,7 +260,8 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                   child: Scaffold(
                                     appBar: _buildAppBar(),
                                     body: Padding(
-                                      padding: const EdgeInsets.only(top: 10,left: 10,right: 10),
+                                      padding: const EdgeInsets.only(
+                                          top: 10, left: 10, right: 10),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -430,7 +433,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
     return PullDownButton(
       itemBuilder: (context) {
         List<AccountEntity> accounts =
-            _accounts.where((element) => element.id != "total").toList();
+            _accounts.where((element) => element.id != totalId).toList();
         return List.generate(
           _accounts.length - 1,
           (index) => PullDownMenuItem.selectable(
@@ -639,13 +642,16 @@ class AddTransactionPageState extends State<AddTransactionPage>
             ? widget.transaction!.id
             : sl<Uuid>().v1(),
         date: _selectedDate,
+        account: _account!,
         amount: _amount,
         category: _category!,
         iconData: _category!.iconData,
-        accountId: _account!.name,
+        accountId: _account!.id,
         isIncome: _isIncome,
         color: _category!.color,
         description: _descriptionController.text,
+        isTotal: false,
+        isTransfer: false,
       );
 
       if (widget.transaction != null) {
@@ -656,7 +662,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
             await sl<DeleteTransactionUsecase>()
                 .call(widget.account, widget.transaction!);
             if (mounted) {
-              accountBloc.add(
+              transactionBloc.add(
                   AddTransaction(transaction: transaction, account: _account!));
             }
             // Add the transaction to the new account
@@ -666,13 +672,13 @@ class AddTransactionPageState extends State<AddTransactionPage>
         } else {
           // Update the transaction within the same account
 
-          accountBloc.add(
+          transactionBloc.add(
               UpdateTransaction(transaction: transaction, account: _account!));
         }
       } else {
         // Add a new transaction to the selected account
 
-        accountBloc
+        transactionBloc
             .add(AddTransaction(transaction: transaction, account: _account!));
       }
 

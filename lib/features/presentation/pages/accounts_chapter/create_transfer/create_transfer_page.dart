@@ -1,3 +1,4 @@
+import 'package:coin_saver/features/presentation/bloc/transaction/transaction_bloc.dart';
 import 'package:coin_saver/features/presentation/pages/accounts_chapter/transfer_detail/transfer_detail_page.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/constants/constants.dart';
@@ -251,7 +252,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
       itemBuilder: (context) {
         return _accounts
             .where((element) =>
-                element.id != "total" &&
+                element.id != totalId &&
                 element.id != _accountTo?.id &&
                 element.id != _accountFrom?.id)
             .map(
@@ -294,7 +295,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
       itemBuilder: (context) {
         return _accounts
             .where((element) =>
-                element.id != "total" &&
+                element.id != totalId &&
                 element.id != _accountTo?.id &&
                 element.id != _accountFrom?.id)
             .map(
@@ -378,7 +379,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
             Text(
               _accountFrom?.currency.code ??
                   _accounts
-                      .firstWhere((element) => element.id == "total")
+                      .firstWhere((element) => element.id == totalId)
                       .currency
                       .code,
               style: Theme.of(context)
@@ -455,6 +456,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
       final id = _isUpdate ? _transfer!.id : sl<Uuid>().v1();
       final TransactionEntity transaction = TransactionEntity(
         id: id,
+        account: _accountFrom!,
         date: _selectedDate,
         amount: 0,
         category: CategoryEntity(
@@ -477,7 +479,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
         description: _commentController.text,
       );
       if (_isUpdate) {
-        context.read<AccountBloc>().add(
+        context.read<TransactionBloc>().add(
               UpdateTransfer(
                 accountFrom: _accountFrom!,
                 accountTo: _accountTo!,
@@ -494,7 +496,7 @@ class _CreateTransferPageState extends State<CreateTransferPage> {
             ),
             (route) => route.settings.name == PageConst.transferHistoryPage);
       } else {
-        context.read<AccountBloc>().add(
+        context.read<TransactionBloc>().add(
               AddTransfer(
                   accountFrom: _accountFrom!,
                   accountTo: _accountTo!,

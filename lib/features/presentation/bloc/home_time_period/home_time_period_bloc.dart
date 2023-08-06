@@ -1,10 +1,10 @@
-
 import 'package:bloc/bloc.dart';
+import 'package:coin_saver/features/domain/usecases/account/get_primary_account_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/time_period/get_transactions_for_today_usecase.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../../domain/entities/transaction/transaction_entity.dart';
-import '../../../domain/usecases/account/transaction/get_transactions_usecase.dart';
+import '../../../domain/usecases/transaction/get_transactions_usecase.dart';
 import '../../../domain/usecases/time_period/fetch_transactions_for_day_usecase.dart';
 import '../../../domain/usecases/time_period/fetch_transactions_for_month_usecase.dart';
 import '../../../domain/usecases/time_period/fetch_transactions_for_period_usecase.dart';
@@ -23,6 +23,7 @@ class HomeTimePeriodBloc
   final FetchTransactionsForYearUsecase fetchTransactionsForYearUsecase;
   final FetchTransactionsForPeriodUsecase fetchTransactionsForPeriodUsecase;
   final GetTransactionsUsecase getTransactionsUsecase;
+  final GetPrimaryAccountUsecase getPrimaryAccountUsecase;
 
   HomeTimePeriodBloc({
     required this.fetchTransactionsForDayUsecase,
@@ -32,6 +33,7 @@ class HomeTimePeriodBloc
     required this.fetchTransactionsForYearUsecase,
     required this.fetchTransactionsForPeriodUsecase,
     required this.getTransactionsUsecase,
+    required this.getPrimaryAccountUsecase,
   }) : super(HomeTimePeriodLoading()) {
     on<SetDayPeriod>(_onSetDayPeriod);
     on<GetTodayPeriod>(_onGetTodayPeriod);
@@ -40,13 +42,12 @@ class HomeTimePeriodBloc
     on<SetYearPeriod>(_onSetYearPeriod);
     on<SetPeriod>(_onSetPeriod);
   }
- 
-
 
   void _onSetDayPeriod(
       SetDayPeriod event, Emitter<HomeTimePeriodState> emit) async {
     final selectedDate = event.selectedDate;
     final transactions = await getTransactionsUsecase.call();
+    
     final totalTransactions = fetchTransactionsForDayUsecase.call(
       selectedDate,
       transactions,
@@ -55,7 +56,8 @@ class HomeTimePeriodBloc
 
     for (var transaction in totalTransactions) {
       final existingTransaction = summedTransactions.firstWhere(
-          (t) => t.category.id == transaction.category.id,
+          (t) =>
+              t.category.id == transaction.category.id ,
           orElse: () => transaction.copyWith(id: ""));
       if (existingTransaction.id != "") {
         double amount = existingTransaction.amount;
@@ -94,6 +96,7 @@ class HomeTimePeriodBloc
   ) async {
     final selectedDate = event.selectedDate;
     final transactions = await getTransactionsUsecase.call();
+    
     final totalTransactions = fetchTransactionsForWeekUsecase.call(
       selectedDate,
       transactions,
@@ -102,7 +105,8 @@ class HomeTimePeriodBloc
 
     for (var transaction in totalTransactions) {
       final existingTransaction = summedTransactions.firstWhere(
-          (t) => t.category.id == transaction.category.id,
+          (t) =>
+              t.category.id == transaction.category.id ,
           orElse: () => transaction.copyWith(id: ""));
       if (existingTransaction.id != "") {
         double amount = existingTransaction.amount;
@@ -128,6 +132,7 @@ class HomeTimePeriodBloc
   void _onSetMonthPeriod(
       SetMonthPeriod event, Emitter<HomeTimePeriodState> emit) async {
     final selectedDate = event.selectedDate;
+    
     final transactions = await getTransactionsUsecase.call();
     final totalTransactions = fetchTransactionsForMonthUsecase.call(
       selectedDate,
@@ -137,7 +142,8 @@ class HomeTimePeriodBloc
 
     for (var transaction in totalTransactions) {
       final existingTransaction = summedTransactions.firstWhere(
-          (t) => t.category.id == transaction.category.id,
+          (t) =>
+              t.category.id == transaction.category.id ,
           orElse: () => transaction.copyWith(id: ""));
       if (existingTransaction.id != "") {
         double amount = existingTransaction.amount;
@@ -163,6 +169,7 @@ class HomeTimePeriodBloc
   void _onSetYearPeriod(
       SetYearPeriod event, Emitter<HomeTimePeriodState> emit) async {
     final selectedDate = event.selectedDate;
+    
     final transactions = await getTransactionsUsecase.call();
     final totalTransactions = fetchTransactionsForYearUsecase.call(
       selectedDate,
@@ -171,8 +178,10 @@ class HomeTimePeriodBloc
     List<TransactionEntity> summedTransactions = [];
 
     for (var transaction in totalTransactions) {
-      final TransactionEntity existingTransaction = summedTransactions
-          .firstWhere((t) => t.category.id == transaction.category.id,
+      final TransactionEntity existingTransaction =
+          summedTransactions.firstWhere(
+              (t) =>
+                  t.category.id == transaction.category.id ,
               orElse: () => transaction.copyWith(id: ""));
       if (existingTransaction.id != "") {
         double amount = existingTransaction.amount;
@@ -197,6 +206,7 @@ class HomeTimePeriodBloc
 
   void _onSetPeriod(SetPeriod event, Emitter<HomeTimePeriodState> emit) async {
     final selectedStart = event.selectedStart;
+    
     final selectedEnd = event.selectedEnd;
     final transactions = await getTransactionsUsecase.call();
     final totalTransactions = fetchTransactionsForPeriodUsecase.call(
@@ -208,7 +218,8 @@ class HomeTimePeriodBloc
 
     for (var transaction in totalTransactions) {
       final existingTransaction = summedTransactions.firstWhere(
-          (t) => t.category.id == transaction.category.id,
+          (t) =>
+              t.category.id == transaction.category.id ,
           orElse: () => transaction.copyWith(id: ""));
       if (existingTransaction.id != "") {
         double amount = existingTransaction.amount;
@@ -230,6 +241,4 @@ class HomeTimePeriodBloc
       ),
     );
   }
-
-
 }

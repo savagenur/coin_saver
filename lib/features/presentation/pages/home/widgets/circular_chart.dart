@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:coin_saver/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -84,6 +85,7 @@ class _HomeSfCircularChartState extends State<HomeSfCircularChart> {
               ? [
                   TransactionEntity(
                       id: "id",
+                      account: accountError,
                       date: DateTime(2023),
                       amount: 1,
                       category: CategoryEntity(

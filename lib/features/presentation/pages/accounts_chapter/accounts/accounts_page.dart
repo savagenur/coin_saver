@@ -24,8 +24,8 @@ class AccountsPage extends StatelessWidget {
 
     return WillPopScope(
       onWillPop: () async {
-       
-        Navigator.popUntil(context, (route) => route.settings.name==PageConst.homePage);
+        Navigator.popUntil(
+            context, (route) => route.settings.name == PageConst.homePage);
         return true;
       },
       child: Scaffold(
@@ -49,11 +49,11 @@ class AccountsPage extends StatelessWidget {
                     builder: (context, accountState) {
                       if (accountState is AccountLoaded) {
                         final totalAccount = accountState.accounts.firstWhere(
-                          (element) => element.id == "total",
+                          (element) => element.id == totalId,
                           orElse: () => accountError,
                         );
                         final accounts = accountState.accounts
-                            .where((element) => element.id != "total")
+                            .where((element) => element.id != totalId)
                             .toList();
                         return Column(
                           children: [
@@ -103,58 +103,60 @@ class AccountsPage extends StatelessWidget {
                                 child: SingleChildScrollView(
                               child: Column(
                                 children: [
-                            sizeVer(10),
+                                  sizeVer(10),
                                   ...accounts
-                                    .map(
-                                      (account) => Padding(
-                                        padding: const EdgeInsets.only(
-                                            right: 10, left: 10, bottom: 10),
-                                        child: Card(
-                                          elevation: 3,
-                                          shape: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            borderSide: BorderSide.none,
-                                          ),
-                                          child: ListTile(
-                                            onTap: () {
-                                              Navigator.pushNamed(context,
-                                                  PageConst.cRUDAccountPage,
-                                                  arguments: CRUDAccountPage(
-                                                    mainCurrency: _mainCurrency,
-                                                    isUpdatePage: true,
-                                                    account: account,
-                                                  ));
-                                            },
+                                      .map(
+                                        (account) => Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 10, left: 10, bottom: 10),
+                                          child: Card(
+                                            elevation: 3,
                                             shape: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(10),
                                               borderSide: BorderSide.none,
                                             ),
-                                            leading: CircleAvatar(
-                                              backgroundColor: account.color,
-                                              child: Icon(
-                                                account.iconData,
-                                                color: Colors.white,
+                                            child: ListTile(
+                                              onTap: () {
+                                                Navigator.pushNamed(context,
+                                                    PageConst.cRUDAccountPage,
+                                                    arguments: CRUDAccountPage(
+                                                      mainCurrency:
+                                                          _mainCurrency,
+                                                      isUpdatePage: true,
+                                                      account: account,
+                                                    ));
+                                              },
+                                              shape: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                borderSide: BorderSide.none,
                                               ),
-                                            ),
-                                            title: Text(account.name),
-                                            trailing: Text(
-                                              NumberFormat.compactCurrency(
-                                                symbol: account.currency.symbol,
-                                                decimalDigits: 2,
-                                              ).format(account.balance),
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium,
+                                              leading: CircleAvatar(
+                                                backgroundColor: account.color,
+                                                child: Icon(
+                                                  account.iconData,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                              title: Text(account.name),
+                                              trailing: Text(
+                                                NumberFormat.compactCurrency(
+                                                  symbol:
+                                                      account.currency.symbol,
+                                                  decimalDigits: 2,
+                                                ).format(account.balance),
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    )
-                                    .toList(),
-                            sizeVer(100)
-                                    ],
+                                      )
+                                      .toList(),
+                                  sizeVer(100)
+                                ],
                               ),
                             )),
                           ],

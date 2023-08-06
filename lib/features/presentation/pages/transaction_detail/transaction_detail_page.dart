@@ -3,6 +3,7 @@ import 'package:coin_saver/features/domain/entities/account/account_entity.dart'
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_date/selected_date_cubit.dart';
+import 'package:coin_saver/features/presentation/bloc/transaction/transaction_bloc.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,7 +11,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
-import '../../bloc/main_transaction/main_transaction_bloc.dart';
 
 class TransactionDetailPage extends StatelessWidget {
   final TransactionEntity transaction;
@@ -183,7 +183,7 @@ class TransactionDetailPage extends StatelessWidget {
                         
 
                         context
-                            .read<AccountBloc>()
+                            .read<TransactionBloc>()
                             .add(DeleteTransaction(transaction: transaction, account: account));
                         Navigator.pop(context);
                         Navigator.pop(context);

@@ -1,3 +1,4 @@
+import 'package:coin_saver/features/presentation/bloc/transaction/transaction_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/presentation/widgets/my_button_widget.dart';
@@ -41,98 +42,110 @@ class _PeriodCalendarWidgetState extends State<PeriodCalendarWidget> {
   @override
   AlertDialog build(BuildContext context) {
     return AlertDialog(
-      content: BlocBuilder<AccountBloc, AccountState>(
-        builder: (context, accountState) {
-          if (accountState is AccountLoaded) {
-            _transactionHistory = accountState.accounts
-                .firstWhere((element) => element.isPrimary)
-                .transactionHistory..sort((a, b) =>a.date.compareTo(b.date) ,);
-            _firstDate = _transactionHistory!.isEmpty
-                ? DateTime.now()
-                : _transactionHistory!.first.date;
+      content: BlocBuilder<TransactionBloc, TransactionState>(
+        builder: (context, transactionState) {
+          return BlocBuilder<AccountBloc, AccountState>(
+            builder: (context, accountState) {
+              if (accountState is AccountLoaded) {
+                final primaryAccount = accountState.accounts
+                    .firstWhere((element) => element.isPrimary);
+                _transactionHistory = 
+                    transactionState.transactions.where((element) => element.accountId==primaryAccount.id).toList()
+                  ..sort(
+                    (a, b) => a.date.compareTo(b.date),
+                  );
+                _firstDate = _transactionHistory!.isEmpty
+                    ? DateTime.now()
+                    : _transactionHistory!.first.date;
 
-            return SizedBox(
-              width: MediaQuery.of(context).size.width *
-                  .9, // Set the desired width
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
+                return SizedBox(
+                  width: MediaQuery.of(context).size.width *
+                      .9, // Set the desired width
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Checkbox(
-                        value: _isChecked,
-                        onChanged: (value) {
-                          setState(() {
-                            _isChecked = value!;
-                            if (value == true) {
-                              _selectedStart = _firstDate ?? DateTime.now();
-                            } else {
-                              _selectedStart = DateTime.now();
-                            }
-                            _selectedEnd = DateTime.now();
-                            _selectedStartConverted = DateTime(
-                                _selectedStart.year,
-                                _selectedStart.month,
-                                _selectedStart.day);
-                            _selectedEndConverted = DateTime(_selectedEnd!.year,
-                                _selectedEnd!.month, _selectedEnd!.day);
-                          });
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: _isChecked,
+                            onChanged: (value) {
+                              setState(() {
+                                _isChecked = value!;
+                                if (value == true) {
+                                  _selectedStart = _firstDate ?? DateTime.now();
+                                } else {
+                                  _selectedStart = DateTime.now();
+                                }
+                                _selectedEnd = DateTime.now();
+                                _selectedStartConverted = DateTime(
+                                    _selectedStart.year,
+                                    _selectedStart.month,
+                                    _selectedStart.day);
+                                _selectedEndConverted = DateTime(
+                                    _selectedEnd!.year,
+                                    _selectedEnd!.month,
+                                    _selectedEnd!.day);
+                              });
+                            },
+                          ),
+                          Text(AppLocalizations.of(context)!.allTime),
+                        ],
+                      ),
+                      BlocBuilder<SelectedDateCubit, DateRange>(
+                        builder: (context, dateRange) {
+                          return TableCalendar(
+                            startingDayOfWeek: StartingDayOfWeek.monday,
+                            calendarFormat: CalendarFormat.month,
+                            headerVisible: true,
+                            headerStyle: const HeaderStyle(
+                              formatButtonVisible: false,
+                            ),
+                            focusedDay: _selectedStart,
+                            firstDay: DateTime(2000),
+                            lastDay: DateTime(DateTime.now().year,
+                                DateTime.now().month, DateTime.now().day),
+                            currentDay: _selectedStart,
+                            onDaySelected: (selectedDay, focusedDay) {
+                              if (_selectedEnd != null) {
+                                setState(() {
+                                  _selectedStart = selectedDay;
+                                  _selectedEnd = null;
+                                });
+                              } else if (_selectedEnd == null) {
+                                if (selectedDay.isAfter(_selectedStart)) {
+                                  setState(() {
+                                    _selectedEnd = selectedDay;
+                                  });
+                                } else {
+                                  setState(() {
+                                    _selectedEnd = _selectedStart;
+                                    _selectedStart = selectedDay;
+                                  });
+                                }
+                                _selectedStartConverted = DateTime(
+                                    _selectedStart.year,
+                                    _selectedStart.month,
+                                    _selectedStart.day);
+
+                                _selectedEndConverted = DateTime(
+                                    _selectedEnd!.year,
+                                    _selectedEnd!.month,
+                                    _selectedEnd!.day);
+                              }
+                            },
+                            rangeStartDay: _selectedStart,
+                            rangeEndDay: _selectedEnd,
+                            rangeSelectionMode: RangeSelectionMode.enforced,
+                          );
                         },
                       ),
-                       Text(AppLocalizations.of(context)!.allTime),
                     ],
                   ),
-                  BlocBuilder<SelectedDateCubit, DateRange>(
-                    builder: (context, dateRange) {
-                      return TableCalendar(
-                        startingDayOfWeek: StartingDayOfWeek.monday,
-                        calendarFormat: CalendarFormat.month,
-                        headerVisible: true,
-                        headerStyle: const HeaderStyle(
-                          formatButtonVisible: false,
-                        ),
-                        focusedDay: _selectedStart,
-                        firstDay: DateTime(2000),
-                        lastDay: DateTime(DateTime.now().year,
-                            DateTime.now().month, DateTime.now().day),
-                        currentDay: _selectedStart,
-                        onDaySelected: (selectedDay, focusedDay) {
-                          if (_selectedEnd != null) {
-                            setState(() {
-                              _selectedStart = selectedDay;
-                              _selectedEnd = null;
-                            });
-                          } else if (_selectedEnd == null) {
-                            if (selectedDay.isAfter(_selectedStart)) {
-                              setState(() {
-                                _selectedEnd = selectedDay;
-                              });
-                            } else {
-                              setState(() {
-                                _selectedEnd = _selectedStart;
-                                _selectedStart = selectedDay;
-                              });
-                            }
-                            _selectedStartConverted = DateTime(
-                                _selectedStart.year,
-                                _selectedStart.month,
-                                _selectedStart.day);
-
-                            _selectedEndConverted = DateTime(_selectedEnd!.year,
-                                _selectedEnd!.month, _selectedEnd!.day);
-                          }
-                        },
-                        rangeStartDay: _selectedStart,
-                        rangeEndDay: _selectedEnd,
-                        rangeSelectionMode: RangeSelectionMode.enforced,
-                      );
-                    },
-                  ),
-                ],
-              ),
-            );
-          }
-          return const Scaffold();
+                );
+              }
+              return const Scaffold();
+            },
+          );
         },
       ),
       actions: [

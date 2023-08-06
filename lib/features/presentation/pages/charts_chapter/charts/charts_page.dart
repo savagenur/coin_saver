@@ -13,6 +13,7 @@ import 'package:pull_down_button/pull_down_button.dart';
 import '../../../../../constants/time_group_type_enum.dart';
 import '../../../../data/models/time_group/time_group_model.dart';
 import '../../../bloc/account/account_bloc.dart';
+import '../../../bloc/transaction/transaction_bloc.dart';
 import '../../../widgets/my_drawer.dart';
 
 class ChartsPage extends StatefulWidget {
@@ -57,106 +58,116 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
       Navigator.popUntil(
           context, (route) => route.settings.name == PageConst.homePage);
       return true;
-    }, child: BlocBuilder<AccountBloc, AccountState>(
-      builder: (context, accountState) {
-        if (accountState is AccountLoaded) {
-          _accounts = accountState.accounts;
-          _account = _accounts.firstWhere((element) => element.isPrimary);
-          _currencyFormat =
-              NumberFormat.compactCurrency(symbol: _account!.currency.symbol);
-          return BlocBuilder<HomeTimePeriodBloc, HomeTimePeriodState>(
-            builder: (context, homeTimePeriodState) {
-              if (homeTimePeriodState is HomeTimePeriodLoaded) {
-                _transactions = _account!.transactionHistory
-                    .where((element) => element.isTransfer != true)
-                    .toList();
-                _timeGroupModels = _transactions.isEmpty
-                    ? []
-                    : groupTransactionsByTime(_transactions, _timeGroupType);
-                return Scaffold(
-                  key: _scaffoldKey,
-                  appBar: _buildAppBar(),
-                  drawer: const MyDrawer(),
-                  body: Column(
-                    children: [
-                      TabBar(
-                        controller: _tabController,
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        labelPadding: const EdgeInsets.symmetric(horizontal: 5),
-                        indicatorColor: Theme.of(context).primaryColor,
-                        indicatorSize: TabBarIndicatorSize.label,
-                        labelStyle: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).primaryColor),
-                        unselectedLabelColor: Theme.of(context).primaryColor,
-                        onTap: (value) {
-                          setState(() {
-                            _timeGroupType = chartTimeGroupTypeValues[value]!;
-                            _timeGroupModels = groupTransactionsByTime(
-                                _transactions, _timeGroupType);
-                            setDateTimeIntervalType();
-                          });
-                        },
-                        tabs: chartPeriodTitles
-                            .map(
-                              (e) => Tab(
-                                child: Text(
-                                  e,
-                                  style: TextStyle(
-                                      color: Theme.of(context).primaryColor),
-                                ),
-                              ),
-                            )
-                            .toList(),
-                      ),
-                      _transactions.isEmpty
-                          ? Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Text(
-                                    AppLocalizations.of(context)!
-                                        .thereIsNoTransactionYet,
-                                    textAlign: TextAlign.center,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .displaySmall!
-                                        .copyWith(fontStyle: FontStyle.italic),
-                                  ),
-                                  const Icon(
-                                    FontAwesomeIcons.folderOpen,
-                                    size: 100,
-                                    color: secondaryColor,
-                                  ),
-                                ],
-                              ),
-                            )
-                          : Expanded(
-                              child: Column(
-                                children: [
-                                  Expanded(
-                                    child: SingleChildScrollView(
-                                      clipBehavior: Clip.none,
-                                      scrollDirection: Axis.horizontal,
-                                      reverse: true,
-                                      child: _buildBarChart(context),
+    }, child: BlocBuilder<TransactionBloc, TransactionState>(
+        builder: (context, transactionState) {
+        return BlocBuilder<AccountBloc, AccountState>(
+          builder: (context, accountState) {
+            if (accountState is AccountLoaded) {
+              _accounts = accountState.accounts;
+              _account = _accounts.firstWhere((element) => element.isPrimary);
+              _currencyFormat = NumberFormat.compactCurrency(
+                  symbol: _account!.currency.symbol);
+              return BlocBuilder<HomeTimePeriodBloc, HomeTimePeriodState>(
+                builder: (context, homeTimePeriodState) {
+                  if (homeTimePeriodState is HomeTimePeriodLoaded) {
+                    _transactions = transactionState.transactions.where((element) => element.accountId==_account!.id)
+                        .where((element) => element.isTransfer != true)
+                        .toList();
+                    _timeGroupModels = _transactions.isEmpty
+                        ? []
+                        : groupTransactionsByTime(
+                            _transactions, _timeGroupType);
+                    return Scaffold(
+                      key: _scaffoldKey,
+                      appBar: _buildAppBar(),
+                      drawer: const MyDrawer(),
+                      body: Column(
+                        children: [
+                          TabBar(
+                            controller: _tabController,
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            labelPadding:
+                                const EdgeInsets.symmetric(horizontal: 5),
+                            indicatorColor: Theme.of(context).primaryColor,
+                            indicatorSize: TabBarIndicatorSize.label,
+                            labelStyle: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).primaryColor),
+                            unselectedLabelColor:
+                                Theme.of(context).primaryColor,
+                            onTap: (value) {
+                              setState(() {
+                                _timeGroupType =
+                                    chartTimeGroupTypeValues[value]!;
+                                _timeGroupModels = groupTransactionsByTime(
+                                    _transactions, _timeGroupType);
+                                setDateTimeIntervalType();
+                              });
+                            },
+                            tabs: chartPeriodTitles
+                                .map(
+                                  (e) => Tab(
+                                    child: Text(
+                                      e,
+                                      style: TextStyle(
+                                          color:
+                                              Theme.of(context).primaryColor),
                                     ),
                                   ),
-                                  _buildLegends()
-                                ],
-                              ),
-                            ),
-                      sizeVer(50)
-                    ],
-                  ),
-                );
-              }
-              return const Scaffold();
-            },
-          );
-        }
-        return const Scaffold();
+                                )
+                                .toList(),
+                          ),
+                          _transactions.isEmpty
+                              ? Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      Text(
+                                        AppLocalizations.of(context)!
+                                            .thereIsNoTransactionYet,
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall!
+                                            .copyWith(
+                                                fontStyle: FontStyle.italic),
+                                      ),
+                                      const Icon(
+                                        FontAwesomeIcons.folderOpen,
+                                        size: 100,
+                                        color: secondaryColor,
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : Expanded(
+                                  child: Column(
+                                    children: [
+                                      Expanded(
+                                        child: SingleChildScrollView(
+                                          clipBehavior: Clip.none,
+                                          scrollDirection: Axis.horizontal,
+                                          reverse: true,
+                                          child: _buildBarChart(context),
+                                        ),
+                                      ),
+                                      _buildLegends()
+                                    ],
+                                  ),
+                                ),
+                          sizeVer(50)
+                        ],
+                      ),
+                    );
+                  }
+                  return const Scaffold();
+                },
+              );
+            }
+            return const Scaffold();
+          },
+        );
       },
     ));
   }

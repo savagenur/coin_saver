@@ -27,6 +27,7 @@ class AccountModelAdapter extends TypeAdapter<AccountModel> {
       isPrimary: fields[5] as bool,
       isActive: fields[6] as bool,
       accountNumber: fields[7] as String?,
+      isTotal: fields[23] as bool?,
       institution: fields[8] as String?,
       ownershipType: fields[9] as OwnershipType,
       openingDate: fields[10] as DateTime,
@@ -37,7 +38,6 @@ class AccountModelAdapter extends TypeAdapter<AccountModel> {
       minimumBalance: fields[15] as double?,
       linkedAccounts: (fields[16] as List?)?.cast<String>(),
       notes: fields[17] as String?,
-      transactionHistory: (fields[18] as List).cast<TransactionModel>(),
       monthlyStatement: fields[19] as String?,
       paymentType: fields[20] as PaymentType?,
     );
@@ -83,8 +83,6 @@ class AccountModelAdapter extends TypeAdapter<AccountModel> {
       ..write(obj.linkedAccounts)
       ..writeByte(17)
       ..write(obj.notes)
-      ..writeByte(18)
-      ..write(obj.transactionHistory)
       ..writeByte(19)
       ..write(obj.monthlyStatement)
       ..writeByte(20)
@@ -92,7 +90,9 @@ class AccountModelAdapter extends TypeAdapter<AccountModel> {
       ..writeByte(21)
       ..write(obj.iconData)
       ..writeByte(22)
-      ..write(obj.color);
+      ..write(obj.color)
+      ..writeByte(23)
+      ..write(obj.isTotal);
   }
 
   @override

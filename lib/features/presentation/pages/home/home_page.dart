@@ -77,7 +77,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-
     return BlocBuilder<SelectedDateCubit, DateRange>(
       builder: (context, dateRange) {
         return BlocBuilder<AccountBloc, AccountState>(
@@ -151,7 +150,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                             CircularChartWidget(
                                                 transactions: transactions,
                                                 selectedDate: _selectedDate,
-                                                
                                                 account: _account,
                                                 totalExpense: _totalExpense),
                                           ],
@@ -186,7 +184,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                   if (res == true) {
                                     updatePage();
                                   }
-                                  
                                 },
                                 child: const Icon(FontAwesomeIcons.plus),
                               ),

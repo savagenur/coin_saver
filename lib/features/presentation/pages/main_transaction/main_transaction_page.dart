@@ -183,8 +183,12 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                                     child: Column(
                                       children: [
                                         Expanded(
-                                            child: ListDateTransactionsWidget(transactions: _transactions, accounts: 
-                                            accountState. accounts, account: _account!, selectedFilter: _selectedFilter)),
+                                            child: ListDateTransactionsWidget(
+                                                transactions: _transactions,
+                                                accounts: accountState.accounts,
+                                                account: _account!,
+                                                selectedFilter:
+                                                    _selectedFilter)),
                                       ],
                                     ),
                                   )
@@ -222,8 +226,6 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
       },
     );
   }
-
-  
 
   PullDownButton _buildPullDownButton(
       AccountEntity account, List<AccountEntity> accounts) {

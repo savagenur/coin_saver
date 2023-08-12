@@ -131,10 +131,11 @@ class TransactionsPageState extends State<TransactionsPage>
                                         .where((transaction) =>
                                             transaction.isIncome == _isIncome &&
                                             transaction.isTransfer == null)
-                                        .toList()..sort(
-                                (a, b) => _selectedFilter == Filter.byDate
-                                    ? b.date.compareTo(a.date)
-                                    : b.amount.compareTo(a.amount)))
+                                        .toList()
+                                      ..sort((a, b) =>
+                                          _selectedFilter == Filter.byDate
+                                              ? b.date.compareTo(a.date)
+                                              : b.amount.compareTo(a.amount)))
                                     : _account.transactionHistory
                                         .where((transaction) =>
                                             transaction.isIncome == _isIncome &&
@@ -143,10 +144,11 @@ class TransactionsPageState extends State<TransactionsPage>
                                                 .toLowerCase()
                                                 .contains(
                                                     _searchQuery.toLowerCase()))
-                                        .toList()..sort(
-                                (a, b) => _selectedFilter == Filter.byDate
-                                    ? b.date.compareTo(a.date)
-                                    : b.amount.compareTo(a.amount));
+                                        .toList()
+                                  ..sort((a, b) =>
+                                      _selectedFilter == Filter.byDate
+                                          ? b.date.compareTo(a.date)
+                                          : b.amount.compareTo(a.amount));
                                 _totalExpense = _transactions.fold(
                                     0,
                                     (previousValue, element) =>
@@ -158,7 +160,10 @@ class TransactionsPageState extends State<TransactionsPage>
                                   totalTransactions: allTransactions,
                                   selectedEnd: _selectedDateEnd,
                                 );
-                                _transactions = BlocProvider.of<TransactionPeriodCubit>(context).state;
+                                _transactions =
+                                    BlocProvider.of<TransactionPeriodCubit>(
+                                            context)
+                                        .state;
                                 _filteredTransactionsMap =
                                     _filterTransactions(_transactions);
 
@@ -218,7 +223,8 @@ class TransactionsPageState extends State<TransactionsPage>
                                                       child:
                                                           ListDateTransactionsWidget(
                                                         account: _account,
-                                                        selectedFilter: _selectedFilter,
+                                                        selectedFilter:
+                                                            _selectedFilter,
                                                         accounts: accountState
                                                             .accounts,
                                                         transactions:

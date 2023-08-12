@@ -1,10 +1,6 @@
 import 'dart:io';
 
-import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:coin_saver/constants/constants.dart';
-import 'package:coin_saver/constants/main_categories.dart';
 import 'package:coin_saver/constants/theme.dart';
-import 'package:coin_saver/features/data/models/currency/currency_model.dart';
 import 'package:coin_saver/features/domain/usecases/hive/init_hive_usecase.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
 import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
@@ -25,21 +21,17 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'features/data/models/category/category_model.dart';
 import 'features/presentation/bloc/cubit/main_colors/main_colors_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_category/selected_category_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_color/selected_color_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_date/selected_date_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_icon/selected_icon_cubit.dart';
 import 'features/presentation/bloc/home_time_period/home_time_period_bloc.dart';
-import 'features/presentation/bloc/main_transaction/main_transaction_bloc.dart';
 import 'features/presentation/pages/home/home_page.dart';
 import 'injection_container.dart';
 import 'l10n/l10n.dart';
-import 'observer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

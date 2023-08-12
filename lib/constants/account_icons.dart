@@ -5,7 +5,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 List<IconData> accountIcons = [
   FontAwesomeIcons.wallet,
-    FontAwesomeIcons.creditCard,
     FontAwesomeIcons.moneyBill,
     FontAwesomeIcons.piggyBank,
     FontAwesomeIcons.briefcase,
@@ -14,7 +13,6 @@ List<IconData> accountIcons = [
     FontAwesomeIcons.moneyCheck,
     FontAwesomeIcons.moneyBill1Wave,
     FontAwesomeIcons.receipt,
-    FontAwesomeIcons.scaleBalanced,
     FontAwesomeIcons.commentDollar,
     FontAwesomeIcons.circleDollarToSlot,
     FontAwesomeIcons.bitcoinSign,

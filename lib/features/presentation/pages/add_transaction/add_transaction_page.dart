@@ -258,7 +258,8 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                   child: Scaffold(
                                     appBar: _buildAppBar(),
                                     body: Padding(
-                                      padding: const EdgeInsets.only(top: 10,left: 10,right: 10),
+                                      padding: const EdgeInsets.only(
+                                          top: 10, left: 10, right: 10),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -701,8 +702,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
                   route.settings.name == PageConst.mainTransactionPage);
           // Navigator.pop(context);
         } else if (widget.isMainTransactionPage) {
-          Navigator.popUntil(context,
-              (route) => route.settings.name == PageConst.mainTransactionPage);
+          Navigator.pop(context, true);
         } else {
           // If it's a new transaction, navigate to the home page with the appropriate arguments
           Navigator.pop(context, true);

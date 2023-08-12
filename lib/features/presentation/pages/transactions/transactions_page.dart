@@ -90,8 +90,6 @@ class TransactionsPageState extends State<TransactionsPage>
     });
   }
 
-  
-
   @override
   void dispose() {
     _tabController.dispose();
@@ -129,11 +127,14 @@ class TransactionsPageState extends State<TransactionsPage>
                                 // Total amountMoney of MainTransactions
 
                                 var allTransactions = _searchQuery == ""
-                                    ? _account.transactionHistory
+                                    ? (_account.transactionHistory
                                         .where((transaction) =>
                                             transaction.isIncome == _isIncome &&
                                             transaction.isTransfer == null)
-                                        .toList()
+                                        .toList()..sort(
+                                (a, b) => _selectedFilter == Filter.byDate
+                                    ? b.date.compareTo(a.date)
+                                    : b.amount.compareTo(a.amount)))
                                     : _account.transactionHistory
                                         .where((transaction) =>
                                             transaction.isIncome == _isIncome &&
@@ -142,12 +143,14 @@ class TransactionsPageState extends State<TransactionsPage>
                                                 .toLowerCase()
                                                 .contains(
                                                     _searchQuery.toLowerCase()))
-                                        .toList();
-                                _totalExpense = _transactions
-                                    .fold(
-                                        0,
-                                        (previousValue, element) =>
-                                            previousValue + element.amount);
+                                        .toList()..sort(
+                                (a, b) => _selectedFilter == Filter.byDate
+                                    ? b.date.compareTo(a.date)
+                                    : b.amount.compareTo(a.amount));
+                                _totalExpense = _transactions.fold(
+                                    0,
+                                    (previousValue, element) =>
+                                        previousValue + element.amount);
                                 BlocProvider.of<TransactionPeriodCubit>(context)
                                     .setPeriod(
                                   period: selectedPeriod,
@@ -155,9 +158,9 @@ class TransactionsPageState extends State<TransactionsPage>
                                   totalTransactions: allTransactions,
                                   selectedEnd: _selectedDateEnd,
                                 );
-                                _transactions = transactions;
-                                _filteredTransactionsMap = _filterTransactions(
-                                    _transactions);
+                                _transactions = BlocProvider.of<TransactionPeriodCubit>(context).state;
+                                _filteredTransactionsMap =
+                                    _filterTransactions(_transactions);
 
                                 return WillPopScope(
                                   onWillPop: () async {
@@ -213,22 +216,13 @@ class TransactionsPageState extends State<TransactionsPage>
                                                     ),
                                                     Expanded(
                                                       child:
-                                                          SingleChildScrollView(
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(10),
-                                                          child:
-                                                              ListDateTransactionsWidget(
-                                                            filteredTransactionsMap:
-                                                                _filteredTransactionsMap,
-                                                            account: _account,
-                                                            accounts:
-                                                                accountState
-                                                                    .accounts,
-                                                            
-                                                          ),
-                                                        ),
+                                                          ListDateTransactionsWidget(
+                                                        account: _account,
+                                                        selectedFilter: _selectedFilter,
+                                                        accounts: accountState
+                                                            .accounts,
+                                                        transactions:
+                                                            _transactions,
                                                       ),
                                                     ),
                                                     sizeVer(10)

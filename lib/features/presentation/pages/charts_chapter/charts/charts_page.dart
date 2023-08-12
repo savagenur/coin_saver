@@ -2,6 +2,7 @@ import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 import 'package:coin_saver/features/presentation/bloc/home_time_period/home_time_period_bloc.dart';
+import 'package:coin_saver/features/presentation/widgets/shadowed_container_widget.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -132,21 +133,28 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
                                 ],
                               ),
                             )
-                          : Expanded(
-                              child: Column(
-                                children: [
-                                  Expanded(
-                                    child: SingleChildScrollView(
-                                      clipBehavior: Clip.none,
-                                      scrollDirection: Axis.horizontal,
-                                      reverse: true,
-                                      child: _buildBarChart(context),
-                                    ),
+                          : Flexible(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 10,right: 10,bottom: 30,top: 10),
+                                child: ShadowedContainerWidget(
+                                  
+                                  borderRadius: BorderRadius.circular(30),
+                                  child: Column(
+                                    children: [
+                                      Expanded(
+                                        child: SingleChildScrollView(
+                                          clipBehavior: Clip.none,
+                                          scrollDirection: Axis.horizontal,
+                                          reverse: true,
+                                          child: _buildBarChart(context),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  _buildLegends()
-                                ],
+                                ),
                               ),
                             ),
+                                    _buildLegends(),
                       sizeVer(50)
                     ],
                   ),
@@ -198,7 +206,6 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
     return Container(
       padding: const EdgeInsets.only(top: 50, bottom: 5),
       margin: const EdgeInsets.symmetric(vertical: 5),
-      color: Theme.of(context).highlightColor,
       width: (_timeGroupModels.length) ~/ 3 == 0 || _timeGroupModels.isEmpty
           ? MediaQuery.of(context).size.width
           : (_timeGroupModels.length * 120),

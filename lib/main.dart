@@ -59,7 +59,7 @@ void main() async {
   }
 
   // await sl<InitHiveAdaptersBoxesUsecase>().call();
-  await sl<InitHiveUsecase>().call();
+  await sl<InitHiveUsecase>().call(); 
   // await removeHive();
 
   runApp(const MyApp());

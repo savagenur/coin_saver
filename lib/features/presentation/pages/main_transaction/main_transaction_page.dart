@@ -1,3 +1,4 @@
+import 'package:coin_saver/features/presentation/pages/transactions/widgets/list_date_transactions_widget.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
@@ -10,6 +11,7 @@ import 'package:coin_saver/features/presentation/pages/transaction_detail/transa
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
@@ -33,7 +35,7 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
   double _totalAmount = 0;
   List<TransactionEntity> _transactions = [];
   Map<DateTime, List<TransactionEntity>> _filteredMap = {};
-  Filter selectedFilter = Filter.byDate;
+  Filter _selectedFilter = Filter.byDate;
 
   @override
   void initState() {
@@ -45,7 +47,8 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
       List<TransactionEntity> transactions) {
     Map<DateTime, List<TransactionEntity>> map = {};
     for (var transaction in transactions) {
-      DateTime transactionDate = DateTime(transaction.date.year,transaction.date.month,transaction.date.day);
+      DateTime transactionDate = DateTime(
+          transaction.date.year, transaction.date.month, transaction.date.day);
       if (map.containsKey(transactionDate)) {
         map[transactionDate]!.add(transaction);
       } else {
@@ -78,18 +81,16 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                                 (account) => account.isPrimary,
                                 orElse: () => accountError);
                             _mainTransactions = transactions
-                                .where((transaction) =>
-                                    _account!.id == "total"
-                                        ? transaction.category ==
-                                                _mainTransaction.category &&
-                                            transaction.isIncome ==
-                                                _mainTransaction.isIncome
-                                        : transaction.accountId ==
-                                                _account!.id &&
-                                            transaction.category ==
-                                                _mainTransaction.category &&
-                                            transaction.isIncome ==
-                                                _mainTransaction.isIncome)
+                                .where((transaction) => _account!.id == "total"
+                                    ? transaction.category ==
+                                            _mainTransaction.category &&
+                                        transaction.isIncome ==
+                                            _mainTransaction.isIncome
+                                    : transaction.accountId == _account!.id &&
+                                        transaction.category ==
+                                            _mainTransaction.category &&
+                                        transaction.isIncome ==
+                                            _mainTransaction.isIncome)
                                 .toList();
 
                             // Total amountMoney of MainTransactions
@@ -104,7 +105,7 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                                     widget.mainTransaction.category.id)
                                 .toList()
                               ..sort(
-                                (a, b) => selectedFilter == Filter.byDate
+                                (a, b) => _selectedFilter == Filter.byDate
                                     ? b.date.compareTo(a.date)
                                     : b.amount.compareTo(a.amount),
                               );
@@ -115,7 +116,9 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                               totalTransactions: allTransactions,
                               selectedEnd: selectedEnd,
                             );
-                            _transactions = transactions;
+                            _transactions =
+                                BlocProvider.of<TransactionPeriodCubit>(context)
+                                    .state;
                             _filteredMap = _filterTransactions(_transactions);
 
                             return Scaffold(
@@ -133,7 +136,7 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                                         PopupMenuButton(
                                             onSelected: (value) {
                                               setState(() {
-                                                selectedFilter = value;
+                                                _selectedFilter = value;
                                               });
                                             },
                                             itemBuilder: (context) {
@@ -141,22 +144,30 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                                                 PopupMenuItem(
                                                     value: Filter.byDate,
                                                     onTap: () {},
-                                                    child:
-                                                         Text(AppLocalizations.of(context)!.byDate)),
+                                                    child: Text(
+                                                        AppLocalizations.of(
+                                                                context)!
+                                                            .byDate)),
                                                 PopupMenuItem(
                                                     value: Filter.byAmount,
                                                     onTap: () {},
-                                                    child:  Text(
-                                                        AppLocalizations.of(context)!.byAmount)),
+                                                    child: Text(
+                                                        AppLocalizations.of(
+                                                                context)!
+                                                            .byAmount)),
                                               ];
                                             },
                                             child: Row(
                                               children: [
                                                 Text(
-                                                  selectedFilter ==
+                                                  _selectedFilter ==
                                                           Filter.byDate
-                                                      ? AppLocalizations.of(context)!.byDate
-                                                      : AppLocalizations.of(context)!.byAmount,
+                                                      ? AppLocalizations.of(
+                                                              context)!
+                                                          .byDate
+                                                      : AppLocalizations.of(
+                                                              context)!
+                                                          .byAmount,
                                                   style: const TextStyle(
                                                       decoration: TextDecoration
                                                           .underline),
@@ -169,12 +180,12 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                                     ),
                                   ),
                                   Expanded(
-                                    child: SingleChildScrollView(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(10),
-                                        child: _buildListTiles(
-                                            accountState, context),
-                                      ),
+                                    child: Column(
+                                      children: [
+                                        Expanded(
+                                            child: ListDateTransactionsWidget(transactions: _transactions, accounts: 
+                                            accountState. accounts, account: _account!, selectedFilter: _selectedFilter)),
+                                      ],
                                     ),
                                   )
                                 ],
@@ -212,72 +223,7 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
     );
   }
 
-  Column _buildListTiles(AccountLoaded accountState, BuildContext context) {
-    return Column(
-      children: [
-        ...List.generate(
-          _filteredMap.keys.length,
-          (keyIndex) {
-            DateTime dateTime = _filteredMap.keys.elementAt(keyIndex);
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  DateFormat.yMMMEd().format(dateTime),
-                  style: const TextStyle(
-                    color: secondaryColor,
-                  ),
-                ),
-                ...List.generate(_filteredMap.values.elementAt(keyIndex).length,
-                    (valueIndex) {
-                  var transaction = _filteredMap[
-                      _filteredMap.keys.elementAt(keyIndex)]![valueIndex];
-                  String accountName = accountState.accounts
-                      .firstWhere(
-                          (element) => element.id == transaction.accountId,
-                          orElse: () => accountError)
-                      .name;
-                  final account = accountState.accounts.firstWhere(
-                      (element) => element.id == transaction.accountId,
-                      orElse: () => accountError);
-                  final transactionDetail = account.transactionHistory
-                      .firstWhere((element) => transaction.id == element.id,orElse: () => transactionError,);
-                  return ListTile(
-                    onTap: () {
-                      Navigator.pushNamed(
-                          context, PageConst.transactionDetailPage,
-                          arguments: TransactionDetailPage(
-                            transaction: transactionDetail,
-                            account: account,
-                          ));
-                    },
-                    contentPadding: EdgeInsets.zero,
-                    leading: CircleAvatar(
-                      backgroundColor: _mainTransaction.color,
-                      child: Icon(
-                        _mainTransaction.iconData,
-                        color: Colors.white,
-                      ),
-                    ),
-                    title: Text(_mainTransaction.category.name),
-                    subtitle:
-                        _account!.id == "total" ? Text(accountName) : null,
-                    trailing: Text(
-                      NumberFormat.currency(symbol: _account!.currency.symbol)
-                          .format(transaction.amount),
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  );
-                }),
-                sizeVer(10)
-              ],
-            );
-          },
-        ),
-        sizeVer(20),
-      ],
-    );
-  }
+  
 
   PullDownButton _buildPullDownButton(
       AccountEntity account, List<AccountEntity> accounts) {

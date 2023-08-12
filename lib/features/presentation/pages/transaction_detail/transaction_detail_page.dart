@@ -186,7 +186,7 @@ class TransactionDetailPage extends StatelessWidget {
                             .read<AccountBloc>()
                             .add(DeleteTransaction(transaction: transaction, account: account));
                         Navigator.pop(context);
-                        Navigator.pop(context);
+                        Navigator.pop(context,true);
                       },
                       child: Text(
                         AppLocalizations.of(context)!.yes,

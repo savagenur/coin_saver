@@ -16,6 +16,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../constants/constants.dart';
 import '../../bloc/account/account_bloc.dart';
 import '../../widgets/my_button_widget.dart';
 
@@ -528,14 +529,14 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
         isErrorColor = true;
       });
     }
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState!.validate()&&_color != null&&_iconData != null) {
       _formKey.currentState!.save();
       final id = widget.category?.id ?? sl<Uuid>().v1();
       _category = CategoryEntity(
         id: id,
         name: _title,
         iconData: _iconData!,
-        color: _color!,
+        color: _color??Colors.black,
         isIncome: _isIncome,
         dateTime: DateTime.now(),
       );
@@ -551,6 +552,14 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
             );
         context.read<SelectedCategoryCubit>().changeCategory(_category);
         Navigator.pop(context);
+        Navigator.pushNamedAndRemoveUntil(
+            context,
+            PageConst.addTransactionPage,
+            arguments: AddTransactionPage(
+                isIncome: _isIncome,
+                account: _account,
+                selectedDate: _selectedDate),
+            (route) => route.settings.name == PageConst.homePage);
         Navigator.popAndPushNamed(
           context,
           PageConst.addTransactionPage,

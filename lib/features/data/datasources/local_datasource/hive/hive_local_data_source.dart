@@ -386,7 +386,17 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       if (totalAccount != null) {
         final exchangeRate = sl<ConvertCurrencyUsecase>()
             .call(existingAccount.currency.code, totalAccount.currency.code);
+        final List<TransactionModel> res = [
+          ...List.from(totalAccount.transactionHistory)
+            ..add(newTransaction.copyWith(
+                amount: transactionEntity.amount * exchangeRate))
+        ];
         final convertedAmount = transactionAmount * exchangeRate;
+        // for (var i = 0; i < 1000; i++) {
+        //   res.add(newTransaction.copyWith(
+        //       amount: transactionEntity.amount * exchangeRate));
+        // }
+        // print("res:${res.length}");
         final updatedTotalAccount = totalAccount.copyWith(
           balance: totalAccount.balance + convertedAmount,
           transactionHistory: List.from(totalAccount.transactionHistory)
@@ -1061,7 +1071,6 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       Hive.box<CurrencyModel>(BoxConst.currency),
     ];
     await Future.wait(boxes.map((e) => e.clear()));
-    
   }
 
   @override

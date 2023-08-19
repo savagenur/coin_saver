@@ -27,7 +27,7 @@ class ExchangeRateModel extends ExchangeRateEntity {
       Map<String, dynamic> json, String base) {
     return ExchangeRateModel(
       base: base,
-      rates: List<RateModel>.from(json['data'].entries.map((MapEntry entry) =>
+      rates: List<RateModel>.from(json['conversion_rates'].entries.map((MapEntry entry) =>
           RateModel(rateName: entry.key, rate: entry.value.toDouble()))),
     );
   }

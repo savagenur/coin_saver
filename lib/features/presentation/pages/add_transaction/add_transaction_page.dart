@@ -1,5 +1,4 @@
 import 'package:coin_saver/constants/constants.dart';
-import 'package:coin_saver/constants/period_enum.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/category/category_entity.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
@@ -12,9 +11,7 @@ import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_category/selected_category_cubit.dart';
 import 'package:coin_saver/features/presentation/pages/add_category/add_category_page.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/widget/calculator_page.dart';
-import 'package:coin_saver/features/presentation/pages/home/home_page.dart';
 import 'package:coin_saver/features/presentation/pages/transaction_detail/transaction_detail_page.dart';
-import 'package:coin_saver/features/presentation/pages/transactions/transactions_page.dart';
 import 'package:coin_saver/features/presentation/widgets/select_currency_widget.dart';
 import 'package:coin_saver/features/presentation/widgets/simple_calendar_widget.dart';
 import 'package:flutter/material.dart';
@@ -24,14 +21,12 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_down_button/pull_down_button.dart';
-import 'package:table_calendar/table_calendar.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../injection_container.dart';
 import '../../../domain/usecases/exchange_rates/convert_currency_usecase.dart';
 import '../../bloc/cubit/selected_date/selected_date_cubit.dart';
 import '../../bloc/home_time_period/home_time_period_bloc.dart';
-import '../../bloc/main_transaction/main_transaction_bloc.dart';
 import '../../widgets/my_button_widget.dart';
 
 class AddTransactionPage extends StatefulWidget {
@@ -63,7 +58,6 @@ class AddTransactionPageState extends State<AddTransactionPage>
   late List<AccountEntity> _accounts;
   late DateTime _selectedDate;
   late bool _isIncome;
-  late Period _selectedPeriod;
   late TabController _tabController;
   late List<CategoryEntity> _categories;
   int _selectedDay = 0;
@@ -213,192 +207,187 @@ class AddTransactionPageState extends State<AddTransactionPage>
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PeriodCubit, Period>(
-      builder: (context, selectedPeriod) {
-        _selectedPeriod = selectedPeriod;
-        return BlocBuilder<AccountBloc, AccountState>(
-          builder: (context, accountState) {
-            if (accountState is AccountLoaded) {
-              _accounts = accountState.accounts;
-              return BlocBuilder<CategoryBloc, CategoryState>(
-                builder: (context, categoryState) {
-                  if (categoryState is CategoryLoaded) {
-                    _categories = categoryState.categories
-                        .where((category) => category.isIncome == _isIncome)
-                        .toList();
-                    _categories.sort(
-                      (a, b) => b.dateTime.compareTo(a.dateTime),
-                    );
-                    _currencyTotal = _accounts
-                        .firstWhere((element) => element.id == "total")
-                        .currency;
-                    return BlocBuilder<SelectedDateCubit, DateRange>(
-                      builder: (context, dateRange) {
-                        return BlocBuilder<SelectedCategoryCubit,
-                            CategoryEntity?>(
-                          builder: (context, selectedCategory) {
-                            _category = selectedCategory;
-                            return Form(
-                              key: _formKey,
-                              child: WillPopScope(
-                                onWillPop: () async {
-                                  if (widget.transaction != null) {
-                                    Navigator.pop(context);
-                                    Navigator.pop(context);
-                                  } else if (widget.isTransactionsPage) {
-                                    Navigator.pop(context);
-                                  } else {
-                                    Navigator.pop(context);
-                                  }
-                                  selectedCategoryCubit.changeCategory(null);
-                                  return false;
-                                },
-                                child: DefaultTabController(
-                                  length: 2,
-                                  child: Scaffold(
-                                    appBar: _buildAppBar(),
-                                    body: Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 10, left: 10, right: 10),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          _buildInputAmount(context),
-                                          sizeVer(5),
-                                          _currencyFrom == null
-                                              ? Container()
-                                              : _buildInputAmount2(context),
-                                          const Divider(),
-                                          Expanded(
-                                            child: Listener(
-                                              onPointerDown: (_) {
-                                                FocusScope.of(context)
-                                                    .unfocus();
-                                              },
-                                              child: SingleChildScrollView(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
+    return BlocBuilder<AccountBloc, AccountState>(
+      builder: (context, accountState) {
+        if (accountState is AccountLoaded) {
+          _accounts = accountState.accounts;
+          return BlocBuilder<CategoryBloc, CategoryState>(
+            builder: (context, categoryState) {
+              if (categoryState is CategoryLoaded) {
+                _categories = categoryState.categories
+                    .where((category) => category.isIncome == _isIncome)
+                    .toList();
+                _categories.sort(
+                  (a, b) => b.dateTime.compareTo(a.dateTime),
+                );
+                _currencyTotal = _accounts
+                    .firstWhere((element) => element.id == "total")
+                    .currency;
+                return BlocBuilder<SelectedDateCubit, DateRange>(
+                  builder: (context, dateRange) {
+                    return BlocBuilder<SelectedCategoryCubit,
+                        CategoryEntity?>(
+                      builder: (context, selectedCategory) {
+                        _category = selectedCategory;
+                        return Form(
+                          key: _formKey,
+                          child: WillPopScope(
+                            onWillPop: () async {
+                              if (widget.transaction != null) {
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                              } else if (widget.isTransactionsPage) {
+                                Navigator.pop(context);
+                              } else {
+                                Navigator.pop(context);
+                              }
+                              selectedCategoryCubit.changeCategory(null);
+                              return false;
+                            },
+                            child: DefaultTabController(
+                              length: 2,
+                              child: Scaffold(
+                                appBar: _buildAppBar(),
+                                body: Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 10, left: 10, right: 10),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      _buildInputAmount(context),
+                                      sizeVer(5),
+                                      _currencyFrom == null
+                                          ? Container()
+                                          : _buildInputAmount2(context),
+                                      const Divider(),
+                                      Expanded(
+                                        child: Listener(
+                                          onPointerDown: (_) {
+                                            FocusScope.of(context)
+                                                .unfocus();
+                                          },
+                                          child: SingleChildScrollView(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                sizeVer(10),
+                                                Text(
+                                                  AppLocalizations.of(
+                                                          context)!
+                                                      .account,
+                                                  style: const TextStyle(
+                                                      color: Colors.grey),
+                                                ),
+                                                sizeVer(5),
+                                                _buildPullDownButton(),
+                                                const Divider(),
+                                                sizeVer(10),
+                                                Row(
                                                   children: [
-                                                    sizeVer(10),
                                                     Text(
                                                       AppLocalizations.of(
                                                               context)!
-                                                          .account,
-                                                      style: TextStyle(
-                                                          color: Colors.grey),
+                                                          .categories,
+                                                      style: const TextStyle(
+                                                          color:
+                                                              Colors.grey),
                                                     ),
-                                                    sizeVer(5),
-                                                    _buildPullDownButton(),
-                                                    const Divider(),
-                                                    sizeVer(10),
-                                                    Row(
-                                                      children: [
-                                                        Text(
-                                                          AppLocalizations.of(
-                                                                  context)!
-                                                              .categories,
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.grey),
-                                                        ),
-                                                        Text(
-                                                          isErrorCategory
-                                                              ? AppLocalizations
-                                                                      .of(context)!
-                                                                  .pleaseSelectCategory
-                                                              : "",
-                                                          style: TextStyle(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .colorScheme
-                                                                  .error),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    sizeVer(10),
-                                                    _buildGridView(_categories),
-                                                    const Divider(),
-                                                    sizeVer(10),
-                                                    _buildSelectDay(
-                                                        context, _selectedDay),
-                                                    sizeVer(20),
                                                     Text(
-                                                      AppLocalizations.of(
-                                                              context)!
-                                                          .comment,
+                                                      isErrorCategory
+                                                          ? AppLocalizations
+                                                                  .of(context)!
+                                                              .pleaseSelectCategory
+                                                          : "",
                                                       style: TextStyle(
-                                                          color: Colors.grey),
+                                                          color: Theme.of(
+                                                                  context)
+                                                              .colorScheme
+                                                              .error),
                                                     ),
-                                                    sizeVer(10),
-                                                    TextFormField(
-                                                      textInputAction:
-                                                          TextInputAction.done,
-                                                      controller:
-                                                          _descriptionController,
-                                                      textCapitalization:
-                                                          TextCapitalization
-                                                              .sentences,
-                                                      maxLength: 4000,
-                                                      minLines: 1,
-                                                      maxLines: 6,
-                                                      decoration:
-                                                          InputDecoration(
-                                                        hintText:
-                                                            AppLocalizations.of(
-                                                                    context)!
-                                                                .comment,
-                                                      ),
-                                                    ),
-                                                    sizeVer(70),
                                                   ],
                                                 ),
-                                              ),
+                                                sizeVer(10),
+                                                _buildGridView(_categories),
+                                                const Divider(),
+                                                sizeVer(10),
+                                                _buildSelectDay(
+                                                    context, _selectedDay),
+                                                sizeVer(20),
+                                                Text(
+                                                  AppLocalizations.of(
+                                                          context)!
+                                                      .comment,
+                                                  style: const TextStyle(
+                                                      color: Colors.grey),
+                                                ),
+                                                sizeVer(10),
+                                                TextFormField(
+                                                  textInputAction:
+                                                      TextInputAction.done,
+                                                  controller:
+                                                      _descriptionController,
+                                                  textCapitalization:
+                                                      TextCapitalization
+                                                          .sentences,
+                                                  maxLength: 4000,
+                                                  minLines: 1,
+                                                  maxLines: 6,
+                                                  decoration:
+                                                      InputDecoration(
+                                                    hintText:
+                                                        AppLocalizations.of(
+                                                                context)!
+                                                            .comment,
+                                                  ),
+                                                ),
+                                                sizeVer(70),
+                                              ],
                                             ),
                                           ),
-                                        ],
+                                        ),
                                       ),
-                                    ),
-                                    floatingActionButtonLocation:
-                                        FloatingActionButtonLocation
-                                            .centerDocked,
-                                    floatingActionButton: MediaQuery.of(context)
-                                                .viewInsets
-                                                .bottom !=
-                                            0
-                                        ? null
-                                        : MyButtonWidget(
-                                            title: AppLocalizations.of(context)!
-                                                .add,
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                .5,
-                                            borderRadius:
-                                                BorderRadius.circular(30),
-                                            paddingVertical: 15,
-                                            onTap: _buildAddTransaction),
+                                    ],
                                   ),
                                 ),
+                                floatingActionButtonLocation:
+                                    FloatingActionButtonLocation
+                                        .centerDocked,
+                                floatingActionButton: MediaQuery.of(context)
+                                            .viewInsets
+                                            .bottom !=
+                                        0
+                                    ? null
+                                    : MyButtonWidget(
+                                        title: AppLocalizations.of(context)!
+                                            .add,
+                                        width: MediaQuery.of(context)
+                                                .size
+                                                .width *
+                                            .5,
+                                        borderRadius:
+                                            BorderRadius.circular(30),
+                                        paddingVertical: 15,
+                                        onTap: _buildAddTransaction),
                               ),
-                            );
-                          },
+                            ),
+                          ),
                         );
                       },
                     );
-                  } else {
-                    return Scaffold(
-                      appBar: AppBar(),
-                    );
-                  }
-                },
-              );
-            } else {
-              return const Scaffold();
-            }
-          },
-        );
+                  },
+                );
+              } else {
+                return Scaffold(
+                  appBar: AppBar(),
+                );
+              }
+            },
+          );
+        } else {
+          return const Scaffold();
+        }
       },
     );
   }
@@ -529,7 +518,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
                 onTap: () {
                   Navigator.pushNamed(context, PageConst.selectCurrencyWidget,
                       arguments: SelectCurrencyWidget(
-                          currency: _currencyTotal!, setCurrency: setCurrency));
+                          currency:_account!=null?_account!.currency: _currencyTotal!, setCurrency: setCurrency));
                 },
                 child: Text(
                   _account == null
@@ -677,12 +666,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
             .add(AddTransaction(transaction: transaction, account: _account!));
       }
 
-      // await Future.delayed(const Duration(milliseconds: 200));
-      // accountBloc.add(GetAccounts());
       if (mounted) {
-        // Set the selected account as the primary account
-        // accountBloc.add(SetPrimaryAccount(accountId: _account!.id));
-
         // Clear the selected category
         selectedCategoryCubit.changeCategory(null);
 
@@ -700,7 +684,6 @@ class AddTransactionPageState extends State<AddTransactionPage>
               (route) =>
                   route.settings.name == PageConst.transactionsPage ||
                   route.settings.name == PageConst.mainTransactionPage);
-          // Navigator.pop(context);
         } else if (widget.isMainTransactionPage) {
           Navigator.pop(context, true);
         } else {
@@ -822,7 +805,7 @@ class AddTransactionPageState extends State<AddTransactionPage>
             },
             child: Column(
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   backgroundColor: secondaryColor,
                   radius: 25,
                   child: Icon(

@@ -1,4 +1,6 @@
+import 'package:coin_saver/features/domain/usecases/exchange_rates/update_single_exchange_rate_from_api_usecase.dart';
 import 'package:coin_saver/features/presentation/widgets/my_button_widget.dart';
+import 'package:coin_saver/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -94,8 +96,18 @@ class SelectCurrencyWidgetState extends State<SelectCurrencyWidget> {
                           _currency = currency;
                         });
                       },
-                      title: Text(currency.name,style: TextStyle(fontWeight: _currency == currency?FontWeight.w600:FontWeight.normal),),
-                      trailing: Text(currency.code,style: TextStyle(fontWeight: _currency == currency?FontWeight.w600:FontWeight.normal)),
+                      title: Text(
+                        currency.name,
+                        style: TextStyle(
+                            fontWeight: _currency == currency
+                                ? FontWeight.w600
+                                : FontWeight.normal),
+                      ),
+                      trailing: Text(currency.code,
+                          style: TextStyle(
+                              fontWeight: _currency == currency
+                                  ? FontWeight.w600
+                                  : FontWeight.normal)),
                     );
                   }),
                   sizeVer(70),
@@ -108,10 +120,16 @@ class SelectCurrencyWidgetState extends State<SelectCurrencyWidget> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: MyButtonWidget(
         title: AppLocalizations.of(context)!.select,
-        onTap:_currency==null?null: () {
-          widget.setCurrency(_currency);
-          Navigator.pop(context);
-        },
+        onTap: _currency == null
+            ? null
+            : () async {
+                widget.setCurrency(_currency);
+                await sl<UpdateSingleExchangeRateFromApiUsecase>()
+                    .call(_currency!.code);
+                if (mounted) {
+                  Navigator.pop(context);
+                }
+              },
         width: MediaQuery.of(context).size.width * .4,
         borderRadius: BorderRadius.circular(20),
       ),

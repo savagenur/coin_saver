@@ -9,7 +9,6 @@ import '../../../../domain/entities/transaction/transaction_entity.dart';
 
 class CircularChartWidget extends StatelessWidget {
   final List<TransactionEntity> transactions;
-  final DateTime _selectedDate;
   final AccountEntity _account;
   final double _totalExpense;
   const CircularChartWidget({
@@ -18,7 +17,7 @@ class CircularChartWidget extends StatelessWidget {
     required DateTime selectedDate,
     required AccountEntity account,
     required double totalExpense,
-  })  : _selectedDate = selectedDate,
+  })  : 
         _account = account,
         _totalExpense = totalExpense;
 

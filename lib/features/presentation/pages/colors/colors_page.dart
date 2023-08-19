@@ -33,7 +33,7 @@ class _ColorsPageState extends State<ColorsPage> {
       body: Column(
         children: [
           Padding(
-            padding: EdgeInsets.only(
+            padding: const EdgeInsets.only(
               top: 20,
               left: 20,
             ),
@@ -56,7 +56,7 @@ class _ColorsPageState extends State<ColorsPage> {
               ],
             ),
           ),
-          Divider(),
+          const Divider(),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),

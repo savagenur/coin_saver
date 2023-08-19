@@ -101,7 +101,7 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
             children: [
               Text(
                 AppLocalizations.of(context)!.reminderName,
-                style: TextStyle(color: secondaryColor),
+                style: const TextStyle(color: secondaryColor),
               ),
               sizeVer(5),
               TextFormField(
@@ -123,7 +123,7 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
               sizeVer(30),
               Text(
                 AppLocalizations.of(context)!.reminderFrequency,
-                style: TextStyle(color: secondaryColor),
+                style: const TextStyle(color: secondaryColor),
               ),
               sizeVer(5),
               PullDownButton(
@@ -154,7 +154,7 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
               sizeVer(20),
               Text(
                 AppLocalizations.of(context)!.day,
-                style: TextStyle(color: secondaryColor),
+                style: const TextStyle(color: secondaryColor),
               ),
               sizeVer(5),
               GestureDetector(
@@ -190,7 +190,7 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
               sizeVer(30),
               Text(
                 AppLocalizations.of(context)!.time,
-                style: TextStyle(color: secondaryColor),
+                style: const TextStyle(color: secondaryColor),
               ),
               sizeVer(5),
               GestureDetector(
@@ -214,7 +214,7 @@ class _CreateReminderPageState extends State<CreateReminderPage> {
               sizeVer(30),
               Text(
                 AppLocalizations.of(context)!.comment,
-                style: TextStyle(color: secondaryColor),
+                style: const TextStyle(color: secondaryColor),
               ),
               sizeVer(5),
               TextField(

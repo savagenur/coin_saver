@@ -47,9 +47,7 @@ class TransactionsPageState extends State<TransactionsPage>
   late final int _initialIndexTab;
 
   Filter _selectedFilter = Filter.byDate;
-  List<TransactionEntity> _filteredTransactions = [];
   List<TransactionEntity> _transactions = [];
-  Map<DateTime, List<TransactionEntity>> _filteredTransactionsMap = {};
   @override
   void initState() {
     super.initState();
@@ -60,33 +58,11 @@ class TransactionsPageState extends State<TransactionsPage>
         TabController(length: 5, vsync: this, initialIndex: _initialIndexTab);
   }
 
-  Map<DateTime, List<TransactionEntity>> _filterTransactions(
-      List<TransactionEntity> transactions) {
-    Map<DateTime, List<TransactionEntity>> map = {};
-    for (var transaction in transactions) {
-      DateTime transactionDate = DateTime(
-          transaction.date.year, transaction.date.month, transaction.date.day);
-
-      if (map.containsKey(transactionDate)) {
-        map[transactionDate]!.add(transaction);
-      } else {
-        map[transactionDate] = [transaction];
-      }
-    }
-    return map;
-  }
-
   String _searchQuery = '';
   bool _isSearching = false;
   void _searchTransactions(String query) {
     setState(() {
       _searchQuery = query;
-      _filteredTransactions = _transactions.where((transaction) {
-        // Perform case-insensitive search based on the transaction name
-        return transaction.category.name
-            .toLowerCase()
-            .contains(query.toLowerCase());
-      }).toList();
     });
   }
 
@@ -164,8 +140,6 @@ class TransactionsPageState extends State<TransactionsPage>
                                     BlocProvider.of<TransactionPeriodCubit>(
                                             context)
                                         .state;
-                                _filteredTransactionsMap =
-                                    _filterTransactions(_transactions);
 
                                 return WillPopScope(
                                   onWillPop: () async {
@@ -347,7 +321,7 @@ class TransactionsPageState extends State<TransactionsPage>
           cursorColor: Colors.white,
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
-            hintStyle: TextStyle(color: Colors.white),
+            hintStyle: const TextStyle(color: Colors.white),
             hintText: '${AppLocalizations.of(context)!.search}...',
             border: InputBorder.none,
           ),

@@ -1,7 +1,6 @@
 import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
-import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/currency/currency_bloc.dart';
 import 'package:coin_saver/features/presentation/pages/accounts_chapter/create_transfer/create_transfer_page.dart';
 import 'package:coin_saver/features/presentation/pages/accounts_chapter/crud_account/crud_account_page.dart';
@@ -12,7 +11,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
-import '../../../../../constants/period_enum.dart';
 
 class AccountsPage extends StatelessWidget {
   const AccountsPage({super.key});
@@ -20,7 +18,6 @@ class AccountsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
     late CurrencyEntity _mainCurrency;
-    late Period _selectedPeriod;
 
     return WillPopScope(
       onWillPop: () async {
@@ -38,135 +35,130 @@ class AccountsPage extends StatelessWidget {
           centerTitle: true,
           title: Text(AppLocalizations.of(context)!.accounts),
         ),
-        body: BlocBuilder<PeriodCubit, Period>(
-          builder: (context, period) {
-            _selectedPeriod = period;
-            return BlocBuilder<CurrencyBloc, CurrencyState>(
-              builder: (context, currencyState) {
-                if (currencyState is CurrencyLoaded) {
-                  _mainCurrency = currencyState.currency;
-                  return BlocBuilder<AccountBloc, AccountState>(
-                    builder: (context, accountState) {
-                      if (accountState is AccountLoaded) {
-                        final totalAccount = accountState.accounts.firstWhere(
-                          (element) => element.id == "total",
-                          orElse: () => accountError,
-                        );
-                        final accounts = accountState.accounts
-                            .where((element) => element.id != "total")
-                            .toList();
-                        return Column(
+        body: BlocBuilder<CurrencyBloc, CurrencyState>(
+          builder: (context, currencyState) {
+            if (currencyState is CurrencyLoaded) {
+              _mainCurrency = currencyState.currency;
+              return BlocBuilder<AccountBloc, AccountState>(
+                builder: (context, accountState) {
+                  if (accountState is AccountLoaded) {
+                    final totalAccount = accountState.accounts.firstWhere(
+                      (element) => element.id == "total",
+                      orElse: () => accountError,
+                    );
+                    final accounts = accountState.accounts
+                        .where((element) => element.id != "total")
+                        .toList();
+                    return Column(
+                      children: [
+                        sizeVer(30),
+                        Text(
+                          "${AppLocalizations.of(context)!.total}:",
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        Text(
+                          NumberFormat.currency(
+                                  symbol: totalAccount.currency.symbol)
+                              .format(totalAccount.balance),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge!
+                              .copyWith(fontSize: 26),
+                        ),
+                        sizeVer(20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            sizeVer(30),
-                            Text(
-                              "${AppLocalizations.of(context)!.total}:",
-                              style: Theme.of(context).textTheme.titleMedium,
+                            _buildTransferButton(
+                              context: context,
+                              title: AppLocalizations.of(context)!
+                                  .transferHistory,
+                              iconData: FontAwesomeIcons.clockRotateLeft,
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, PageConst.transferHistoryPage);
+                              },
                             ),
-                            Text(
-                              NumberFormat.currency(
-                                      symbol: totalAccount.currency.symbol)
-                                  .format(totalAccount.balance),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge!
-                                  .copyWith(fontSize: 26),
+                            _buildTransferButton(
+                              context: context,
+                              title:
+                                  AppLocalizations.of(context)!.newTransfer,
+                              iconData: FontAwesomeIcons.rightLeft,
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, PageConst.createTransferPage,
+                                    arguments: const CreateTransferPage());
+                              },
                             ),
-                            sizeVer(20),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                _buildTransferButton(
-                                  context: context,
-                                  title: AppLocalizations.of(context)!
-                                      .transferHistory,
-                                  iconData: FontAwesomeIcons.clockRotateLeft,
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                        context, PageConst.transferHistoryPage);
-                                  },
-                                ),
-                                _buildTransferButton(
-                                  context: context,
-                                  title:
-                                      AppLocalizations.of(context)!.newTransfer,
-                                  iconData: FontAwesomeIcons.rightLeft,
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                        context, PageConst.createTransferPage,
-                                        arguments: const CreateTransferPage());
-                                  },
-                                ),
-                              ],
-                            ),
-                            sizeVer(10),
-                            Expanded(
-                                child: SingleChildScrollView(
-                              child: Column(
-                                children: [
-                            sizeVer(10),
-                                  ...accounts
-                                    .map(
-                                      (account) => Padding(
-                                        padding: const EdgeInsets.only(
-                                            right: 10, left: 10, bottom: 10),
-                                        child: Card(
-                                          elevation: 3,
-                                          shape: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            borderSide: BorderSide.none,
-                                          ),
-                                          child: ListTile(
-                                            onTap: () {
-                                              Navigator.pushNamed(context,
-                                                  PageConst.cRUDAccountPage,
-                                                  arguments: CRUDAccountPage(
-                                                    mainCurrency: _mainCurrency,
-                                                    isUpdatePage: true,
-                                                    account: account,
-                                                  ));
-                                            },
-                                            shape: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              borderSide: BorderSide.none,
-                                            ),
-                                            leading: CircleAvatar(
-                                              backgroundColor: account.color,
-                                              child: Icon(
-                                                account.iconData,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                            title: Text(account.name),
-                                            trailing: Text(
-                                              NumberFormat.compactCurrency(
-                                                symbol: account.currency.symbol,
-                                                decimalDigits: 2,
-                                              ).format(account.balance),
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium,
-                                            ),
+                          ],
+                        ),
+                        sizeVer(10),
+                        Expanded(
+                            child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                        sizeVer(10),
+                              ...accounts
+                                .map(
+                                  (account) => Padding(
+                                    padding: const EdgeInsets.only(
+                                        right: 10, left: 10, bottom: 10),
+                                    child: Card(
+                                      elevation: 3,
+                                      shape: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      child: ListTile(
+                                        onTap: () {
+                                          Navigator.pushNamed(context,
+                                              PageConst.cRUDAccountPage,
+                                              arguments: CRUDAccountPage(
+                                                mainCurrency: _mainCurrency,
+                                                isUpdatePage: true,
+                                                account: account,
+                                              ));
+                                        },
+                                        shape: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        leading: CircleAvatar(
+                                          backgroundColor: account.color,
+                                          child: Icon(
+                                            account.iconData,
+                                            color: Colors.white,
                                           ),
                                         ),
+                                        title: Text(account.name),
+                                        trailing: Text(
+                                          NumberFormat.compactCurrency(
+                                            symbol: account.currency.symbol,
+                                            decimalDigits: 2,
+                                          ).format(account.balance),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium,
+                                        ),
                                       ),
-                                    )
-                                    .toList(),
-                            sizeVer(100)
-                                    ],
-                              ),
-                            )),
-                          ],
-                        );
-                      }
-                      return Container();
-                    },
-                  );
-                }
-                return Container();
-              },
-            );
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                        sizeVer(100)
+                                ],
+                          ),
+                        )),
+                      ],
+                    );
+                  }
+                  return Container();
+                },
+              );
+            }
+            return Container();
           },
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

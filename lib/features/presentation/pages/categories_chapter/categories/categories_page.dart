@@ -72,7 +72,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                 },
                                 child: Column(
                                   children: [
-                                    CircleAvatar(
+                                    const CircleAvatar(
                                       backgroundColor: secondaryColor,
                                       radius: 25,
                                       child: Icon(
@@ -162,7 +162,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
                                           context: context,
                                           builder: (context) => Dialog(
                                             child: Padding(
-                                              padding: EdgeInsets.all(30),
+                                              padding: const EdgeInsets.all(30),
                                               child: Text(
                                                 AppLocalizations.of(context)!
                                                     .thisIsAServiceCategoryAnd,

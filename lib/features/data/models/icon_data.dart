@@ -19,9 +19,9 @@ class IconDataAdapter extends TypeAdapter<IconData> {
   }
 
   @override
-  void write(BinaryWriter writer, IconData icon) {
-    writer.writeInt(icon.codePoint);
-    writer.writeString(icon.fontFamily??"");
-    writer.writeString(icon.fontPackage??"");
+  void write(BinaryWriter writer, IconData obj) {
+    writer.writeInt(obj.codePoint);
+    writer.writeString(obj.fontFamily??"");
+    writer.writeString(obj.fontPackage??"");
   }
 }

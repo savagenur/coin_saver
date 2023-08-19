@@ -86,7 +86,7 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
                             },
                             child:  Column(
                               children: [
-                                CircleAvatar(
+                                const CircleAvatar(
                                   backgroundColor: secondaryColor,
                                   radius: 25,
                                   child: Icon(

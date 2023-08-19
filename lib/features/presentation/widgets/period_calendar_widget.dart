@@ -1,8 +1,7 @@
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/presentation/widgets/my_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../domain/entities/transaction/transaction_entity.dart';
@@ -30,7 +29,6 @@ class _PeriodCalendarWidgetState extends State<PeriodCalendarWidget> {
   DateTime? _selectedEnd;
   DateTime? _firstDate;
   bool _isChecked = false;
-  AccountEntity? _account;
   List<TransactionEntity>? _transactionHistory;
   @override
   void initState() {

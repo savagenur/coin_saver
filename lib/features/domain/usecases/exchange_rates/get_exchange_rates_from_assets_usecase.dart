@@ -2,12 +2,12 @@ import 'package:coin_saver/features/domain/repositories/base_currency_repository
 
 import '../../../data/models/exchange_rate/exchange_rate_model.dart';
 
-class GetExchangeRatesFromApiUsecase {
+class GetExchangeRatesFromAssetsUsecase {
   final BaseCurrencyRepository repository;
-  GetExchangeRatesFromApiUsecase({
+  GetExchangeRatesFromAssetsUsecase({
     required this.repository,
   });
   Future<List<ExchangeRateModel>> call() async {
-    return repository.getExchangeRatesFromApi();
+    return repository.getExchangeRatesFromAssets();
   }
 }

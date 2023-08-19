@@ -10,8 +10,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
-import '../../bloc/main_transaction/main_transaction_bloc.dart';
-
 class TransactionDetailPage extends StatelessWidget {
   final TransactionEntity transaction;
   final AccountEntity account;
@@ -44,15 +42,16 @@ class TransactionDetailPage extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
+      body: SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             sizeVer(10),
              Text(
               AppLocalizations.of(context)!.amount,
-              style: TextStyle(
+              style: const TextStyle(
                 color: secondaryColor,
               ),
             ),
@@ -68,7 +67,7 @@ class TransactionDetailPage extends StatelessWidget {
             sizeVer(20),
               Text(
               AppLocalizations.of(context)!.account,
-              style: TextStyle(
+              style: const TextStyle(
                 color: secondaryColor,
               ),
             ),
@@ -96,7 +95,7 @@ class TransactionDetailPage extends StatelessWidget {
             sizeVer(20),
               Text(
               AppLocalizations.of(context)!.category,
-              style: TextStyle(
+              style: const TextStyle(
                 color: secondaryColor,
               ),
             ),
@@ -124,7 +123,7 @@ class TransactionDetailPage extends StatelessWidget {
             sizeVer(20),
               Text(
               AppLocalizations.of(context)!.day,
-              style: TextStyle(
+              style: const TextStyle(
                 color: secondaryColor,
               ),
             ),
@@ -135,6 +134,21 @@ class TransactionDetailPage extends StatelessWidget {
                   .textTheme
                   .titleMedium!
                   .copyWith(fontWeight: FontWeight.w500),
+            ),
+            sizeVer(20),
+              Text(
+              AppLocalizations.of(context)!.comment,
+              style: const TextStyle(
+                color: secondaryColor,
+              ),
+            ),
+            sizeVer(5),
+            Text(
+              transaction.description==""?"--":transaction.description!,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleSmall!
+                  .copyWith(fontWeight: FontWeight.normal),
             ),
             sizeVer(30),
             TextButton.icon(
@@ -151,7 +165,9 @@ class TransactionDetailPage extends StatelessWidget {
                       .textTheme
                       .titleLarge!
                       .copyWith(color: Theme.of(context).colorScheme.error),
-                ))
+                ),),
+            sizeVer(50),
+
           ],
         ),
       ),

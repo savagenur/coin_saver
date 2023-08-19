@@ -1,20 +1,6 @@
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'dart:ui';
-
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:coin_saver/features/domain/entities/reminder/reminder_entity.dart';
-import 'package:coin_saver/features/domain/entities/settings/settings_entity.dart';
-import 'package:coin_saver/features/domain/usecases/exchange_rates/convert_currency_usecase.dart';
-import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_api_usecase.dart';
-import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_assets_usecase.dart';
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:hive/hive.dart';
-import 'package:uuid/uuid.dart';
-
 import 'package:coin_saver/constants/colors.dart';
 import 'package:coin_saver/constants/constants.dart';
-import 'package:coin_saver/constants/main_categories.dart';
 import 'package:coin_saver/features/data/datasources/local_datasource/hive/base_hive_local_data_source.dart';
 import 'package:coin_saver/features/data/models/account/account_model.dart';
 import 'package:coin_saver/features/data/models/category/category_model.dart';
@@ -23,8 +9,17 @@ import 'package:coin_saver/features/data/models/transaction/transaction_model.da
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/category/category_entity.dart';
 import 'package:coin_saver/features/domain/entities/currency/currency_entity.dart';
+import 'package:coin_saver/features/domain/entities/reminder/reminder_entity.dart';
+import 'package:coin_saver/features/domain/entities/settings/settings_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
+import 'package:coin_saver/features/domain/usecases/exchange_rates/convert_currency_usecase.dart';
+import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_api_usecase.dart';
+import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_assets_usecase.dart';
 import 'package:coin_saver/injection_container.dart';
+import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hive/hive.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../models/account_type.dart';
 import '../../../models/color.dart';
@@ -114,7 +109,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
         await exchangeRatesBox.put(exchangeRate.base, exchangeRate);
       }));
     } catch (e) {
-      print("Error: $e");
+      // print("Error: $e");
     }
   }
 
@@ -129,7 +124,9 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       String main, String reminderTitle, String reminderBody) async {
     await currencyBox.put(
         currencyEntity.code, CurrencyModel.fromEntity(currencyEntity));
-    // var locale = PlatformDispatcher.instance.locale;
+    if (colorsBox.isEmpty) {
+      await colorsBox.addAll(mainColors);
+    }
     await accountsBox.put(
         "total",
         AccountModel(
@@ -386,17 +383,7 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       if (totalAccount != null) {
         final exchangeRate = sl<ConvertCurrencyUsecase>()
             .call(existingAccount.currency.code, totalAccount.currency.code);
-        final List<TransactionModel> res = [
-          ...List.from(totalAccount.transactionHistory)
-            ..add(newTransaction.copyWith(
-                amount: transactionEntity.amount * exchangeRate))
-        ];
         final convertedAmount = transactionAmount * exchangeRate;
-        // for (var i = 0; i < 1000; i++) {
-        //   res.add(newTransaction.copyWith(
-        //       amount: transactionEntity.amount * exchangeRate));
-        // }
-        // print("res:${res.length}");
         final updatedTotalAccount = totalAccount.copyWith(
           balance: totalAccount.balance + convertedAmount,
           transactionHistory: List.from(totalAccount.transactionHistory)

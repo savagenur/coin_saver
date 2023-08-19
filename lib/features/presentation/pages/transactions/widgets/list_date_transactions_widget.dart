@@ -53,7 +53,7 @@ class ListDateTransactionsWidget extends StatelessWidget {
                     date == previousDate &&index!=0
                         ? Container()
                         : Padding(
-                            padding: EdgeInsets.only(
+                            padding: const EdgeInsets.only(
                               left: 10,
                             ),
                             child: Text(
@@ -94,7 +94,7 @@ class ListDateTransactionsWidget extends StatelessWidget {
                   ],
                 );
               } else {
-                return SizedBox(height: 50.0); // Add space at the end
+                return const SizedBox(height: 50.0); // Add space at the end
               }
             },
           )
@@ -189,6 +189,5 @@ class ListDateTransactionsWidget extends StatelessWidget {
               );
             },
           );
-    ;
   }
 }

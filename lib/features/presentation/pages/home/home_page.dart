@@ -1,7 +1,6 @@
 import 'package:coin_saver/constants/constants.dart';
 import 'package:coin_saver/constants/period_enum.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
-import 'package:coin_saver/features/presentation/bloc/cubit/first_launch/first_launch_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
 import 'package:coin_saver/features/presentation/pages/home/widgets/account_switch_pull_down_btn.dart';
@@ -16,7 +15,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../../domain/entities/transaction/transaction_entity.dart';
 import '../../bloc/account/account_bloc.dart';

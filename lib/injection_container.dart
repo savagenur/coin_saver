@@ -17,6 +17,7 @@ import 'package:coin_saver/features/domain/usecases/account/update_account_useca
 import 'package:coin_saver/features/domain/usecases/currency/get_currency_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_api_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/exchange_rates/get_exchange_rates_from_assets_usecase.dart';
+import 'package:coin_saver/features/domain/usecases/exchange_rates/update_single_exchange_rate_from_api_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/hive/first_init_user_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/hive/get_first_launch_usecase.dart';
 import 'package:coin_saver/features/domain/usecases/hive/init_hive_usecase.dart';
@@ -218,6 +219,7 @@ Future<void> initGetIt() async {
   sl.registerLazySingleton(
       () => GetExchangeRatesFromApiUsecase(repository: sl.call()));
   sl.registerLazySingleton(() => ConvertCurrencyUsecase(repository: sl.call()));
+sl.registerLazySingleton(() => UpdateSingleExchangeRateFromApiUsecase(repository: sl.call()));
 
 // * Time Period usecases
   sl.registerLazySingleton(

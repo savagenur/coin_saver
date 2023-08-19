@@ -1,5 +1,3 @@
-import 'package:coin_saver/features/presentation/pages/transactions/widgets/list_date_transactions_widget.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:coin_saver/features/domain/entities/account/account_entity.dart';
 import 'package:coin_saver/features/domain/entities/transaction/transaction_entity.dart';
 import 'package:coin_saver/features/presentation/bloc/account/account_bloc.dart';
@@ -7,11 +5,11 @@ import 'package:coin_saver/features/presentation/bloc/cubit/period/period_cubit.
 import 'package:coin_saver/features/presentation/bloc/cubit/selected_date/selected_date_cubit.dart';
 import 'package:coin_saver/features/presentation/bloc/cubit/transaction_period/transaction_period_cubit.dart';
 import 'package:coin_saver/features/presentation/pages/add_transaction/add_transaction_page.dart';
-import 'package:coin_saver/features/presentation/pages/transaction_detail/transaction_detail_page.dart';
+import 'package:coin_saver/features/presentation/pages/transactions/widgets/list_date_transactions_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
@@ -34,7 +32,6 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
   List<TransactionEntity> _mainTransactions = [];
   double _totalAmount = 0;
   List<TransactionEntity> _transactions = [];
-  Map<DateTime, List<TransactionEntity>> _filteredMap = {};
   Filter _selectedFilter = Filter.byDate;
 
   @override
@@ -43,20 +40,7 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
     _mainTransaction = widget.mainTransaction;
   }
 
-  Map<DateTime, List<TransactionEntity>> _filterTransactions(
-      List<TransactionEntity> transactions) {
-    Map<DateTime, List<TransactionEntity>> map = {};
-    for (var transaction in transactions) {
-      DateTime transactionDate = DateTime(
-          transaction.date.year, transaction.date.month, transaction.date.day);
-      if (map.containsKey(transactionDate)) {
-        map[transactionDate]!.add(transaction);
-      } else {
-        map[transactionDate] = [transaction];
-      }
-    }
-    return map;
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +103,6 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                             _transactions =
                                 BlocProvider.of<TransactionPeriodCubit>(context)
                                     .state;
-                            _filteredMap = _filterTransactions(_transactions);
 
                             return Scaffold(
                               appBar: _buildAppBar(),
@@ -293,11 +276,11 @@ class _MainTransactionPageState extends State<MainTransactionPage> {
                 .copyWith(color: Colors.white, fontWeight: FontWeight.normal),
           ),
           Padding(
-            padding: EdgeInsets.only(bottom: 5),
+            padding: const EdgeInsets.only(bottom: 5),
             child: Text(
               NumberFormat.currency(symbol: _account!.currency.symbol)
                   .format(_totalAmount),
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
         ],

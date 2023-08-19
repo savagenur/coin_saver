@@ -34,7 +34,7 @@ class CurrencyLocalDataSource implements BaseCurrencyLocalDataSource {
         exchangeRates.add(exchangeRate);
       }));
     } catch (e) {
-      print('Error loading exchange rates: $e');
+      // print('Error loading exchange rates: $e');
     }
     return exchangeRates;
   }
@@ -42,16 +42,13 @@ class CurrencyLocalDataSource implements BaseCurrencyLocalDataSource {
   @override
   Future<List<ExchangeRateModel>> getExchangeRatesFromApi() async {
     final List<ExchangeRateModel> exchangeRates = [];
-    final exchangeRateModel = exchangeRatesBox.values.cast<ExchangeRateModel>().toList();
-    final currencies =
-        exchangeRateModel.map((exchangeRate) => exchangeRate.base).join(",");
-    const String apiKey = "fca_live_ZLuN9MN7MVESNdBD9YUGcqljQnOJDs2AwzFfgTc4";
-
+    final currencies = currencyBox.values.cast<CurrencyModel>().toList();
+    const String apiKey = "9f71dae6986fed5a16512424";
     try {
-      await Future.wait(exchangeRateModel.map((exchangeRateModel) async {
-        final baseCurrency = exchangeRateModel.base;
+      await Future.wait(currencies.map((currencyModel) async {
+        final baseCurrency = currencyModel.code;
         final url =
-            "https://api.freecurrencyapi.com/v1/latest?apikey=$apiKey&base_currency=$baseCurrency&currencies=$currencies";
+            "https://v6.exchangerate-api.com/v6/$apiKey/latest/$baseCurrency";
         final response = await http.get(Uri.parse(url));
         if (response.statusCode == 200) {
           final body = json.decode(response.body);
@@ -59,11 +56,27 @@ class CurrencyLocalDataSource implements BaseCurrencyLocalDataSource {
         }
       }));
     } catch (e) {
-      print('Error loading exchange rates from API: $e');
+      // print('Error loading exchange rates from API: $e');
     }
-
-
     return exchangeRates;
+  }
+
+  @override
+  Future<void> updateSingleExchangeRateFromApi(
+      String baseCurrency) async {
+    const String apiKey = "9f71dae6986fed5a16512424";
+    try {
+      final url =
+          "https://v6.exchangerate-api.com/v6/$apiKey/latest/$baseCurrency";
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final body = json.decode(response.body);
+       await exchangeRatesBox.put(
+            baseCurrency, ExchangeRateModel.fromJsonApi(body, baseCurrency));
+      }
+    } catch (e) {
+      // print('Error loading exchange rates from API: $e');
+    }
   }
 
   @override

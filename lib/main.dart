@@ -37,23 +37,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await initGetIt();
-
-  // Bloc.observer = const MainTransactionObserver();
-
-  Future<void> removeHive() async {
-    final appDocumentDir = await getApplicationDocumentsDirectory();
-
-    // Close all open Hive boxes
-    await Hive.close();
-
-    // Delete all the Hive files
-    await appDocumentDir.delete(recursive: true);
-  }
-
-  // await sl<InitHiveAdaptersBoxesUsecase>().call();
   await sl<InitHiveUsecase>().call(); 
-  // await removeHive();
-
   runApp(const MyApp());
 }
 

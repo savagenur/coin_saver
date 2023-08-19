@@ -16,7 +16,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../../constants/constants.dart';
 import '../../bloc/account/account_bloc.dart';
 import '../../widgets/my_button_widget.dart';
 
@@ -435,7 +434,7 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
             Navigator.pushNamed(context, PageConst.catalogIconsPage);
           },
           child: Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
             ),
@@ -453,30 +452,30 @@ class CreateCategoryPageState extends State<CreateCategoryPage> {
     );
   }
 
-  Row _buildPlannedOutlay(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Flexible(
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width * .3,
-            child: TextField(
-              textCapitalization: TextCapitalization.sentences,
-              enabled: false,
-              decoration: InputDecoration(
-                  hintText: AppLocalizations.of(context)!.notSelected),
-            ),
-          ),
-        ),
-        sizeHor(10),
-        const Expanded(
-            child: Text(
-          "KGS per month",
-          style: TextStyle(fontWeight: FontWeight.w500),
-        ))
-      ],
-    );
-  }
+  // Row _buildPlannedOutlay(BuildContext context) {
+  //   return Row(
+  //     mainAxisSize: MainAxisSize.min,
+  //     children: [
+  //       Flexible(
+  //         child: SizedBox(
+  //           width: MediaQuery.of(context).size.width * .3,
+  //           child: TextField(
+  //             textCapitalization: TextCapitalization.sentences,
+  //             enabled: false,
+  //             decoration: InputDecoration(
+  //                 hintText: AppLocalizations.of(context)!.notSelected),
+  //           ),
+  //         ),
+  //       ),
+  //       sizeHor(10),
+  //       const Expanded(
+  //           child: Text(
+  //         "KGS per month",
+  //         style: TextStyle(fontWeight: FontWeight.w500),
+  //       ))
+  //     ],
+  //   );
+  // }
 
   Row _buildIsIncomeRadio(BuildContext context) {
     return Row(

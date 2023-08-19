@@ -71,7 +71,7 @@ class _TransferDetailPageState extends State<TransferDetailPage> {
                   sizeVer(10),
                     Text(
                     AppLocalizations.of(context)!.transferFromAccount,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: secondaryColor,
                     ),
                   ),
@@ -99,7 +99,7 @@ class _TransferDetailPageState extends State<TransferDetailPage> {
                   sizeVer(20),
                     Text(
                     AppLocalizations.of(context)!.transferToAccount,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: secondaryColor,
                     ),
                   ),
@@ -127,7 +127,7 @@ class _TransferDetailPageState extends State<TransferDetailPage> {
                   sizeVer(20),
                     Text(
                     AppLocalizations.of(context)!.transferAmount,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: secondaryColor,
                     ),
                   ),

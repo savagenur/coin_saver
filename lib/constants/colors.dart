@@ -57,8 +57,8 @@ final List<Color> colors = [
   Colors.amber,  Colors.amber.shade400,
   Colors.amber.shade200,
   Colors.black,
-  Color.fromARGB(255, 24, 24, 24),
-  Color.fromARGB(255, 57, 57, 57),
-  Color.fromARGB(255, 103, 103, 103),
-  Color.fromARGB(255, 120, 120, 120),
+  const Color.fromARGB(255, 24, 24, 24),
+  const Color.fromARGB(255, 57, 57, 57),
+  const Color.fromARGB(255, 103, 103, 103),
+  const Color.fromARGB(255, 120, 120, 120),
 ];

@@ -143,7 +143,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                 sizeVer(20),
                                 Text(
                                   AppLocalizations.of(context)!.accountName,
-                                  style: TextStyle(color: Colors.grey),
+                                  style: const TextStyle(color: Colors.grey),
                                 ),
                                 sizeVer(10),
                                 TextFormField(
@@ -169,7 +169,7 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                   children: [
                                     Text(
                                       AppLocalizations.of(context)!.icons,
-                                      style: TextStyle(color: Colors.grey),
+                                      style: const TextStyle(color: Colors.grey),
                                     ),
                                     _isErrorIcon
                                         ? Text(
@@ -244,26 +244,26 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                                             AppLocalizations.of(context)!
                                                 .selectCurrency,
                                             style:
-                                                TextStyle(color: Colors.grey),
+                                                const TextStyle(color: Colors.grey),
                                           ),
                                           PullDownButton(
-                                            scrollController: _pullDownBtnController,
+                                            scrollController:
+                                                _pullDownBtnController,
                                             itemBuilder: (context) {
                                               return currencies
-                                                  .map((currency) =>
-                                                      PullDownMenuItem
-                                                          .selectable(
-                                                              onTap: () {
-                                                                setState(() {
-                                                                  _currency =
-                                                                      currency;
-                                                                });
-                                                              },
-                                                              selected:
-                                                                  _currency ==
-                                                                      currency,
-                                                              title:
-                                                                  "${currency.name} (${currency.code})"))
+                                                  .map((currency) => PullDownMenuItem
+                                                      .selectable(
+                                                          onTap: () {
+                                                            setState(() {
+                                                              _currency =
+                                                                  currency;
+                                                            });
+                                                          },
+                                                          selected:
+                                                              _currency.code ==
+                                                                  currency.code,
+                                                          title:
+                                                              "${currency.name} (${currency.code})"))
                                                   .toList();
                                             },
                                             buttonBuilder: (context, showMenu) {
@@ -327,7 +327,6 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                       onPressed: () => Navigator.pop(context),
                       child: Text(
                         AppLocalizations.of(context)!.no,
-                        
                       )),
                 ),
                 Expanded(
@@ -342,10 +341,8 @@ class CRUDAccountPageState extends State<CRUDAccountPage> {
                       },
                       child: Text(
                         AppLocalizations.of(context)!.yes,
-                        
                       )),
                 ),
-                
               ],
             )
           ],

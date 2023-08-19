@@ -1,6 +1,4 @@
 import 'package:coin_saver/constants/constants.dart';
-import 'package:coin_saver/features/presentation/bloc/category/category_bloc.dart';
-import 'package:coin_saver/features/presentation/bloc/cubit/main_colors/main_colors_cubit.dart';
 import 'package:coin_saver/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

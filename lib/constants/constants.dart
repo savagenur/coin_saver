@@ -23,7 +23,7 @@ AccountModel accountError = AccountModel(
     isActive: true,
     ownershipType: OwnershipType.business,
     openingDate: DateTime(2023),
-    transactionHistory: []);
+    transactionHistory: const []);
 TransactionModel transactionError = TransactionModel(
     id: 'null',
     date: DateTime.now(),

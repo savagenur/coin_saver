@@ -176,7 +176,7 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
       AppLocalizations.of(context)!.loss,
       AppLocalizations.of(context)!.profit,
     ];
-    List<Color> colors = [
+   const List<Color> colors = [
       Colors.orange,
       Colors.blue,
       Colors.red,
@@ -275,10 +275,10 @@ class _ChartsPageState extends State<ChartsPage> with TickerProviderStateMixin {
 
   BarTooltipItem _buildBarToolTipItem(BarChartRodData rod, int rodIndex,
       int groupIndex, BarChartGroupData group) {
-    final title;
-    final date;
-    final dateFormat;
-    final amount;
+    final String title;
+    final DateTime date;
+    final String dateFormat;
+    final double amount;
 
     switch (rodIndex) {
       case 0:
@@ -472,7 +472,6 @@ List<TimeGroupModel> groupTransactionsByTime(
       // Calculate the start and end dates for the week
       DateTime weekStart = transaction.date
           .subtract(Duration(days: transaction.date.weekday - 1));
-      DateTime weekEnd = weekStart.add(Duration(days: 6));
 
       timeKey = '${weekStart.year}-${weekStart.month}-${weekStart.day}';
     }
@@ -497,7 +496,7 @@ List<TimeGroupModel> groupTransactionsByTime(
       List<int> dateParts = key.split('-').map(int.parse).toList();
       start = DateTime(dateParts[0], dateParts[1]);
       end =
-          DateTime(dateParts[0], dateParts[1] + 1).subtract(Duration(days: 1));
+          DateTime(dateParts[0], dateParts[1] + 1).subtract(const Duration(days: 1));
     } else if (groupType == TimeGroupType.year) {
       start = DateTime(int.parse(key));
       end = DateTime(int.parse(key));

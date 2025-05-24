@@ -941,14 +941,14 @@ class HiveLocalDataSource implements BaseHiveLocalDataSource {
       DateTime selectedDate, List<TransactionEntity> totalTransactions) {
     final startOfWeek =
         selectedDate.subtract(Duration(days: selectedDate.weekday - 1));
-    final endOfWeek = startOfWeek.add(const Duration(days: 6));
+    final endOfWeek = startOfWeek.add(const Duration(days: 7));
     List<TransactionEntity> weekTransactions =
         totalTransactions.where((mainTransaction) {
       DateTime mainTransactionDate = mainTransaction.date;
 
       return mainTransactionDate
-              .isAfter(startOfWeek.subtract(const Duration(days: 1))) &&
-          mainTransactionDate.isBefore(endOfWeek.add(const Duration(days: 0)));
+              .isAfter(startOfWeek) &&
+          mainTransactionDate.isBefore(endOfWeek);
     }).toList();
 
     return weekTransactions;

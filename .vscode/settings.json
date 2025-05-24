@@ -1,5 +1,6 @@
 {
-    "cSpell.words": [
-        "gamepad"
-    ]
+  "cSpell.words": [
+    "gamepad"
+  ],
+  "dart.flutterSdkPath": ".fvm/versions/3.10.3"
 }

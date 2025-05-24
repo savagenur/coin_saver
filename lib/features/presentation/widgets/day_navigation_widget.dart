@@ -29,13 +29,13 @@ class DayNavigationWidget extends StatefulWidget {
 
 class _DayNavigationWidgetState extends State<DayNavigationWidget> {
   String formatDateyMMMMd(DateTime dateTime) {
-    String formattedDate = DateFormat.yMMMMd().format(dateTime);
+    String formattedDate = DateFormat.yMMMd().format(dateTime);
 
     return formattedDate;
   }
 
   String formatDateM(DateTime dateTime) {
-    String formattedDate = DateFormat.MMMMd().format(dateTime);
+    String formattedDate = DateFormat.MMMd().format(dateTime);
 
     return formattedDate;
   }
@@ -52,11 +52,11 @@ class _DayNavigationWidgetState extends State<DayNavigationWidget> {
             .add(SetDayPeriod(selectedDate: selectedDate));
         return formatDateyMMMMd(selectedDate) ==
                 formatDateyMMMMd(DateTime.now())
-            ? AppLocalizations.of(context)!.today
+            ? "${AppLocalizations.of(context)!.today}, ${formatDateM(DateTime.now())}"
             : formatDateyMMMMd(selectedDate) ==
                     formatDateyMMMMd(
                         DateTime.now().subtract(const Duration(days: 1)))
-                ? AppLocalizations.of(context)!.yesterday
+                ? "${AppLocalizations.of(context)!.yesterday}, ${formatDateM(DateTime.now().subtract(const Duration(days: 1)))}"
                 : formatDateyMMMMd(selectedDate);
       case Period.week:
         context

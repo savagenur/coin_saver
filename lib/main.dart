@@ -21,7 +21,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'features/presentation/bloc/cubit/main_colors/main_colors_cubit.dart';
 import 'features/presentation/bloc/cubit/selected_category/selected_category_cubit.dart';

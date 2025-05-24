@@ -256,10 +256,14 @@ class AddTransactionPageState extends State<AddTransactionPage>
                                         CrossAxisAlignment.start,
                                     children: [
                                       _buildInputAmount(context),
-                                      sizeVer(5),
                                       _currencyFrom == null
                                           ? Container()
-                                          : _buildInputAmount2(context),
+                                          : Column(
+                                            children: [
+                                              const Icon(FontAwesomeIcons.equals),
+                                              _buildInputAmount2(context)
+                                            ],
+                                          ),
                                       const Divider(),
                                       Expanded(
                                         child: Listener(

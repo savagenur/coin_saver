@@ -14,13 +14,9 @@ class RateAppInitWidget extends StatefulWidget {
 
 class RateAppInitWidgetState extends State<RateAppInitWidget> {
   RateMyApp? rateMyApp;
-  
- 
 
- 
-
-  static const String playStoreId = "com.savagenur.coin_saver";
-  static const String appStoreId = "com.savagenur.coinSaver";
+  static const String playStoreId = "com.skyforge.coin_saver";
+  static const String appStoreId = "com.skyforge.coin_saver";
   @override
   Widget build(BuildContext context) {
     return RateMyAppBuilder(
@@ -29,7 +25,7 @@ class RateAppInitWidgetState extends State<RateAppInitWidget> {
           minDays: 3,
           minLaunches: 7,
           remindDays: 5,
-          remindLaunches: 7,
+          remindLaunches: 2,
           googlePlayIdentifier: playStoreId,
           appStoreIdentifier: appStoreId),
       onInitialized: (context, rateMyApp) {

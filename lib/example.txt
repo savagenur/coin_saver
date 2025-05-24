@@ -1,0 +1,14 @@
+- awesome_notifications
+- fl_chart
+- flutter_bloc
+- flutter_localizations
+- get_it
+- hive
+- http
+- animated_splash_screen
+- intl
+- page_transition
+- rate_my_app
+- syncfusion_flutter_charts
+- table_calendar
+- uuid

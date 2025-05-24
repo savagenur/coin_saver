@@ -539,7 +539,7 @@
   "@byDay": {
     "description": "Button byDay"
   },
-  "shareLinkAnApp": "I'm been using Coin Saver app and I really like it. You should try it, too!\nGoogle Play https://play.google.com/store/apps/details?id=com.savagenur.coin_saver",
+  "shareLinkAnApp": "I'm been using Coin Saver app and I really like it. You should try it, too!\nGoogle Play https://play.google.com/store/apps/details?id=com.skyforge.coin_saver",
   "@shareLinkAnApp": {
     "description": "Button shareLinkOfApp"
   },
